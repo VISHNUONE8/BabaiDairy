@@ -74,31 +74,6 @@ class CartActivity : AppCompatActivity() {
 
 
         }
-        binding.checkbox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if (isChecked){
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val getCount = async(Dispatchers.IO){
-                            quantity = cartViewModel.getKovaCount()
-                        }
-                        getCount.await()
-                        withContext(Dispatchers.Main){
-                            binding.tDelivery.setText((quantity*200).toString())
-                        }
-
-                        println("kova count is:"+getCount.toString())
-
-                    }
-
-                }
-                else{
-                    //if the checkbox is unchecked
-                    binding.tDelivery.setText("0")
-
-                }
-            }
-
-        })
         userReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {

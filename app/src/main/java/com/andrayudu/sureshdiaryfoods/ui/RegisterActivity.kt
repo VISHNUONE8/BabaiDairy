@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -14,6 +15,7 @@ import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.*
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -30,6 +32,32 @@ class RegisterActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         userReference = FirebaseDatabase.getInstance().getReference("Users")
         specialPricesReference = FirebaseDatabase.getInstance().getReference("SpecialPrices")
+
+
+        binding.checkbox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                if (isChecked){
+
+
+
+//                    CoroutineScope(Dispatchers.IO).launch {
+//                        val getCount = async(Dispatchers.IO){
+//                            quantity = cartViewModel.getKovaCount()
+//                        }
+//                        getCount.await()
+//                        withContext(Dispatchers.Main){
+//                            binding.tDelivery.setText((quantity*200).toString())
+//                        }
+//
+//                        println("kova count is:"+getCount.toString())
+//
+//                    }
+
+                }
+
+            }
+
+        })
 
 
 
@@ -55,13 +83,13 @@ class RegisterActivity : AppCompatActivity() {
     }
     private fun createFirebaseDBuser(userId:String){
         val email: String = binding.etRegEmail.getEditText()?.getText().toString()
-        val password: String = binding.etRegPass.getText().toString()
         //we do not need to save the password because we are resetting the password using firevase auth methods
         val mobile: String = binding.Phonenumber.getText().toString()
         val name: String = binding.fullName.getText().toString()
         val limit: String = binding.Limit.getText().toString()
+        val transportRequired:String = if (binding.checkbox.isChecked) "Yes" else "No"
 
-        userReference.child(userId).setValue(UserRegisterModel(name,mobile,email,limit,userId))
+        userReference.child(userId).setValue(UserRegisterModel(name,mobile,email,limit,userId,transportRequired))
         createSpecialPrices(userId)
 
     }

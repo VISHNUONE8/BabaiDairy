@@ -62,23 +62,11 @@
                 android:textColor="@color/colorPrimary" />
 
 
-            <CheckBox
-                android:id="@+id/checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/coupon_layout"
-                android:checked="false"
-                android:text="Transport Required"
-                android:textStyle="bold"
-                android:textColor="@color/grey_text"
-                android:textSize="14sp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/t_title"
-                android:layout_below="@+id/checkbox"
                 android:text="bill_details"
                 android:textStyle="bold"
                 android:textColor="@color/grey_text"

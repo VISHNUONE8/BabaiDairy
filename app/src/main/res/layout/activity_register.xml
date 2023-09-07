@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="5dp"
     tools:context=".ui.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -177,6 +174,18 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="Transport Required"
+            android:textStyle="bold"
+            android:textColor="@color/grey_text"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
@@ -188,6 +197,6 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
 
 </layout>
