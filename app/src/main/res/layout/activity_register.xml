@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             app:errorIconDrawable="@null"
-            android:hint="name"
+            android:hint="Name"
             >
 
             <com.google.android.material.textfield.TextInputEditText
