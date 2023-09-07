@@ -15,10 +15,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".StockActivity"
+            android:name=".ui.StockActivity"
             android:exported="false" />
         <activity
-            android:name=".DaySaleReport"
+            android:name=".ui.DaySaleReport"
             android:exported="false" />
         <activity
             android:name=".ui.OrderDetails"

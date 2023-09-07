@@ -12,12 +12,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.andrayudu.sureshdiaryfoods.ui.DaySaleReport
 import com.andrayudu.sureshdiaryfoods.ui.OrderDetails
 import com.andrayudu.sureshdiaryfoods.R
+import com.andrayudu.sureshdiaryfoods.ui.StockActivity
 import com.andrayudu.sureshdiaryfoods.adapters.OrdersAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentOrdersBinding
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
+import com.andrayudu.sureshdiaryfoods.ui.DayProductionReportManaging
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -43,6 +46,7 @@ class OrdersFragment : Fragment() {
     var customerOrdersList =ArrayList<OrderModel>()
 
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -57,10 +61,11 @@ class OrdersFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         userId = mAuth.uid.toString()
 
-//        getOrdersData(userId)
-        getOrdersData(userId)
+        isAdmin(userId)
 
-        initRecyclerView()
+
+
+
 
         return binding.root
     }
@@ -153,6 +158,35 @@ class OrdersFragment : Fragment() {
 
 
        }
+
+    private fun isAdmin(userid:String?) {
+        //if the user is an admin
+        if (userid.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")){
+
+            binding.adminPanelLayout.visibility = View.VISIBLE
+            binding.ordersFragmentTV.text = "Admin Panel"
+
+            //setting the onclickListeners
+            binding.relLayoutProductionReport.setOnClickListener {
+                startActivity(Intent(mContext, DayProductionReportManaging::class.java))
+            }
+            binding.relLayoutSaleReport.setOnClickListener {
+                startActivity(Intent(mContext, DaySaleReport::class.java))
+            }
+            binding.relLayoutStockReport.setOnClickListener {
+                startActivity(Intent(mContext, StockActivity::class.java))
+
+            }
+
+        }
+        //if the user is not an admin,we will get the ordersdata and we will initialize recyclerview...
+        else{
+            getOrdersData(userId)
+            initRecyclerView()
+
+        }
+    }
+
 
 
 

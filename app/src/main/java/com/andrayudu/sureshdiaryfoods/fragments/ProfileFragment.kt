@@ -10,12 +10,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.andrayudu.sureshdiaryfoods.DaySaleReport
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.StockActivity
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentProfileBinding
 import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
-import com.andrayudu.sureshdiaryfoods.ui.DayProductionReportManaging
 import com.andrayudu.sureshdiaryfoods.ui.LoginActivity
 import com.andrayudu.sureshdiaryfoods.ui.PasswordResetActivity
 import com.andrayudu.sureshdiaryfoods.ui.RegisterActivity
@@ -27,11 +24,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
 
     private lateinit var mAuth: FirebaseAuth
@@ -72,17 +64,9 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(mContext, PasswordResetActivity::class.java))
         }
 
-        binding.relLayoutProductionReport.setOnClickListener {
-            startActivity(Intent(mContext,DayProductionReportManaging::class.java))
-        }
-        binding.DaySaleReport.setOnClickListener {
-            startActivity(Intent(mContext,DaySaleReport::class.java))
 
-        }
-        binding.relLayoutSupport.setOnClickListener {
-            startActivity(Intent(mContext,StockActivity::class.java))
 
-        }
+
         binding.relLayoutLogout.setOnClickListener {
 
             logOut()
@@ -98,21 +82,14 @@ class ProfileFragment : Fragment() {
         userReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    Log.i("snapshot", "the snapshot exists bro")
                     val userRegisterModel = snapshot.getValue(UserRegisterModel::class.java)
                     binding.usernameTV.text = userRegisterModel?.Name
                     binding.limitTV.append("₹ ${userRegisterModel?.Limit}")
-                    Log.i("TAG", "the limit for the user is:" + userRegisterModel?.Limit)
                 }
             }
-
-
             override fun onCancelled(error: DatabaseError) {
             }
-
         })
-
-
     }
 
     private fun isAdmin(userid:String?) {

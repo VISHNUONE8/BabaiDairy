@@ -1,4 +1,4 @@
-package com.andrayudu.sureshdiaryfoods
+package com.andrayudu.sureshdiaryfoods.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +7,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.DaySaleReportAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityDaySaleReportBinding
 import com.andrayudu.sureshdiaryfoods.model.DaySaleReportModel
@@ -35,7 +35,7 @@ class DaySaleReport : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_day_sale_report)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_day_sale_report)
 
 
         val current = LocalDateTime.now()

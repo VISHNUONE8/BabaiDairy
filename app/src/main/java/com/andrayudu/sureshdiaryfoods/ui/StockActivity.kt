@@ -1,19 +1,15 @@
-package com.andrayudu.sureshdiaryfoods
+package com.andrayudu.sureshdiaryfoods.ui
 
 import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.adapters.DaySaleReportAdapter
+import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityStockBinding
 import com.andrayudu.sureshdiaryfoods.model.DaySaleReportModel
 import com.andrayudu.sureshdiaryfoods.model.ProductionReportModel
 import com.google.firebase.database.*
-import java.text.Format
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 //this activity displays the amount of stock that the dairy has after delivering yesterdays orders..
@@ -35,7 +31,7 @@ class StockActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_stock)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_stock)
 
 
         binding.datePickerLayout.setEndIconOnClickListener {
@@ -74,7 +70,7 @@ class StockActivity : AppCompatActivity() {
 
                 //here we add +1 to the monthOfYear because it is being returned one val less than the current month
                 val monthSelected = getDoubleDigitDate((monthOfYear+1).toString())
-                val daySelected = getDoubleDigitDate(day.toString())
+                val daySelected = getDoubleDigitDate(dayOfMonth.toString())
                 val editTextdate =  ("$daySelected-$monthSelected-$year")
 
                 binding.datePickerET.setText(editTextdate)
