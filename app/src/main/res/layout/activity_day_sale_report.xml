@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+<RelativeLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <!-- Linear layout of horizontal orientation -->
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:background="#D6EEEE">
+
+
+        <TextView
+            android:id="@+id/customerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="CustomerName"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+        <!-- icon for user name column heading -->
+        <TextView
+            android:id="@+id/billNoTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="BillNo"
+            android:textColor="@color/black"
+            android:textSize="15dp" />
+
+
+        <TextView
+            android:id="@+id/normalBoxTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="normalBOx"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/splBoxTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="splBox"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/billAmountTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="BillAmount"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+
+
+        <!-- icon for number of attempted column heading -->
+
+        <!-- icon for number of correct column heading -->
+
+        <!-- icon for time taken column heading -->
+
+    </LinearLayout>
+
+    <!-- Recycler view for populating data in a table format -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/ll1"
+        android:background="#D6EEEE" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recyclerView"
+        >
+       <LinearLayout
+
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical">
+
+           <com.google.android.material.textfield.TextInputLayout
+               android:id="@+id/customerNamelayout"
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:layout_width="match_parent"
+               android:layout_height="60dp"
+               android:layout_marginTop="12dp"
+
+               android:hint="CustomerName"
+               >
+
+               <com.google.android.material.textfield.MaterialAutoCompleteTextView
+
+                   android:id="@+id/customerNameAuto"
+                   android:inputType="text"
+                   android:cursorVisible="true"
+                   android:paddingStart="10dp"
+                   android:paddingEnd="10dp"
+                   android:layout_width="match_parent"
+                   android:layout_height="50dp"/>
+           </com.google.android.material.textfield.TextInputLayout>
+
+
+           <com.google.android.material.textfield.TextInputLayout
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:id="@+id/normalBoxETlayout"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="12dp"
+               android:visibility="gone"
+               tools:visibility="visible"
+               android:hint="NormalBox"
+
+               >
+
+               <com.google.android.material.textfield.TextInputEditText
+
+                   android:id="@+id/normalBoxET"
+                   android:inputType="text"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+           </com.google.android.material.textfield.TextInputLayout>
+
+
+           <com.google.android.material.textfield.TextInputLayout
+               android:id="@+id/specialBoxETlayout"
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="12dp"
+               android:visibility="gone"
+               tools:visibility="visible"
+               android:hint="SpecialBox"
+               >
+               <com.google.android.material.textfield.TextInputEditText
+                   android:id="@+id/specialBoxET"
+                   android:inputType="text"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+
+           </com.google.android.material.textfield.TextInputLayout>
+
+
+           <com.google.android.material.textfield.TextInputLayout
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:id="@+id/billNoETlayout"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="12dp"
+               android:hint="Billno"
+               android:visibility="gone"
+               tools:visibility="visible"
+
+               >
+
+               <com.google.android.material.textfield.TextInputEditText
+
+                   android:id="@+id/billNoET"
+
+                   android:inputType="text"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+           </com.google.android.material.textfield.TextInputLayout>
+
+           <com.google.android.material.textfield.TextInputLayout
+
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:id="@+id/billAmountETlayout"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="12dp"
+               android:hint="BillAmount"
+               android:visibility="gone"
+               tools:visibility="visible"
+               >
+
+               <com.google.android.material.textfield.TextInputEditText
+
+                   android:id="@+id/billAmountET"
+                   android:inputType="text"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+           </com.google.android.material.textfield.TextInputLayout>
+           <com.google.android.material.button.MaterialButton
+               android:id="@+id/btnPost"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="24dp"
+               android:visibility="gone"
+               tools:visibility="visible"
+               android:text="Post" />
+       </LinearLayout>
+    </ScrollView>
+
+
+
+
+
+
+</RelativeLayout>
+
+</layout>

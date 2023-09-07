@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/white">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/food_card">
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/i_food_image"
+                android:scaleType="centerCrop"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/baseline_expand_less_24"
+                android:contentDescription="food_image" />
+            <TextView
+                android:id="@+id/t_food_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:padding="4dp"
+                android:textColor="@color/grey_text"
+                android:layout_toEndOf="@id/i_food_image"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="6dp"
+                android:textStyle="bold"
+                 />
+
+
+            <TextView
+                android:id="@+id/t_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rupee_symbol"
+                android:textColor="@color/grey_text"
+                android:layout_toEndOf="@id/i_food_image"
+                android:padding="4dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_below="@id/t_food_name"
+
+                />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/i_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                app:srcCompat="@drawable/ic_plus"
+                android:layout_below="@id/t_price"
+                android:background="?attr/actionBarItemBackground"/>
+
+            <EditText
+                android:id="@+id/t_count"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_toStartOf="@id/i_plus"
+                android:layout_marginTop="50dp"
+                android:hint="0"
+                android:imeOptions="actionDone"
+                android:gravity="center"
+                android:inputType="number"
+                android:textColor="@color/grey_text"
+                 />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_minus"
+                android:id="@+id/i_minus"
+                android:background="?attr/actionBarItemBackground"
+                android:layout_below="@id/t_price"
+                android:layout_toStartOf="@id/t_count"
+              />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
+
+</layout>

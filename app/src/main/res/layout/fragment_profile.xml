@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <LinearLayout
+        tools:context=".fragments.ProfileFragment"
+        android:id="@+id/ProfileFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:focusable="false"
+        android:focusableInTouchMode="true">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@color/colorPrimary"
+            android:padding="20dp">
+
+            <ImageView
+                android:id="@+id/profile_imageIV"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/navigation_account"
+
+                />
+
+            <TextView
+                android:id="@+id/usernameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/profile_imageIV"
+                android:includeFontPadding="false"
+                android:text="              "
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/emailOrMobileTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usernameTV"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/profile_imageIV"
+                android:includeFontPadding="false"
+                android:text="          "
+                android:textSize="14sp" />
+             <TextView
+                android:id="@+id/limitTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/emailOrMobileTV"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/profile_imageIV"
+                android:includeFontPadding="false"
+                android:text="Limit:"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/RegisterUser"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/accountInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="RegisterUser" />
+
+            <ImageView
+                android:id="@+id/arrow1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorDivider"/>
+        <RelativeLayout
+            android:id="@+id/relLayoutProductionReport"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/myAddresses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="DayProductionReport" />
+
+            <ImageView
+                android:id="@+id/arrow2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorDivider"/>
+
+        <RelativeLayout
+            android:id="@+id/relLayoutChangePassword"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/changePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="Change Password"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="100dp"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relLayoutSupport"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/support"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="Support"
+                />
+
+            <ImageView
+                android:id="@+id/arrow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="100dp"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relLayoutAbout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+
+
+            <TextView
+                android:id="@+id/DaySaleReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="DaySaleReport"
+                />
+
+            <ImageView
+                android:id="@+id/arrow4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/relLayoutLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/logout"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="5dp"
+                android:textSize="20dp"
+                android:text="LogOut" />
+
+            <ImageView
+                android:id="@+id/logoutIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:layout_toEndOf="@id/logout"
+                android:layout_marginStart="3dp"
+                android:paddingTop="5dp"
+                android:src="@drawable/baseline_power_settings_new_24" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+</layout>
