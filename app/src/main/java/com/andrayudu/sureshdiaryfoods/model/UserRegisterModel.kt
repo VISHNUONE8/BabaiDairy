@@ -5,5 +5,6 @@ data class UserRegisterModel (var Name:String="",
                               var Email:String="",
                               var Limit:String="",
                               var userId:String="",
-                              var TransportRequired:String=""
+                              var TransportRequired:String="",
+                              var Outstanding:String=""
 )

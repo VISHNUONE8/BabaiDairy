@@ -12,15 +12,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.ui.DaySaleReport
-import com.andrayudu.sureshdiaryfoods.ui.OrderDetails
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.ui.StockActivity
 import com.andrayudu.sureshdiaryfoods.adapters.OrdersAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentOrdersBinding
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
-import com.andrayudu.sureshdiaryfoods.ui.DayProductionReportManaging
+import com.andrayudu.sureshdiaryfoods.ui.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -89,21 +86,20 @@ class OrdersFragment : Fragment() {
         datesList.clear()
         ordersList.clear()
 
-           var ordersName = ""
-           var Price = 0
-           val ordersRef =  FirebaseDatabase.getInstance().getReference("Orders").child(userId)
+
            val customersordersRef =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId)
         //getting customer orders to the customerorders list
 
             customersordersRef.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    //clearing the arraylist because it will load duplicate values...
+                    customerOrdersList.clear()
                     if (snapshot.exists()){
                         for (datasnapshot in snapshot.children){
                             val order = datasnapshot.getValue(OrderModel::class.java)
                             customerOrdersList.add(order!!)
-
-
                         }
+                        adapter.setList(customerOrdersList)
                         Log.i("TAG","the order list is:"+customerOrdersList.toString())
                     }
                 }
@@ -113,45 +109,6 @@ class OrdersFragment : Fragment() {
                 }
 
             })
-           ordersRef.addValueEventListener(object : ValueEventListener{
-               override fun onDataChange(snapshot: DataSnapshot) {
-                   if (snapshot.exists()){
-                       for (dataSnapshot in snapshot.children){
-                           //this datasnapshot currespondss to the date and time heading
-                            var prevDate = ""
-                            for (subSnap in dataSnapshot.children){
-                                val cartItem = subSnap.getValue(CartItem::class.java)
-                                ordersList.add(cartItem!!)
-                                if (prevDate == cartItem.Date){
-                                    datesList.add("")
-                                }
-                                else{
-                                    datesList.add(cartItem.Date)
-                                    prevDate = cartItem.Date
-
-                                }
-                                ordersName = ordersName+cartItem.Name+"(${cartItem.Quantity}), "
-                                Price = Price + ((cartItem.Price.toInt()) * (cartItem.Quantity.toInt()))
-
-
-                            }
-                            Log.i("TAG","Dates list is :"+datesList.toString())
-                           ordersListSummary.add(ordersName)
-                           adapter.setList(ordersList,datesList,customerOrdersList)
-                           adapter.notifyDataSetChanged()
-                           Log.i("the price is :",""+Price)
-
-
-                       }
-                       Log.i("MY TAG","the orders are:"+ordersList.toString())
-                       Log.i("MY TAG","the orders names are:"+ordersListSummary.toString())
-                   }
-               }
-
-               override fun onCancelled(error: DatabaseError) {
-               }
-
-           })
 
 
 
@@ -167,6 +124,11 @@ class OrdersFragment : Fragment() {
             binding.ordersFragmentTV.text = "Admin Panel"
 
             //setting the onclickListeners
+
+            binding.relLayoutUserOrders.setOnClickListener {
+                startActivity(Intent(mContext, UserOrdersAdminView::class.java))
+
+            }
             binding.relLayoutProductionReport.setOnClickListener {
                 startActivity(Intent(mContext, DayProductionReportManaging::class.java))
             }
@@ -175,7 +137,6 @@ class OrdersFragment : Fragment() {
             }
             binding.relLayoutStockReport.setOnClickListener {
                 startActivity(Intent(mContext, StockActivity::class.java))
-
             }
 
         }

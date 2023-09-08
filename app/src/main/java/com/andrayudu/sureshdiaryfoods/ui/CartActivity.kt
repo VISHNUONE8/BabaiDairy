@@ -24,6 +24,9 @@ import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.database.ktx.snapshots
+import com.google.firebase.database.ktx.values
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import java.time.LocalDateTime
@@ -42,6 +45,10 @@ class CartActivity : AppCompatActivity() {
     private  var cartItemsList:ArrayList<CartItem> = ArrayList()
 
     var quantity = 0
+    var name:String? = null
+    var outstanding:String? = null
+    var userId:String?=null
+
 
 
 
@@ -65,14 +72,13 @@ class CartActivity : AppCompatActivity() {
         limitTextView = findViewById(R.id.limitTV)
 
 
-        val userId = mAuth.currentUser?.uid
+         userId = mAuth.currentUser?.uid
+
+        getUserName()
         val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId.toString())
 
         binding.orderNowBtn.setOnClickListener {
             ordernow()
-
-
-
         }
         userReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -93,9 +99,24 @@ class CartActivity : AppCompatActivity() {
 
     }
 
-    private fun orderNowman() {
-        TODO("Not yet implemented")
-    }
+    private fun getUserName() {
+
+        //for admin the order will be saved under the users name
+        val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+        userReference.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    name = snapshot.child("name").getValue<String>()
+                    outstanding = snapshot.child("outstanding").getValue<String>()
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })    }
+
 
     private fun initRecyclerView(){
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -131,15 +152,15 @@ class CartActivity : AppCompatActivity() {
     }
 
 
+
+
     private fun ordernow() {
-        val user = mAuth.currentUser
 
         var max = Date().getTime().toInt()
         var orderId = max
 
 
         val current = LocalDateTime.now()
-        val userId = user?.uid.toString()
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val dateformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -147,8 +168,11 @@ class CartActivity : AppCompatActivity() {
         val date = current.format(dateformatter)
 
         println("Current Date and Time is: $formatted")
-       val ordersRef =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId)
-       val ordersReference =  FirebaseDatabase.getInstance().getReference("Orders").child(userId)
+
+
+       val ordersReference =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId!!)
+       val adminOrdersRef =  FirebaseDatabase.getInstance().getReference("Orders")
+
 
 
 
@@ -156,16 +180,22 @@ class CartActivity : AppCompatActivity() {
         val order = OrderModel()
         order.userId = userId
         order.orderId = orderId.toString()
-        order.quantity = "10"
+        order.userName = name
+        order.quantity =(cartItemsList.size).toString()
         order.date = date
-        order.orderValue = "200"
+        order.orderValue = cartViewModel.getTotalCost()
         order.cartItemList = cartItemsList
-
-        ordersRef.child(order.orderId!!).setValue(order)
-        for (cartItem in cartItemsList){
-            //adding to the users orders list
-           ordersReference.child(formatted.toString()).child(cartItem.Name).setValue(cartItem)
+        if ((outstanding!!.toInt())>0){
+            //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
+            order.orderStatus = "-1"
         }
+        else{
+            order.orderStatus="0"
+            //orderstatus 0 implies that the orderplaced succesfully
+        }
+        ordersReference.child(order.orderId!!).setValue(order)
+        adminOrdersRef.child(order.orderId!!).setValue(order)
+        //clearing the cart
         GlobalScope.launch {
             cartViewModel.repo.deleteAll()
         }

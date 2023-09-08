@@ -28,7 +28,7 @@ class DaySaleReport : AppCompatActivity() {
     private lateinit var myAdapter:DaySaleReportAdapter
     var date:String? = null
 
-    var nameSuggestions = arrayOf("ajay","bindu","chintu","dinesh","ellamma")
+    private var nameSuggestions = arrayOf("ajay","bindu","chintu","dinesh","Naresh","Ramesh","LocalSale")
 
     private var daySales:MutableLiveData<List<DaySaleReportModel>?> = MutableLiveData()
     private var list:ArrayList<DaySaleReportModel>? = null

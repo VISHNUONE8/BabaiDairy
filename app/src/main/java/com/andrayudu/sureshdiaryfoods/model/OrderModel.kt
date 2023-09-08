@@ -6,13 +6,17 @@ import android.os.Parcelable
 
 data class OrderModel(
     var userId:String?=null,
+    var userName:String?=null,
     var orderId:String?=null,
     var quantity:String?=null,
     var date:String?=null,
     var orderValue:String?=null,
+    var orderStatus:String?=null,
     var cartItemList:List<CartItem>?=null
 ):Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -24,10 +28,12 @@ data class OrderModel(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(userId)
+        parcel.writeString(userName)
         parcel.writeString(orderId)
         parcel.writeString(quantity)
         parcel.writeString(date)
         parcel.writeString(orderValue)
+        parcel.writeString(orderStatus)
         parcel.writeTypedList(cartItemList)
     }
 
