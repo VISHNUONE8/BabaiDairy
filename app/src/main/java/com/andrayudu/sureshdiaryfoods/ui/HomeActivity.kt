@@ -1,9 +1,15 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.Manifest
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +20,8 @@ import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 
 class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -37,6 +45,19 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         actionBarTextView = findViewById(R.id.actionbar_Home_Text)
 
 //
+
+        Firebase.messaging.subscribeToTopic("notifications")
+            .addOnCompleteListener{task->
+                var msg = "Subscribed"
+                if (!task.isSuccessful){
+                    msg = "Subscribe failed"
+                }
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+
+
+            }
+
         binding.bottomNavigation.selectedItemId = R.id.Home
         binding.bottomNavigation.setOnItemSelectedListener (this)
         supportFragmentManager.beginTransaction().replace(
@@ -46,6 +67,21 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
 
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 100){
+            if(grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(this, "Notification Permission Granted", Toast.LENGTH_SHORT).show()            }
+        }
+    }
+
 
     private fun setNavController() {
 
