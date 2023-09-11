@@ -5,6 +5,7 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
@@ -19,8 +20,13 @@ import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
 import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
+import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 
 class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
@@ -58,6 +64,9 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
             }
 
+
+
+
         binding.bottomNavigation.selectedItemId = R.id.Home
         binding.bottomNavigation.setOnItemSelectedListener (this)
         supportFragmentManager.beginTransaction().replace(
@@ -67,6 +76,8 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
 
     }
+
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

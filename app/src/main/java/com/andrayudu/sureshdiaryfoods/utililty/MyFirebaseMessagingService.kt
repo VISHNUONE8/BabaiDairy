@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -18,7 +19,10 @@ import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.model.ProductionReportModel
+import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
 import com.andrayudu.sureshdiaryfoods.ui.HomeActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -30,8 +34,32 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
 
-        Log.d("TAG", "the token is :$token")
+        //saving the token to our firebase realtime database...
+        Log.i("TAG","the new token generated is:${token}")
+        //this token is generated as a device token and not an account token
+        //no matter if we change the login account it will not be generated
+        //Called when a new token for the default Firebase project is generated.
+        //This is invoked after app install when a token is first generated, and again if the token changes.
+        saveToken(token)
         super.onNewToken(token)
+    }
+
+    private fun saveToken(token: String) {
+
+
+        val mAuth = FirebaseAuth.getInstance()
+        val user = mAuth.currentUser
+        val userId = user?.uid
+
+        val tokenSavingModel:TokenSavingModel = TokenSavingModel(token,user?.email,userId)
+        if (userId!=null){
+            val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
+                .setValue(tokenSavingModel)
+            if (postTask.isSuccessful){
+                Toast.makeText(this,"UserToken Saved Successfully",Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

@@ -9,9 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityLoginBinding
+import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : AppCompatActivity() {
 
@@ -36,6 +40,23 @@ class LoginActivity : AppCompatActivity() {
 
 
     }
+    private fun saveToken(token: String) {
+
+        val mAuth = FirebaseAuth.getInstance()
+        val user = mAuth.currentUser
+        val userId = user?.uid
+
+        val tokenSavingModel = TokenSavingModel(token,user?.email,userId)
+        if (userId!=null){
+            val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
+                .setValue(tokenSavingModel)
+            if (postTask.isSuccessful){
+                Toast.makeText(this,"UserToken Saved Successfully",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
 
     private fun loginUser() {
         Log.i("TAG","loginuser() is running")
@@ -63,6 +84,15 @@ class LoginActivity : AppCompatActivity() {
                         "User logged in successfully",
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
+                        if (it.isSuccessful){
+                            saveToken(it.result)
+                            Log.i("TAG","the token of this device is :"+it.result)
+
+                        }
+                    })
+
 
                     startActivity(Intent(this, HomeActivity::class.java))
 

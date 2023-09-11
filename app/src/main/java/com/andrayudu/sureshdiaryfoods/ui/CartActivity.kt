@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.andrayudu.sureshdiaryfoods.Api
 import com.andrayudu.sureshdiaryfoods.CartViewModelFactory
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.CartAdapter
@@ -30,6 +31,14 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
 import com.google.firebase.messaging.ktx.remoteMessage
 import kotlinx.coroutines.*
+import okhttp3.Callback
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -76,13 +85,6 @@ class CartActivity : AppCompatActivity() {
 
 
          userId = mAuth.currentUser?.uid
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
-            if (it.isSuccessful){
-                Log.i("TAG","the token of this device is :"+it.result)
-            }
-         })
-
 
         getUserName()
         val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId.toString())
@@ -172,8 +174,8 @@ class CartActivity : AppCompatActivity() {
 
     private fun ordernow() {
 
-        var max = Date().getTime().toInt()
-        var orderId = max
+        val max = Date().getTime().toInt()
+        val orderId = max
 
 
         val current = LocalDateTime.now()
@@ -205,11 +207,36 @@ class CartActivity : AppCompatActivity() {
         if ((outstanding!!.toInt())>0){
             //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
             order.orderStatus = "-1"
-            sendRequest(order.userName)
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://sureshdairyfoods-f8a5a.web.app/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val api = retrofit.create(Api::class.java)
+            val call:Call<ResponseBody> = api.sendNotification("Hii","Woohooo","anthera ayya aipoindiii")
+            call.enqueue(object :retrofit2.Callback<ResponseBody>{
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+
+                    try {
+                        Toast.makeText(this@CartActivity,response.body().toString(),Toast.LENGTH_SHORT).show()
+                    }
+                    catch (e:IOException){
+                        e.printStackTrace()
+                    }
+
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.i("Sorry bro api call","failed")
+                }
+            })
         }
         else{
             order.orderStatus="0"
             //orderstatus 0 implies that the orderplaced succesfully
+
         }
         ordersReference.child(order.orderId!!).setValue(order)
         adminOrdersRef.child(order.orderId!!).setValue(order)
@@ -221,28 +248,6 @@ class CartActivity : AppCompatActivity() {
 
     }
 
-    private fun sendRequest(userName: String?) {
-        //this function sends a notification to the admin stating that the customer is requesting for an order to be accepted..
-        val topic = "notifications"
-        val SENDER_ID = "414833058183"
-
-
-
-//        messageId shouldbe unique for every sender inorder to identify the sender by the receiver
-        val message =RemoteMessage.Builder(SENDER_ID + "@fcm.googleapis.com")
-            .setMessageId("123")
-
-
-            .addData("request","${userName} is requesting you to accept the order ")
-            . build()
-
-
-        val response = FirebaseMessaging.getInstance().send(message);
-        Log.i("TAG","Successfully sent message: " + response);
-        Toast.makeText(this,"Successfully sent the message", Toast.LENGTH_SHORT).show()
-
-
-    }
 
     private fun listItemClicked(cartItem: CartItem){
         Toast.makeText(this,"Selected food is ${cartItem.Name}", Toast.LENGTH_SHORT).show()

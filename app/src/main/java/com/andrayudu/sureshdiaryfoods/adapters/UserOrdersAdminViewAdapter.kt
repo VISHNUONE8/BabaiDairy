@@ -38,6 +38,12 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
         notifyDataSetChanged()
     }
 
+    fun deleteItem(adapterPosition: Int) {
+        NamesList.removeAt(adapterPosition)
+        notifyItemRemoved(adapterPosition)
+
+    }
+
 }
 
 class UserOrdersHolder(val binding: UserOrdersAdminViewItemBinding): RecyclerView.ViewHolder(binding.root){

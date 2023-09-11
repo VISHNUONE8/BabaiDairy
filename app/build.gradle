@@ -44,7 +44,8 @@ dependencies {
     implementation 'androidx.test:core-ktx:1.5.0'
     def lifecycle_version = "2.6.0-alpha01"
     def room_version = "2.4.3"
-
+    def nav_version = "2.5.3"
+    def retrofit_version = "2.9.0"
 
 // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.1")
@@ -75,8 +76,10 @@ dependencies {
 
 
     //retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    //OKHttp logging interceptor
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.6"
 
 
 
@@ -94,7 +97,7 @@ dependencies {
     //google location service dependency
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     //navigation Architecture
-    def nav_version = "2.5.3"
+
 
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
