@@ -10,6 +10,7 @@ interface CartItemDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCartItem(cartItem: CartItem):Long
+
     @Query("SELECT quantity FROM cart_item_table WHERE item_name = :name")
      suspend fun getCartCount(name:String):String
 

@@ -138,21 +138,19 @@ class CartActivity : AppCompatActivity() {
 
     private fun initRecyclerView(){
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CartAdapter({ selectedItem: CartItem?->listItemClicked(selectedItem!!)})
+        adapter = CartAdapter({ selectedItem: CartItem?->removeItem(selectedItem!!)})
         binding.cartRecyclerView.adapter = adapter
 
 
         cartViewModel.cartItems.observe(this, Observer {
-            Log.i("the cart list is :",""+it.toString())
+
             
-                adapter.setList(it)
-                cartViewModel.calculateGrandTotalCost()
-                cartItemsList = it as ArrayList<CartItem>
+            adapter.setList(it)
+            cartViewModel.calculateGrandTotalCost()
+            cartItemsList.addAll(it)
+            cartViewModel.cartItemsList.addAll(it)
 
-
-
-
-//            cartItemsList = it as ArrayList<CartItem>
+            Log.i("the cartItemslist from viewModel is :",""+cartViewModel.cartItemsList.toString())
 
         })
 
@@ -190,11 +188,6 @@ class CartActivity : AppCompatActivity() {
 
        val ordersReference =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId!!)
        val adminOrdersRef =  FirebaseDatabase.getInstance().getReference("Orders")
-
-
-
-
-
 
         val order = OrderModel()
         order.userId = userId
@@ -249,7 +242,8 @@ class CartActivity : AppCompatActivity() {
     }
 
 
-    private fun listItemClicked(cartItem: CartItem){
-        Toast.makeText(this,"Selected food is ${cartItem.Name}", Toast.LENGTH_SHORT).show()
+    private fun removeItem(cartItem: CartItem){
+        //the received cartItem in parameters should be removed from the cartData
+        cartViewModel.removeItem(cartItem)
     }
 }

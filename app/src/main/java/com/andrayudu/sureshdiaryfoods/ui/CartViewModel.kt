@@ -3,21 +3,22 @@ package com.andrayudu.sureshdiaryfoods.ui
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.model.CartItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
     val cartItems = repository.cartItems
-
     var repo = repository
-
     val grandTotal = MutableLiveData<String>()
     var totalcost: String = "0"
-
+    var cartItemsList: ArrayList<CartItem> = ArrayList()
 
     lateinit var cartList: List<CartItem>
-
     var kovaQuantity: Int = 0
 
 
@@ -50,5 +51,12 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         kovaQuantity = repository.getKovaCount("Kova")
 
         return kovaQuantity
+    }
+
+    //used for removing the cartItem
+    fun removeItem(cartItem: CartItem) {
+        viewModelScope.launch {
+            repository.delete(cartItem.Name)
+        }
     }
 }
