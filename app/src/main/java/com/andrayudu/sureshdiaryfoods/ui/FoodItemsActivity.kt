@@ -36,7 +36,6 @@ class FoodItemsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_food_items)
         val dao = FoodItemDatabase.getInstance(application).cartItemDao
         val repository = CartItemRepository(dao)
@@ -103,8 +102,6 @@ class FoodItemsActivity : AppCompatActivity() {
 
         foodItemsViewModel.cartItems.observe(this, Observer {
 
-            Log.i("MY TAG","the list is:"+it.toString())
-
             updateCartUI(it)
 
         })
@@ -120,11 +117,9 @@ class FoodItemsActivity : AppCompatActivity() {
 
             for (cartItem in cartItems) {
                 price = price +( cartItem.Price.toInt() * cartItem.Quantity.toInt())
-                quantity = quantity + cartItem.Quantity.toInt()
+//                quantity = quantity + cartItem.Quantity.toInt()
             }
-            //ask suresh anna if he wants total items or sub items count in app
             tCartQuantity.setText(cartItems.size.toString())
-//            tCartQuantity.setText(quantity.toString())
             tTotalCost.setText(getString(R.string.rupee_symbol) + price.toString())
 
         }
@@ -137,15 +132,10 @@ class FoodItemsActivity : AppCompatActivity() {
 
     }
 
-
-
     private fun displayFoodItemsList(){
-
         foodItemsViewModel.firebaseFoodItems.observe(this, Observer {
             Log.i("MY TAG",it.toString())
-
             //as soon as the items load we will hide the progress bar
-
             binding.idPBLoading.visibility = View.INVISIBLE
             adapter.setList(it)
             adapter.notifyDataSetChanged()
@@ -155,8 +145,6 @@ class FoodItemsActivity : AppCompatActivity() {
 
     private fun listItemClicked(foodItem: FoodItem){
         Toast.makeText(this,"Selected food is ${foodItem.Name}",Toast.LENGTH_SHORT).show()
-
-
             foodItemsViewModel.insert(foodItem)
 
     }

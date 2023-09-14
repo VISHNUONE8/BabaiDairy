@@ -7,19 +7,29 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.adapters.ToolbarBindingAdapter
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
+import com.andrayudu.sureshdiaryfoods.HomeActivityViewModelFactory
+import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.fragments.HomeFragment
 import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
 import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
+import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
+import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
+import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,6 +44,8 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
+    private lateinit var homeActivityViewModel: HomeActivityViewModel
+
 
     private lateinit var actionBarTextView: TextView
 
@@ -47,10 +59,33 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+        val dao = FoodItemDatabase.getInstance(application).cartItemDao
+        val repository = CartItemRepository(dao)
+        val factory = HomeActivityViewModelFactory(repository)
+        homeActivityViewModel = ViewModelProvider(this, factory)[HomeActivityViewModel::class.java]
+
 
         actionBarTextView = findViewById(R.id.actionbar_Home_Text)
+        actionBarTextView.text = "SureshDairyFoods"
 
 //
+        val networkConnection = NetworkConnection(applicationContext)
+
+        networkConnection.observe(this, Observer {isConnected->
+            //here 'it' represents the connection status logic value
+            if (isConnected){
+                binding.navigationHostFragment.visibility = View.VISIBLE
+                binding.actionbar.visibility = View.VISIBLE
+                binding.noInternetLayout.visibility= View.GONE
+                Toast.makeText(this,"Internet Connected",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                binding.navigationHostFragment.visibility = View.GONE
+                binding.actionbar.visibility = View.GONE
+                binding.noInternetLayout.visibility= View.VISIBLE
+                Toast.makeText(this,"No Internet Connection",Toast.LENGTH_SHORT).show()
+            }
+        })
 
         Firebase.messaging.subscribeToTopic("notifications")
             .addOnCompleteListener{task->
@@ -59,9 +94,6 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
                     msg = "Subscribe failed"
                 }
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-
-
-
             }
 
 
@@ -74,8 +106,34 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         , HomeFragment()
         )
 
+        homeActivityViewModel.cartItems.observe(this, Observer {
+//            updateCartUI(it)
+        })
 
     }
+//    private fun updateCartUI(cartItems: List<CartItem>?) {
+//        if(cartItems!=null && cartItems.size > 0){
+//            binding.cartView.visibility = View.VISIBLE
+//            var price =0
+//            var quantity = 0
+//
+//            for (cartItem in cartItems) {
+//                price = price +( cartItem.Price.toInt() * cartItem.Quantity.toInt())
+//                quantity = quantity + cartItem.Quantity.toInt()
+//            }
+//            tCartQuantity.setText(cartItems.size.toString())
+//            tTotalCost.setText(getString(R.string.rupee_symbol) + price.toString())
+//
+//        }
+//        else
+//        {
+//            binding.cartView.setVisibility(View.GONE)
+//            tCartQuantity.text = "0"
+//            tTotalCost.text = getString(R.string.rupee_symbol) + "0"
+//        }
+//
+//    }
+
 
 
 

@@ -101,6 +101,8 @@ class UserOrdersAdminView : AppCompatActivity() {
 
                     if (requestedOrders.isEmpty()){
                         Log.i("TAG","the requested Orders is empty")
+                        //the below snippet is used because on swiping the item, it is going to hiding position
+                        //to bring it back to normal we are using below snippet
                         userOrdersAdminViewAdapter!!.notifyItemChanged(viewHolder.adapterPosition)
                     }
                     else {

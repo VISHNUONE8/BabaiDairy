@@ -20,7 +20,7 @@ interface CartItemDao {
     @Query("DELETE FROM cart_item_table WHERE item_name = :name")
     suspend fun deleteCartItem(name: String):Int
 
-    @Query("SELECT COUNT(item_name) FROM cart_item_table WHERE item_category=:category")
+    @Query("SELECT IFNULL(SUM(quantity),0) FROM cart_item_table WHERE item_category=:category")
     suspend fun getKovaCount(category:String):Int
 
 

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,68 +17,51 @@
             android:layout_height="wrap_content"
             android:id="@+id/cart_RecyclerView"
             android:background="@color/grey"/>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bill_layout"
             android:background="@color/white"
             android:layout_below="@+id/cart_RecyclerView"
+            android:layout_marginTop="10dp"
             android:padding="8dp">
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/coupon_layout"-->
-<!--                android:layout_alignParentTop="true"-->
-<!--                android:layout_alignParentStart="true"-->
-<!--                android:layout_toStartOf="@+id/b_apply"-->
-<!--                app:hintEnabled="true"-->
-<!--                android:textColorHint="@color/grey_text"-->
-<!--                android:layout_marginTop="8dp">-->
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:id="@+id/e_coupon"-->
-<!--                    android:hint="coupon"-->
-<!--                    android:imeOptions="actionDone"-->
-<!--                    android:inputType="text"-->
-<!--                    android:maxLines="1"-->
-<!--                    android:singleLine="true"-->
-<!--                    android:textColor="@color/grey_text"-->
-<!--                    android:textSize="14sp"/>-->
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/i_remove"
-                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            <TextView
+                android:id="@+id/limitTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/coupon_layout"
-                android:layout_alignParentEnd="true"
-                app:srcCompat="@drawable/ic_minus"
-                android:visibility="invisible"
-                android:textColor="@color/colorPrimary" />
-
-
+                android:text="UserLimit:"
+                />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/t_title"
-                android:text="bill_details"
+                android:layout_below="@+id/limitTV"
+                android:text="Billing_details:"
                 android:textStyle="bold"
                 android:textColor="@color/grey_text"
                 android:textSize="14sp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="2dp"
+                />
+            <View
+                android:id="@+id/lineSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@+id/t_title"
+                android:background="@color/colorDivider"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/h_total"
-                android:layout_below="@+id/t_title"
+                android:layout_below="@+id/lineSeparator"
                 android:padding="4dp"
                 android:layout_marginStart="4dp"
-                android:text="cart_total"
+                android:layout_marginTop="5dp"
+                android:text="Cart_total"
                 android:textSize="14sp"
                 android:textColor="@color/grey_text"/>
             <TextView
@@ -92,48 +73,39 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignTop="@+id/h_total"
                 android:layout_alignBottom="@+id/h_total"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/h_discount"
-                android:text="discount"
-                android:padding="4dp"
-                android:layout_marginStart="4dp"
-                android:textColor="@color/grey_text"
-                android:layout_below="@+id/h_total"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/t_discount"
-                android:layout_below="@+id/h_total"
-                android:layout_alignParentEnd="true"
-                android:gravity="center_vertical|end"
-                android:layout_alignTop="@+id/h_discount"
-                android:layout_alignBottom="@+id/h_discount"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/h_delivery"
-                android:text="delivery_charges"
+                android:text="Transport_charges"
                 android:textColor="@color/grey_text"
                 android:padding="4dp"
                 android:layout_marginStart="4dp"
-                android:layout_below="@+id/t_discount"/>
-            <TextView
-                android:id="@+id/limitTV"
+                android:layout_below="@+id/h_total"/>
+            <ProgressBar
+                android:id="@+id/idPBLoading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="UserLimit:"
-                />
+                android:layout_alignParentEnd="true"
+                android:gravity="center_vertical|end"
+                android:layout_below="@+id/t_total"
+                android:layout_alignTop="@+id/h_delivery"
+                android:layout_alignBottom="@+id/h_delivery"
+                android:visibility="visible"
+                tools:visibility="visible" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/t_delivery"
                 android:layout_alignParentEnd="true"
                 android:gravity="center_vertical|end"
-                android:layout_below="@+id/t_discount"
+                android:layout_below="@+id/t_total"
                 android:layout_alignTop="@+id/h_delivery"
-                android:layout_alignBottom="@+id/h_delivery"/>
+                android:layout_alignBottom="@+id/h_delivery"
+                android:visibility="invisible"
+                />
             <View
                 android:layout_width="150dp"
                 android:layout_height="1dp"
@@ -142,7 +114,8 @@
                 android:layout_below="@+id/t_delivery"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"/>
+                android:layout_marginBottom="6dp"
+               />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,7 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/h_pay"
-                android:text="You Pay"
+                android:text="GrandTotal"
                 android:textStyle="bold"
                 android:layout_below="@id/line"
                 android:padding="4dp"
@@ -171,8 +144,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/h_pay"
-                android:layout_marginTop="10dp"
-                android:text="OrderNow"
+                android:layout_marginTop="40dp"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"
+                android:text="Order Now"
                 android:textColor="@color/colorPrimary" />
         </RelativeLayout>
     </RelativeLayout>

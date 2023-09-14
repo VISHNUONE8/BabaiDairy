@@ -1,16 +1,14 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.Api
 import com.andrayudu.sureshdiaryfoods.CartViewModelFactory
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.CartAdapter
@@ -18,53 +16,18 @@ import com.andrayudu.sureshdiaryfoods.databinding.ActivityCartBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
-import com.andrayudu.sureshdiaryfoods.model.OrderModel
-import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.ktx.messaging
-import com.google.firebase.messaging.ktx.remoteMessage
-import kotlinx.coroutines.*
-import okhttp3.Callback
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import java.io.IOException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class CartActivity : AppCompatActivity() {
-
-    private lateinit var mAuth:FirebaseAuth
-    private lateinit var limitTextView: TextView
 
     private lateinit var binding:ActivityCartBinding
     private lateinit var cartViewModel: CartViewModel
     private lateinit var adapter:CartAdapter
 
-    private  var cartItemsList:ArrayList<CartItem> = ArrayList()
+    //UI components
+    private lateinit var limitTextView: TextView
 
-    var quantity = 0
-    var name:String? = null
-    var outstanding:String? = null
-    var userId:String?=null
-
-
-
-
-
-
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,69 +35,30 @@ class CartActivity : AppCompatActivity() {
         val dao = FoodItemDatabase.getInstance(application).cartItemDao
         val repository = CartItemRepository(dao)
         val factory = CartViewModelFactory(repository)
-
-
-        runtimeEnableAutoInit()
         cartViewModel = ViewModelProvider(this,factory)[CartViewModel::class.java]
-
         binding.lifecycleOwner = this
 
+        runtimeEnableAutoInit()
 
-          mAuth = Firebase.auth
+        cartViewModel.loadUserDetails()
+
         limitTextView = findViewById(R.id.limitTV)
 
-
-         userId = mAuth.currentUser?.uid
-
-        getUserName()
-        val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId.toString())
-
         binding.orderNowBtn.setOnClickListener {
-            ordernow()
+            cartViewModel.ordernow()
         }
-        userReference.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    Log.i("snapshot","the snapshot exists bro")
-                    val userRegisterModel = snapshot.getValue(UserRegisterModel::class.java)
-                    limitTextView.append(userRegisterModel!!.Limit)
-                }
-            }
 
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })
 
         initRecyclerView()
-
     }
 
+    //enables firebasecloudmessaging by default it is enabled only , but we are making sure once again as
+    //we need to send notification to admin incase of outstanding amount value exists...
     fun runtimeEnableAutoInit() {
         // [START fcm_runtime_enable_auto_init]
         Firebase.messaging.isAutoInitEnabled = true
         // [END fcm_runtime_enable_auto_init]
     }
-
-    private fun getUserName() {
-
-        //for admin the order will be saved under the users name
-        val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
-        userReference.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
-                    name = snapshot.child("name").getValue<String>()
-                    outstanding = snapshot.child("outstanding").getValue<String>()
-
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })    }
-
 
     private fun initRecyclerView(){
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -142,105 +66,52 @@ class CartActivity : AppCompatActivity() {
         binding.cartRecyclerView.adapter = adapter
 
 
-        cartViewModel.cartItems.observe(this, Observer {
 
-            
+        val observer  = Observer<List<CartItem>> {  }
+
+        cartViewModel.getUserDetails().observe(this, Observer {
+            //after change in the userDetails only the calculation of totalCost begins else just blank
+            //put a loading symbol ....
+            Log.i("TAG","the loading is done bigiluu")
+            cartViewModel.getCartItems().observe(this,observer)
+            binding.idPBLoading.visibility = View.GONE
+            binding.tDelivery.visibility  = View.VISIBLE
+            binding.orderNowBtn.visibility =View.VISIBLE
+            limitTextView.append(it?.Limit)
+            cartViewModel.cartItemsCost()
+            updateUI()
+        })
+
+        cartViewModel.getCartItems().observe(this, Observer {
+            Log.i("TAG","cartItems ui is called")
+
             adapter.setList(it)
-            cartViewModel.calculateGrandTotalCost()
-            cartItemsList.addAll(it)
+            cartViewModel.cartItemsCost()
+            //this list will be uploaded to firebase soo we have to keep it up-to-date
             cartViewModel.cartItemsList.addAll(it)
-
-            Log.i("the cartItemslist from viewModel is :",""+cartViewModel.cartItemsList.toString())
-
+            updateUI()
+            //if the cart has no items in it ,then we will close the activity
+            if (it != null && it.size == 0) {
+                finish()
+            }
         })
-
-        cartViewModel.grandTotal.observe(this, Observer {
-            updateUI(it.toString())
-
+        cartViewModel.getGrandTotal().observe(this, Observer {
+            Log.i("TAG","grandtotal ui is called")
+            binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " +it
         })
+        cartViewModel.getTransportCharges().observe(this, Observer {
+            Log.i("TAG","transport ui is called")
+            binding.tDelivery.text=getString(R.string.rupee_symbol) + " " + it
+        })
+    }
+    private fun updateUI() {
+        Log.i("TAG","update ui is called")
+        binding.tTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getCartValue()
+        binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getGrandTotal().value
+        binding.tDelivery.text=getString(R.string.rupee_symbol) + " " + cartViewModel.getTransportValue()
 
 
     }
-
-    private fun updateUI(grandTotal: String) {
-        binding.tTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getTotalCost()
-        binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " + grandTotal
-    }
-
-
-
-
-    private fun ordernow() {
-
-        val max = Date().getTime().toInt()
-        val orderId = max
-
-
-        val current = LocalDateTime.now()
-
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val dateformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formatted = current.format(formatter)
-        val date = current.format(dateformatter)
-
-        println("Current Date and Time is: $formatted")
-
-
-       val ordersReference =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId!!)
-       val adminOrdersRef =  FirebaseDatabase.getInstance().getReference("Orders")
-
-        val order = OrderModel()
-        order.userId = userId
-        order.orderId = orderId.toString()
-        order.userName = name
-        order.quantity =(cartItemsList.size).toString()
-        order.date = date
-        order.orderValue = cartViewModel.getTotalCost()
-        order.cartItemList = cartItemsList
-        if ((outstanding!!.toInt())>0){
-            //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
-            order.orderStatus = "-1"
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://sureshdairyfoods-f8a5a.web.app/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val api = retrofit.create(Api::class.java)
-            val call:Call<ResponseBody> = api.sendNotification("Hii","Woohooo","anthera ayya aipoindiii")
-            call.enqueue(object :retrofit2.Callback<ResponseBody>{
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-
-                    try {
-                        Toast.makeText(this@CartActivity,response.body().toString(),Toast.LENGTH_SHORT).show()
-                    }
-                    catch (e:IOException){
-                        e.printStackTrace()
-                    }
-
-                }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.i("Sorry bro api call","failed")
-                }
-            })
-        }
-        else{
-            order.orderStatus="0"
-            //orderstatus 0 implies that the orderplaced succesfully
-
-        }
-        ordersReference.child(order.orderId!!).setValue(order)
-        adminOrdersRef.child(order.orderId!!).setValue(order)
-        //clearing the cart
-        GlobalScope.launch {
-            cartViewModel.repo.deleteAll()
-        }
-
-
-    }
-
 
     private fun removeItem(cartItem: CartItem){
         //the received cartItem in parameters should be removed from the cartData

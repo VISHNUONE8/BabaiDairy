@@ -10,7 +10,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".fragments.HomeFragment">
-
+    <TextView
+        android:id="@+id/titleTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Our Products"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="30sp"
+        android:includeFontPadding="false"
+        android:textStyle="bold"/>
 
 
     <androidx.cardview.widget.CardView
@@ -18,7 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/titleTV"
         android:padding="5dp"
         >
 
@@ -53,7 +64,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="50dp"
+        android:layout_below="@id/titleTV"
+        android:layout_marginTop="10dp"
         android:padding="5dp"
         android:layout_alignBaseline="@id/milkCardview"
         android:layout_toEndOf="@id/milkCardview">
@@ -90,7 +102,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="50dp"
+        android:layout_below="@id/titleTV"
+        android:layout_marginTop="10dp"
         android:padding="5dp"
         android:layout_alignBaseline="@id/milkCardview"
         android:layout_toEndOf="@id/gheeCardview">
@@ -270,45 +283,75 @@
 
     </androidx.cardview.widget.CardView>
 
-
-
-
-
-
-    <TextView
-        android:id="@+id/titleTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Suresh Dairy Foods"
-        android:layout_centerHorizontal="true"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="30sp"
-        android:includeFontPadding="false"
-        android:textStyle="bold"/>
-
-    <ScrollView
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/cart_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:layout_below="@id/titleTV"
-
-        >
-
-
-
-    </ScrollView>
-
-    <Button
-        android:id="@+id/cartBtn"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Cart"
-        android:gravity="center"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/ratingHigh"
+        tools:visibility= "visible"
         android:layout_alignParentBottom="true"
-
         >
-    </Button>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/i_cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:srcCompat="@drawable/ic_cart" />
+
+            <TextView
+                android:id="@+id/t_cart_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/i_cart"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="0"
+                android:textColor="@color/white" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/i_cart"
+                android:layout_alignBottom="@+id/i_cart"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_toEndOf="@+id/t_cart_count"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/t_total_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/b_cart"
+                android:layout_toEndOf="@+id/divider"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/rupee_symbol"
+                android:textColor="@color/white" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/b_cart"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="view_cart"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
 </RelativeLayout>
 
