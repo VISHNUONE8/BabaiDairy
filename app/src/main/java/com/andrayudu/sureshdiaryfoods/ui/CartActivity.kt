@@ -40,7 +40,6 @@ class CartActivity : AppCompatActivity() {
 
         runtimeEnableAutoInit()
 
-        cartViewModel.loadUserDetails()
 
         limitTextView = findViewById(R.id.limitTV)
 
@@ -67,49 +66,44 @@ class CartActivity : AppCompatActivity() {
 
 
 
-        val observer  = Observer<List<CartItem>> {  }
-
-        cartViewModel.getUserDetails().observe(this, Observer {
-            //after change in the userDetails only the calculation of totalCost begins else just blank
-            //put a loading symbol ....
-            Log.i("TAG","the loading is done bigiluu")
-            cartViewModel.getCartItems().observe(this,observer)
-            binding.idPBLoading.visibility = View.GONE
-            binding.tDelivery.visibility  = View.VISIBLE
-            binding.orderNowBtn.visibility =View.VISIBLE
-            limitTextView.append(it?.Limit)
-            cartViewModel.cartItemsCost()
-            updateUI()
-        })
-
-        cartViewModel.getCartItems().observe(this, Observer {
+        val observer  = Observer<List<CartItem>> {
             Log.i("TAG","cartItems ui is called")
 
             adapter.setList(it)
             cartViewModel.cartItemsCost()
             //this list will be uploaded to firebase soo we have to keep it up-to-date
             cartViewModel.cartItemsList.addAll(it)
-            updateUI()
             //if the cart has no items in it ,then we will close the activity
             if (it != null && it.size == 0) {
                 finish()
             }
+        }
+
+        cartViewModel.getUserDetails().observe(this, Observer {
+            //after getting userDetails only we will start calculation of total cost..
+            //put a loading symbol ....
+            //cartItems observe will start observing only after the userDetails is loaded because we need TransportRequired Atrribute
+            cartViewModel.getCartItems().observe(this,observer)
+            Log.i("TAG","the loading is done bigiluu")
+            binding.idPBLoading.visibility = View.GONE
+            binding.tDelivery.visibility  = View.VISIBLE
+            binding.orderNowBtn.visibility =View.VISIBLE
+            limitTextView.append(it?.Limit)
         })
+
         cartViewModel.getGrandTotal().observe(this, Observer {
+            //the grand total is the final calculation that will be done
+            //so it must definitely have an observer
             Log.i("TAG","grandtotal ui is called")
-            binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " +it
+            updateUI(it)
         })
-        cartViewModel.getTransportCharges().observe(this, Observer {
-            Log.i("TAG","transport ui is called")
-            binding.tDelivery.text=getString(R.string.rupee_symbol) + " " + it
-        })
+
     }
-    private fun updateUI() {
+    private fun updateUI(grandTotal:String?) {
         Log.i("TAG","update ui is called")
         binding.tTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getCartValue()
-        binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getGrandTotal().value
+        binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " +grandTotal
         binding.tDelivery.text=getString(R.string.rupee_symbol) + " " + cartViewModel.getTransportValue()
-
 
     }
 
@@ -117,4 +111,6 @@ class CartActivity : AppCompatActivity() {
         //the received cartItem in parameters should be removed from the cartData
         cartViewModel.removeItem(cartItem)
     }
+
+
 }

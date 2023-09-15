@@ -36,16 +36,11 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     private val foodItemList: ArrayList<FoodItem?> = ArrayList()
 
 
-    private var isUpdateOrDelete = false
-    private lateinit var foodItem: FoodItem
+
 
     val foodName = MutableLiveData<String>()
     val foodQuantity = MutableLiveData<String>()
     val foodPrice = MutableLiveData<String>()
-
-//    val saveorUpdateButtonText = MutableLiveData<String>()
-//    val clearAllOrDeleteButtonText = MutableLiveData<String>()
-
     private val statusMessage = MutableLiveData<Event<String>>()
 
     val message: LiveData<Event<String>>
@@ -179,11 +174,6 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             else->{
                 //if the item doesnt belong to categoories kova and special kova
 
-
-
-
-
-
             }
 
         }
@@ -194,8 +184,6 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
         }
         return foodItem
     }
-
-
     fun getFirebaseData(itemName:String?) {
 
         if (firebaseFoodItems.value == null) {
@@ -226,43 +214,10 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
                     }
 
                 })
         }
     }
 
-    fun clearAllOrDelete() {
-
-
-        clearAll()
-
-
-    }
-
-
-
-
-    fun clearAll() {
-        viewModelScope.launch(Dispatchers.IO)
-
-        {
-
-            val numberOfRowsDeleted = repository.deleteAll()
-            withContext(Dispatchers.Main) {
-                if (numberOfRowsDeleted > 0) {
-
-
-                    statusMessage.value =
-                        Event("$numberOfRowsDeleted Food Items Deleted Successfully")
-                } else {
-                    statusMessage.value = Event("An Error Occured")
-
-                }
-
-            }
-
-        }
-    }
 }

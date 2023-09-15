@@ -1,6 +1,7 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
 import android.content.Intent
+import android.graphics.Canvas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 class UserOrdersAdminView : AppCompatActivity() {
 
@@ -95,6 +98,7 @@ class UserOrdersAdminView : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
+
                 //this method is called when we swipe our item to left direction
                 if (direction == ItemTouchHelper.LEFT)
                 {
@@ -157,6 +161,34 @@ class UserOrdersAdminView : AppCompatActivity() {
                 }
             }
 
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(this@UserOrdersAdminView,R.color.colorPrimary))
+                    .addSwipeLeftActionIcon(R.drawable.baseline_handshake_24)
+                    .addSwipeLeftLabel("Accept")
+                    .addSwipeRightLabel("Dispatched")
+                    .addSwipeRightBackgroundColor((ContextCompat.getColor(this@UserOrdersAdminView,R.color.colorPrimaryDark)))
+                    .addSwipeRightActionIcon(R.drawable.baseline_done_outline_24)
+                    .create()
+                    .decorate()
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
         })
         itemTouchHelper.attachToRecyclerView(binding.userOrdersAdminViewRV)
     }

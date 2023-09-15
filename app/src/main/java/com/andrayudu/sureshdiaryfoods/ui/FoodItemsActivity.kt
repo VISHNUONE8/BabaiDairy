@@ -31,6 +31,8 @@ class FoodItemsActivity : AppCompatActivity() {
     private lateinit var tTotalCost:TextView
     private lateinit var tCartQuantity:TextView
 
+    private val TAG = "FoodItemsActivity"
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +104,7 @@ class FoodItemsActivity : AppCompatActivity() {
 
         foodItemsViewModel.cartItems.observe(this, Observer {
 
+            adapter.notifyDataSetChanged()
             updateCartUI(it)
 
         })
@@ -148,5 +151,6 @@ class FoodItemsActivity : AppCompatActivity() {
             foodItemsViewModel.insert(foodItem)
 
     }
+
 
 }

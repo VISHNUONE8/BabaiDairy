@@ -38,6 +38,7 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.setListeners()
         holder.bind(mContext,position,foodItemsList,foodItemsList[position],clickListener)
     }
 
@@ -55,6 +56,31 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
 class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(binding.root){
 
 
+    private val TAG = "MyRecyclerViewAdapter"
+
+
+
+
+    fun setListeners(){
+        binding.tCount.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                Log.i(TAG,"this is before text changed")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.i(TAG,"this is on text changed")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+    }
 
 
     fun bind(
@@ -70,8 +96,6 @@ class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):Recycle
             val getCount = async(Dispatchers.IO){
                 Quantity = FoodItemDatabase.getInstance(context).cartItemDao.getCartCount(foodItem.Name)
                 //the quantity is null if the item doesnt exist in the cart
-
-
 
             }
             getCount.await()
@@ -105,35 +129,6 @@ class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):Recycle
             }
 
         })
-
-//        binding.tCount.addTextChangedListener(object :TextWatcher{
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//            }
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                Log.i("TAG","this is on text is changed bro:")
-//
-//
-//
-//
-//
-//
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {
-//
-//                Log.i("TAG","this is after the text is changed bro:")
-//
-//
-//            }
-//
-//        })
-
-
-
-
-
-
 
 
 

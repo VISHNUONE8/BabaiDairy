@@ -1,26 +1,19 @@
-package com.andrayudu.sureshdiaryfoods.utililty
+package com.andrayudu.sureshdiaryfoods.utility
 
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import androidx.test.core.app.ApplicationProvider
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.model.ProductionReportModel
 import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
-import com.andrayudu.sureshdiaryfoods.ui.HomeActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 

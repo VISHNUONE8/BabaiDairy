@@ -37,6 +37,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     private val cartItems = repository.cartItems
     private val transportCharges = MutableLiveData<String?>()
     private val userDetails = MutableLiveData<UserRegisterModel?>()
+    private var user:UserRegisterModel? = null
     //this list will be uploaded to firebase
     var cartItemsList: ArrayList<CartItem> = ArrayList()
 
@@ -44,8 +45,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     private var cartValue: Int? = 0
     private var transportValue: Int? = 0
 
-    var name:String? = null
-    var outstanding:String? = null
+
     var transportRequired:String? = null
     val mAuth = FirebaseAuth.getInstance()
     var userId = mAuth.currentUser?.uid
@@ -105,25 +105,23 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     fun getTransportCharges():LiveData<String?>{
         return transportCharges
     }
-    fun getUserDetails():LiveData<UserRegisterModel?>{
-        return userDetails
-    }
 
     // this fun is used to get the customers details like name,outstanding balance
-      fun loadUserDetails() {
+      fun getUserDetails():LiveData<UserRegisterModel?> {
         //since the user is already in login this can never be null
         //for admins ease of viewing the order will be saved under the users name in adminOrders db folder i.e "Orders"
          if (userId!=null && userDetails.value == null){
              viewModelScope.launch {
                  withContext(Dispatchers.IO){
                      val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
-                     val user = userReference.get().await().getValue(UserRegisterModel::class.java)
+                     user = userReference.get().await().getValue(UserRegisterModel::class.java)
                      userDetails.postValue(user)
                      transportRequired = user?.TransportRequired
                      Log.i("TAG","the user details are:"+user.toString())
                  }
              }
          }
+        return userDetails
          }
 
     fun ordernow() {
@@ -152,6 +150,10 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
             Log.i("TAG","the outstanding of the customer in null Areyou the admin")
             return
         }
+        //this data is used only for posting Orders
+        val name = user!!.Name
+        val outstanding = user!!.Outstanding
+
         val order = OrderModel()
         order.userId = userId
         order.orderId = orderId.toString()
@@ -214,4 +216,5 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
             repository.delete(cartItem.Name)
         }
     }
+
 }
