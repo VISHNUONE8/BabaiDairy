@@ -30,7 +30,7 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
         //this is where we will create listview
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding:FoodItemCardviewBinding = DataBindingUtil.inflate(layoutInflater,R.layout.food_item_cardview,parent,false)
-        return MyViewHolder(mContext,binding)
+        return MyViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -38,13 +38,11 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.setListeners()
         holder.bind(mContext,position,foodItemsList,foodItemsList[position],clickListener)
     }
 
     fun setList(foodItems:List<FoodItem>){
         foodItemsList.addAll(foodItems)
-
     }
 
 
@@ -53,35 +51,7 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
 }
 
 
-class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(binding.root){
-
-
-    private val TAG = "MyRecyclerViewAdapter"
-
-
-
-
-    fun setListeners(){
-        binding.tCount.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-                Log.i(TAG,"this is before text changed")
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.i(TAG,"this is on text changed")
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-        })
-    }
-
+class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(binding.root){
 
     fun bind(
          context: Context,position: Int,
@@ -95,7 +65,7 @@ class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):Recycle
         GlobalScope.launch {
             val getCount = async(Dispatchers.IO){
                 Quantity = FoodItemDatabase.getInstance(context).cartItemDao.getCartCount(foodItem.Name)
-                //the quantity is null if the item doesnt exist in the cart
+                //the quantity is null if the item doesnt exist in the cart coalesce or ifnull functions can be used
 
             }
             getCount.await()
@@ -104,14 +74,12 @@ class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):Recycle
                 if (Quantity!=null){
                     foodItemsList.get(position).Quantity = Quantity
                 }
-                Log.i("Tag","the quantity val is:"+Quantity)
             }
         }
 
 
         binding.tFoodName.text = foodItem.Name
         binding.tPrice.text = (" ₹ ${foodItem.Price}")
-
 
         binding.tCount.setOnEditorActionListener(object :OnEditorActionListener{
             override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
@@ -127,19 +95,11 @@ class MyViewHolder(context: Context,val binding:FoodItemCardviewBinding):Recycle
                 }
                 return false
             }
-
         })
-
-
-
-//        binding.foodCard.setOnClickListener {
-//            clickListener(foodItem)
-//        }
 
         binding.iPlus.setOnClickListener{
 
             foodItemsList.get(adapterPosition).Quantity= ((foodItemsList.get(adapterPosition).Quantity).toInt() + 1).toString()
-
             binding.tCount.setText(foodItemsList.get(adapterPosition).Quantity.toString())
             //now we should update this into cart database on demand
             clickListener(foodItem)

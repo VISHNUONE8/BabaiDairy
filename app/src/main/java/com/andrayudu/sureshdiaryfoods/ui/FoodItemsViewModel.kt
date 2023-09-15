@@ -32,8 +32,7 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
 
     var firebaseFoodItems: MutableLiveData<List<FoodItem>> = MutableLiveData()
 
-    //    val firebaseList:List<FoodItem> = List()
-    private val foodItemList: ArrayList<FoodItem?> = ArrayList()
+
 
 
 
