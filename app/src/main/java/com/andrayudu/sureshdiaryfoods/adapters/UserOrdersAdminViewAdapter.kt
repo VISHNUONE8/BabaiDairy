@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.layout.Layout
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.CustomerOrdersItemBinding
@@ -41,6 +42,8 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
     }
 
     fun deleteItem(adapterPosition: Int) {
+
+        NamesList.removeAt(adapterPosition)
         notifyItemRemoved(adapterPosition)
     }
 

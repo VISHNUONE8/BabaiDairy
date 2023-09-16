@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.test.core.app.takeScreenshot
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.google.android.gms.tasks.Task
@@ -18,6 +19,7 @@ import kotlinx.coroutines.tasks.await
 
 class UserOrdersAdminViewModel():ViewModel() {
 
+    val TAG = "UserOrdersAdminViewModel"
 
     private var spinnerPosition = 0
     private val ORDERSTATUS = "orderStatus"
@@ -25,9 +27,13 @@ class UserOrdersAdminViewModel():ViewModel() {
     private val acceptedOrdersLive = MutableLiveData<List<OrderModel>>()
     private val requestedOrdersLive = MutableLiveData<List<OrderModel>>()
     private val undoStatus = MutableLiveData<String>()
+    private val task = MutableLiveData<String>()
+
     var customerNamesList = ArrayList<OrderModel>()
     var acceptedOrders = ArrayList<OrderModel>()
     var requestedOrders = ArrayList<OrderModel>()
+    var undoOrderId:String? = null
+    var undoOrderStatus:String? = null
 
 
     fun getSpinnerPosition():Int{
@@ -51,27 +57,70 @@ class UserOrdersAdminViewModel():ViewModel() {
         return undoStatus
     }
 
-
-    fun changeOrderStatus(orderId: String, status: String, position: Int) {
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val change = FirebaseDatabase.getInstance().getReference(Orders)
-                .child(orderId).child(ORDERSTATUS).setValue(status)
-            change.await()
-            Log.i("TAG", "move the order with orderId to acceptedOrders" + orderId)
-
-                undoStatus.postValue(position.toString())
-
-        }
+    //After Snackbar disappears this will be called to clear the previous order Details...
+    fun clearUndoOrderDetails(){
+        undoOrderId  = null
+        undoOrderStatus = null
+        Log.i(TAG,"undoOrder Details have been cleared")
     }
 
-        fun undoOrderMoving(orderId: String, status: String) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val task = FirebaseDatabase.getInstance().getReference(Orders)
-                    .child(orderId).child(ORDERSTATUS).setValue(status)
-                task.await()
-                undoStatus.postValue("Undo Operation is Successful")
+    fun swiped(position:Int,direction:Int):Task<Void>?{
+
+        val left = 4
+        val right = 8
+        val order = if (getSpinnerPosition() == 0) acceptedOrders.get(position)
+        else requestedOrders.get(position)
+
+        var changeTask:Task<Void>? = null
+
+        val orderId = order.orderId
+        val orderStatus = order.orderStatus
+        val changeLocation  =  FirebaseDatabase.getInstance().getReference(Orders)
+            .child(orderId!!)
+        val newStatus: String
+
+        //requested to Accepted
+        if (orderStatus == "-1" && direction == left ) {
+            newStatus = "0"
+            changeTask =changeLocation.child(ORDERSTATUS).setValue(newStatus)
+            Log.i("UserOrdersAdminviewModel", "move the order with orderId to acceptedOrders" + orderId)
+            changeTask.addOnSuccessListener {
+                undoStatus.postValue("0")
+                undoOrderId = orderId
+                undoOrderStatus = "-1"
+
+
             }
+        }
+        //Accepted to Dispatched
+        else if(orderStatus == "0" && direction == right){
+            newStatus ="1"
+            changeTask = changeLocation.child(ORDERSTATUS).setValue(newStatus)
+            Log.i("UserOrdersAdminviewModel", "move the order with orderId to DispatchedOrders" + orderId)
+            changeTask.addOnSuccessListener {
+                undoStatus.postValue("1")
+                undoOrderId = orderId
+                undoOrderStatus = "0"
+            }
+        }
+        //below line will return null if swiped right from Requested Orders and left from AcceptedOrders as the action is invalid
+        return changeTask
+}
+
+
+
+        fun undoOrderMoving() {
+            if (undoOrderId!=null && undoOrderStatus!=null){
+                viewModelScope.launch(Dispatchers.IO) {
+                    val task = FirebaseDatabase.getInstance().getReference(Orders)
+                        .child(undoOrderId!!).child(ORDERSTATUS).setValue(undoOrderStatus)
+                    task.await()
+                    if (task.isSuccessful){
+                        undoStatus.postValue("Undo")
+                    }
+                }
+            }
+
 
         }
 
@@ -83,19 +132,24 @@ class UserOrdersAdminViewModel():ViewModel() {
                 requestedOrders.clear()
                 acceptedOrders.clear()
                 customerNamesList.clear()
+
+                Log.i("UserOrdersAdminviewModel","Firebase Data is being Loaded")
                 if (snapshot.exists()) {
                     for (dataSnapshot in snapshot.children) {
                         val order: OrderModel? = dataSnapshot.getValue(OrderModel::class.java)
                         if (order!!.orderStatus == "0") {
                             acceptedOrders.add(order)
-                            acceptedOrdersLive.postValue(acceptedOrders)
                         } else if (order.orderStatus == "-1") {
                             requestedOrders.add(order)
-                            requestedOrdersLive.postValue(requestedOrders)
                         }
                         //customerNamesList contains both accepted and requested orders
                         customerNamesList.add(order)
+
                     }
+                    acceptedOrdersLive.postValue(acceptedOrders)
+                    requestedOrdersLive.postValue(requestedOrders)
+
+
                 }
             }
 
