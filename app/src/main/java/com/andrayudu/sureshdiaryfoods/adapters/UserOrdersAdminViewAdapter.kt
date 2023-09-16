@@ -14,6 +14,7 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
 
     //in this,the customers whose orders undelivered(pending) should only come
     private var NamesList = ArrayList<OrderModel>()
+    //since the default spinner position is 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserOrdersHolder {
 
@@ -26,12 +27,13 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
         return NamesList.size
     }
 
+
     override fun onBindViewHolder(holder: UserOrdersHolder, position: Int) {
         holder.bind(NamesList[position],clickListener)
     }
 
     fun setList(
-        customerNamesList:ArrayList<OrderModel>
+        customerNamesList:List<OrderModel>
     ){
         NamesList.clear()
         NamesList.addAll(customerNamesList)
@@ -39,9 +41,7 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
     }
 
     fun deleteItem(adapterPosition: Int) {
-        NamesList.removeAt(adapterPosition)
         notifyItemRemoved(adapterPosition)
-
     }
 
 }

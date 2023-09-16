@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,23 +30,17 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class UserOrdersAdminView : AppCompatActivity() {
 
     private lateinit var binding:ActivityUserOrdersAdminViewBinding
-
+    private lateinit var userOrdersAdminViewModel: UserOrdersAdminViewModel
 
     var userOrdersAdminViewAdapter: UserOrdersAdminViewAdapter? = null
-    var customerNamesList = ArrayList<OrderModel>()
-    var acceptedOrders = ArrayList<OrderModel>()
-    var requestedOrders = ArrayList<OrderModel>()
-    //since the default spinner position is 0
-    private var spinnerPosition = 0
+
+
 
     private val orderSpinnerItems = arrayOf("AcceptedOrders","RequestedOrders")
 
@@ -51,11 +48,12 @@ class UserOrdersAdminView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_user_orders_admin_view)
+        userOrdersAdminViewModel = ViewModelProvider(this)[UserOrdersAdminViewModel::class.java]
 
         initRecyclerView()
         initSpinner()
 
-        getUserNames()
+        userOrdersAdminViewModel.loadUserNames()
 
     }
 
@@ -65,14 +63,13 @@ class UserOrdersAdminView : AppCompatActivity() {
         binding.ordersSpinner.onItemSelectedListener = spinListener
         binding.ordersSpinner.dropDownVerticalOffset = 100
     }
-
     private fun loadAcceptedOrders() {
         Log.i("TAG","loading acceptedOrders")
-        userOrdersAdminViewAdapter?.setList(acceptedOrders)
+        userOrdersAdminViewAdapter?.setList(userOrdersAdminViewModel.acceptedOrders)
     }
     private fun loadRequestedOrders() {
         Log.i("TAG","loading requestedOrders")
-        userOrdersAdminViewAdapter?.setList(requestedOrders)
+        userOrdersAdminViewAdapter?.setList(userOrdersAdminViewModel.requestedOrders)
 
     }
 
@@ -82,34 +79,25 @@ class UserOrdersAdminView : AppCompatActivity() {
         userOrdersAdminViewAdapter = UserOrdersAdminViewAdapter { selectedItem: OrderModel? -> listItemClicked(selectedItem!!) }
         binding.userOrdersAdminViewRV.adapter = userOrdersAdminViewAdapter
         itemTouchHelper.attachToRecyclerView(binding.userOrdersAdminViewRV)
-    }
 
-    private fun getUserNames() {
-        val adminOrdersRef = FirebaseDatabase.getInstance().getReference("Orders")
-        adminOrdersRef.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                requestedOrders.clear()
-                acceptedOrders.clear()
-                if (snapshot.exists()){
-                    for (dataSnapshot in snapshot.children){
-                        val order:OrderModel? = dataSnapshot.getValue(OrderModel::class.java)
-                        if (order!!.orderStatus == "0"){
-                            acceptedOrders.add(order)
-                        }
-                        else if (order.orderStatus =="-1"){
-                            requestedOrders.add(order)
-                        }
-                        //customerNamesList contains both accepted and requested orders
-                        customerNamesList.add(order)
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
+        userOrdersAdminViewModel.getUndoStatus().observe(this, Observer {
+            Snackbar.make(binding.userOrdersAdminViewRV,it,Snackbar.LENGTH_SHORT).show()
         })
+        userOrdersAdminViewModel.getAcceptedOrders().observe(this, Observer {
+            if(userOrdersAdminViewModel.getSpinnerPosition() ==0){
+                userOrdersAdminViewAdapter!!.setList(it)
+            }
+        })
+
+        userOrdersAdminViewModel.getRequestedOrders().observe(this, Observer {
+            if (userOrdersAdminViewModel.getSpinnerPosition()== 1){
+                userOrdersAdminViewAdapter!!.setList(it)
+            }
+        })
+
+
     }
+
     private fun listItemClicked(orderModel: OrderModel) {
 
         Toast.makeText(this,"Selected food is ${orderModel.cartItemList}", Toast.LENGTH_SHORT).show()
@@ -131,8 +119,12 @@ class UserOrdersAdminView : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
 
-            val order = if (spinnerPosition == 0) acceptedOrders.get(viewHolder.adapterPosition)
-            else requestedOrders.get(viewHolder.adapterPosition)
+            val acceptedOrder = "0"
+            val dispatchedOrder ="1"
+            val requestedOrder ="-1"
+            //place not null conditions for both lists coz on swiping fast index out of bounds error coming
+            val order = if (userOrdersAdminViewModel.getSpinnerPosition() == 0) userOrdersAdminViewModel.acceptedOrders.get(viewHolder.getBindingAdapterPosition())
+            else userOrdersAdminViewModel.requestedOrders.get(viewHolder.getBindingAdapterPosition())
 
             //this method is called when we swipe our item to left direction
             if (direction == ItemTouchHelper.LEFT)
@@ -140,44 +132,35 @@ class UserOrdersAdminView : AppCompatActivity() {
                 //RequestedOrders to AcceptedOrder Moving
                 if (order.orderStatus == "-1"){
 
-                   val moving =  FirebaseDatabase.getInstance().getReference("Orders")
-                        .child(order.orderId.toString()).child("orderStatus").setValue("0")
-                    Log.i("TAG","move the order with orderId to acceptedOrders" + order.orderId)
-                    GlobalScope.launch(Dispatchers.IO) {
-                        moving.await()
-                        if (moving.isSuccessful){
+
+                    userOrdersAdminViewModel.changeOrderStatus(order.orderId!!,acceptedOrder,viewHolder.bindingAdapterPosition)
+                    userOrdersAdminViewAdapter?.deleteItem(viewHolder.bindingAdapterPosition)
                             Log.i("TAG","moving is successfull bro")
-                            withContext(Dispatchers.Main){
-                                userOrdersAdminViewAdapter?.deleteItem(viewHolder.adapterPosition)
-                                Snackbar.make(binding.userOrdersAdminViewRV,"${order.orderId} has been moved to accepted Orders",Snackbar.LENGTH_SHORT)
-                                    .setAction("Undo",View.OnClickListener {
-                                        FirebaseDatabase.getInstance().getReference("Orders")
-                                            .child(order.orderId.toString()).child("orderStatus").setValue("-1")
-                                        Log.i("undoing the action now","to -1")
-                                    }).show()
+
+//                                userOrdersAdminViewAdapter?.deleteItem(viewHolder.getBindingAdapterPosition())
+//                                Snackbar.make(binding.userOrdersAdminViewRV,"${order.orderId} has been moved to accepted Orders",Snackbar.LENGTH_SHORT)
+//                                    .setAction("Undo",View.OnClickListener {
+//                                       userOrdersAdminViewModel.undoOrderMoving(order.orderId!!,requestedOrder)
+//
+//                                        Log.i("undoing the action now","to -1")
+//                                    }).show()
+
                             }
-                        }
+
                         else{
-                            withContext(Dispatchers.Main) {
+
                                 Snackbar.make(
                                     binding.userOrdersAdminViewRV,
                                     "The moving Operation Failed,Please Check your Internet Connection",
                                     Snackbar.LENGTH_SHORT
                                 ).show()
-                            }
+
 
                         }
-                    }
 
 
-                }
+
                 //tried to move Accepted Order again to Accepted  i.e, order.orderStatus == "0"
-                else{
-                    //the below snippet is used because on swiping the item, it is going to hiding position
-                    //to bring it back to normal we are using below snippet
-                    Snackbar.make(binding.userOrdersAdminViewRV,"The Order is already in Accepted State",Snackbar.LENGTH_SHORT).show()
-                    userOrdersAdminViewAdapter!!.notifyItemChanged(viewHolder.adapterPosition)
-                }
             }
 
             //this method is called if swipe is in RightDirection
@@ -192,7 +175,7 @@ class UserOrdersAdminView : AppCompatActivity() {
                         moveToDispatched.await()
                         if(moveToDispatched.isSuccessful){
                             withContext(Dispatchers.Main){
-                                userOrdersAdminViewAdapter?.deleteItem(viewHolder.adapterPosition)
+                                userOrdersAdminViewAdapter?.deleteItem(viewHolder.getBindingAdapterPosition())
                             }
                         }
                     }
@@ -200,7 +183,7 @@ class UserOrdersAdminView : AppCompatActivity() {
                 //if an order for which order status is "-1" it cant be set to "1" directly
                 //first it should be moved to acceptedOrders
                 else{
-                    userOrdersAdminViewAdapter?.notifyItemChanged(viewHolder.adapterPosition)
+                    userOrdersAdminViewAdapter?.notifyItemChanged(viewHolder.getBindingAdapterPosition())
                     Snackbar.make(binding.userOrdersAdminViewRV,"Please Accept the Order First:",Snackbar.LENGTH_SHORT).show()
                 }
 
@@ -239,11 +222,11 @@ class UserOrdersAdminView : AppCompatActivity() {
    private val spinListener:AdapterView.OnItemSelectedListener = object :AdapterView.OnItemSelectedListener{
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             if (position == 0){
-                spinnerPosition = position
+                userOrdersAdminViewModel.setSpinnerPosition( position)
                 loadAcceptedOrders()
             }
             else{
-                spinnerPosition = position
+                userOrdersAdminViewModel.setSpinnerPosition( position)
                 loadRequestedOrders()
             }
         }

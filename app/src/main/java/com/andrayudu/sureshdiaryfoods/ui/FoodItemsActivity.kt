@@ -48,8 +48,8 @@ class FoodItemsActivity : AppCompatActivity() {
 
 
 
-        tTotalCost = binding.cartView.findViewById(R.id.t_total_price)
-        tCartQuantity = binding.cartView.findViewById(R.id.t_cart_count)
+        tTotalCost = binding.tTotalPrice
+        tCartQuantity = binding.tCartCount
         binding.myViewModel = foodItemsViewModel
         binding.lifecycleOwner = this
 
