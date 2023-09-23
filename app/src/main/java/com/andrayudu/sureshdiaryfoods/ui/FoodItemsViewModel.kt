@@ -33,13 +33,6 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     var firebaseFoodItems: MutableLiveData<List<FoodItem>> = MutableLiveData()
 
 
-
-
-
-
-    val foodName = MutableLiveData<String>()
-    val foodQuantity = MutableLiveData<String>()
-    val foodPrice = MutableLiveData<String>()
     private val statusMessage = MutableLiveData<Event<String>>()
 
     val message: LiveData<Event<String>>
@@ -49,39 +42,6 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     init {
 //        saveorUpdateButtonText.value = "Save"
 //        clearAllOrDeleteButtonText.value = "Clear All"
-    }
-
-
-    fun saveOrUpdate() {
-
-
-        if (foodName.value == null) {
-            statusMessage.value = Event("Please Enter Food Name")
-        } else if (foodQuantity.value == null) {
-            statusMessage.value = Event("Please Enter Food Quantity")
-        }
-//        else if(foodPrice.value==null){
-//            statusMessage.value = Event("Please Enter Food Price")
-//        }
-
-        else {
-
-//            if(isUpdateOrDelete){
-//                subscriberToUpdateOrDelete.name = inputName.value!!
-//                subscriberToUpdateOrDelete.email  =inputEmail.value!!
-//                update(subscriberToUpdateOrDelete)
-//            }
-            val foodItemName = foodName.value!!
-            val quantity = foodQuantity.value!!
-            val price = foodPrice.value!!
-
-            insert(FoodItem(foodItemName,price,quantity))
-            //After the insertion is completed we are clearing the input email and input name attributes
-            foodName.value = ""
-            foodQuantity.value = "0"
-            foodPrice.value = "0"
-
-        }
     }
 
 

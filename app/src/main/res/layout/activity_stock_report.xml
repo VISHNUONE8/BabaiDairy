@@ -4,9 +4,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:theme="@style/Theme.SureshDiaryFoods"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.StockActivity">
+    tools:context=".ui.StockReportActivity">
+
+    <include layout="@layout/actionbar_with_back"
+        android:id="@+id/actionbarStockReport"
+        />
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -14,12 +20,12 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_below="@id/actionbarStockReport"
+        android:layout_marginTop="20dp"
         app:endIconDrawable="@drawable/calendar_icon"
         app:passwordToggleEnabled="true"
-        android:hint="Email"
+        android:hint="Date"
         >
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/datePickerET"
             android:inputType="textEmailAddress"
@@ -28,46 +34,37 @@
             />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
-
-    <Button
-        android:id="@+id/btnStock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GetStock"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/datePickerLayout"
-        />
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/stockDisplayLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/datePickerLayout"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:orientation="vertical"
         >
-        <TextView
-            android:id="@+id/dateTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date Selected:">
-
-        </TextView>
         <TextView
             android:id="@+id/stockTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:text="Todays Stock is:">
-
+            android:layout_marginStart="10dp"
+            android:text="Available Stock is:">
         </TextView>
-
-    </LinearLayout>
-
-
-
-
+        <TextView
+            android:id="@+id/stockDisplayTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"
+            android:layout_below="@id/stockTV"
+            android:layout_alignStart="@id/stockTV"
+            android:text="">
+        </TextView>
+    </RelativeLayout>
 </RelativeLayout>
 
 </layout>

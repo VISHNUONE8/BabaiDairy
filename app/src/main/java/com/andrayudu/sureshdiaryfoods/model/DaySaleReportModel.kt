@@ -1,8 +1,8 @@
 package com.andrayudu.sureshdiaryfoods.model
-data class DaySaleReportModel ( var CustomerName:String="",
-                                var BillNo:String="",
-                                var NormalBox:String="",
-                                var SplBox:String="",
-                                var BillAmount:String="",
+data class DaySaleReportModel ( var CustomerName:String?=null,
+                                var BillNo:String?=null,
+                                var NormalBox:String?=null,
+                                var SplBox:String?=null,
+                                var BillAmount:String?=null,
 
 )

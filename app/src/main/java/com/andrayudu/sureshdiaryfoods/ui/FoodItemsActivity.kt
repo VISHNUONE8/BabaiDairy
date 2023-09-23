@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -28,6 +30,9 @@ class FoodItemsActivity : AppCompatActivity() {
     private lateinit var foodItemsViewModel: FoodItemsViewModel
     private lateinit var adapter: MyRecyclerViewAdapter
 
+    private lateinit var actionBarBackButton: ImageView
+    private lateinit var actionBarTextView: TextView
+
     private lateinit var tTotalCost:TextView
     private lateinit var tCartQuantity:TextView
 
@@ -45,6 +50,22 @@ class FoodItemsActivity : AppCompatActivity() {
         foodItemsViewModel = ViewModelProvider(this,factory)[FoodItemsViewModel::class.java]
 
 
+
+
+        actionBarBackButton = binding.actionBarFoodItems.findViewById(R.id.actionbar_Back)
+        actionBarTextView = binding.actionBarFoodItems.findViewById(R.id.actionbar_Text)
+
+
+
+        actionBarBackButton.setOnClickListener {
+            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+
+                    finish()
+                }
+            })
+            onBackPressedDispatcher.onBackPressed()
+        }
 
 
 
@@ -67,12 +88,8 @@ class FoodItemsActivity : AppCompatActivity() {
 
 
         val itemName = intent.getStringExtra("itemName")
-        println(itemName+"is the item name")
+        actionBarTextView.text = itemName
 
-        val relLayout = binding.actionBarFoodItems
-
-        val headText:TextView = relLayout.findViewById(R.id.actionbar_Home_Text)
-        headText.text = itemName
 
         initRecyclerView()
 

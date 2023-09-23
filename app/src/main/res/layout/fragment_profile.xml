@@ -7,40 +7,42 @@
         tools:context=".fragments.ProfileFragment"
         android:id="@+id/ProfileFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:focusable="false"
         android:focusableInTouchMode="true">
 
 
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorGreen"
             android:padding="20dp">
+
+
 
             <ImageView
                 android:id="@+id/profile_imageIV"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerVertical="true"
-                android:src="@drawable/navigation_account"
-
-                />
+                android:src="@drawable/navigation_account" />
 
             <TextView
                 android:id="@+id/usernameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/profile_imageIV"
+                android:layout_alignTop="@id/profile_imageIV"
                 android:includeFontPadding="false"
                 android:text="              "
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/emailOrMobileTV"
+                android:id="@+id/customer_or_admin_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/usernameTV"
@@ -54,7 +56,7 @@
                 android:id="@+id/limitTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/emailOrMobileTV"
+                android:layout_below="@+id/customer_or_admin_tv"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/profile_imageIV"
@@ -63,7 +65,6 @@
                 android:textSize="14sp" />
 
         </RelativeLayout>
-
 
         <RelativeLayout
             android:id="@+id/RegisterUser"
@@ -130,16 +131,42 @@
                 android:src="@drawable/baseline_keyboard_arrow_right_24"/>
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/relLayoutAbout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/about"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="About"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="100dp"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
 
 
 
         <RelativeLayout
             android:id="@+id/relLayoutLogout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:orientation="horizontal"
-
+            android:layout_gravity="center"
             >
 
             <TextView
@@ -147,10 +174,9 @@
                 style="@style/TextAppearance.Material3.BodyLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:paddingTop="5dp"
-                android:textSize="20dp"
-                android:text="LogOut" />
+                android:text="LogOut"
+                android:textSize="20dp" />
 
             <ImageView
                 android:id="@+id/logoutIV"

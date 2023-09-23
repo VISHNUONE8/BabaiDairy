@@ -3,7 +3,9 @@ package com.andrayudu.sureshdiaryfoods.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -16,6 +18,7 @@ import com.andrayudu.sureshdiaryfoods.databinding.ActivityCartBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
+import com.andrayudu.sureshdiaryfoods.utility.ProgressButton
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 
@@ -24,9 +27,15 @@ class CartActivity : AppCompatActivity() {
     private lateinit var binding:ActivityCartBinding
     private lateinit var cartViewModel: CartViewModel
     private lateinit var adapter:CartAdapter
+    //this is the orderNow which has progressbar in it..
+    lateinit var progressButton: ProgressButton
+
+    private lateinit var actionBarBackButton: ImageView
+    private lateinit var actionBarTextView: TextView
 
     //UI components
     private lateinit var limitTextView: TextView
+    private lateinit var progressButtonTV:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +49,32 @@ class CartActivity : AppCompatActivity() {
 
         runtimeEnableAutoInit()
 
+        actionBarBackButton = binding.actionbarCart.findViewById(R.id.actionbar_Back)
+        actionBarTextView = binding.actionbarCart.findViewById(R.id.actionbar_Text)
+        actionBarTextView.text = "Cart"
+        progressButtonTV = binding.progressBtnOrderNow.findViewById(R.id.progressBtnText)
+        progressButtonTV.text = "OrderNow"
 
-        limitTextView = findViewById(R.id.limitTV)
 
-        binding.orderNowBtn.setOnClickListener {
+
+        actionBarBackButton.setOnClickListener {
+            onBackPressedDispatcher.addCallback(this,object :OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+
+                    finish()
+                }
+            })
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+
+
+        limitTextView = binding.limitTV
+
+        binding.progressBtnOrderNow.setOnClickListener {
+            val btnName = "ORDERNOW"
+            progressButton = ProgressButton(this,it,btnName)
+            progressButton.buttonActivated()
             cartViewModel.ordernow()
         }
 
@@ -87,8 +118,8 @@ class CartActivity : AppCompatActivity() {
             Log.i("TAG","the loading is done bigiluu")
             binding.idPBLoading.visibility = View.GONE
             binding.tDelivery.visibility  = View.VISIBLE
-            binding.orderNowBtn.visibility =View.VISIBLE
-            limitTextView.append(it?.Limit)
+            binding.progressBtnOrderNow.visibility =View.VISIBLE
+            limitTextView.append(it?.Limit.toString())
         })
 
         cartViewModel.getGrandTotal().observe(this, Observer {

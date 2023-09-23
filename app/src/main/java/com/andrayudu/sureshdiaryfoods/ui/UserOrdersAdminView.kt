@@ -6,37 +6,30 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.adapters.OrdersAdapter
 import com.andrayudu.sureshdiaryfoods.adapters.UserOrdersAdminViewAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityUserOrdersAdminViewBinding
-import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
 
 class UserOrdersAdminView : AppCompatActivity() {
 
+    private val tag = "UserOrdersAdminView"
     private lateinit var binding:ActivityUserOrdersAdminViewBinding
     private lateinit var userOrdersAdminViewModel: UserOrdersAdminViewModel
+    private lateinit var actionBarBackButton: ImageView
+    private lateinit var actionBarTextView: TextView
 
     var userOrdersAdminViewAdapter: UserOrdersAdminViewAdapter? = null
     private val orderSpinnerItems = arrayOf("AcceptedOrders","RequestedOrders")
@@ -47,11 +40,31 @@ class UserOrdersAdminView : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this,R.layout.activity_user_orders_admin_view)
         userOrdersAdminViewModel = ViewModelProvider(this)[UserOrdersAdminViewModel::class.java]
 
+        actionBarBackButton = binding.actionbarCustomerOrders.findViewById(R.id.actionbar_Back)
+        actionBarTextView = binding.actionbarCustomerOrders.findViewById(R.id.actionbar_Text)
+        actionBarTextView.text = "Customer Orders"
+
+
+
+
         initRecyclerView()
         initSpinner()
+        initClickListeners()
 
-        userOrdersAdminViewModel.loadUserNames()
+        userOrdersAdminViewModel.loadCustomerOrders()
 
+    }
+
+    private fun initClickListeners() {
+        actionBarBackButton.setOnClickListener {
+            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+
+                    finish()
+                }
+            })
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun initSpinner() {
@@ -62,11 +75,23 @@ class UserOrdersAdminView : AppCompatActivity() {
     }
     private fun loadAcceptedOrders() {
         Log.i("TAG","loading acceptedOrders")
-        userOrdersAdminViewAdapter?.setList(userOrdersAdminViewModel.acceptedOrders)
+        val acceptedOrders = userOrdersAdminViewModel.acceptedOrders
+        if (acceptedOrders.isEmpty()){
+            binding.userOrdersAdminViewRV.visibility = View.GONE
+            binding.noItemsIndicator.text = "No Accepted Orders For now..."
+            return
+        }
+        userOrdersAdminViewAdapter?.setList(acceptedOrders)
     }
     private fun loadRequestedOrders() {
         Log.i("TAG","loading requestedOrders")
-        userOrdersAdminViewAdapter?.setList(userOrdersAdminViewModel.requestedOrders)
+        val requestedOrders = userOrdersAdminViewModel.requestedOrders
+        if (requestedOrders.isEmpty()){
+            binding.userOrdersAdminViewRV.visibility = View.GONE
+            binding.noItemsIndicator.text = "No Requested Orders For now..."
+            return
+        }
+        userOrdersAdminViewAdapter?.setList(requestedOrders)
 
     }
 
@@ -89,12 +114,31 @@ class UserOrdersAdminView : AppCompatActivity() {
         })
         userOrdersAdminViewModel.getAcceptedOrders().observe(this, Observer {
             if(userOrdersAdminViewModel.getSpinnerPosition() ==0){
+                //if the list is empty then we will hide the RV and show a text saying "No Accepted Orderssss"
+                binding.idPBLoading.visibility = View.INVISIBLE
+                if (it.isEmpty()){
+                    binding.userOrdersAdminViewRV.visibility = View.GONE
+                    binding.noItemsIndicator.text = "No Accepted Orders For now..."
+                    Log.i(tag,"this is empty boss")
+                    return@Observer
+                }
+                binding.noItemsIndicator.visibility = View.GONE
+                binding.userOrdersAdminViewRV.visibility = View.VISIBLE
                 userOrdersAdminViewAdapter!!.setList(it)
             }
         })
 
         userOrdersAdminViewModel.getRequestedOrders().observe(this, Observer {
             if (userOrdersAdminViewModel.getSpinnerPosition()== 1){
+                //if the list is empty then we will hide the RV and show a text saying "No Requested Orderssss"
+                binding.idPBLoading.visibility = View.INVISIBLE
+                if (it.isEmpty()){
+                    binding.noItemsIndicator.text = "No Requested Orders For now..."
+                    binding.userOrdersAdminViewRV.visibility = View.GONE
+                    return@Observer
+                }
+                binding.noItemsIndicator.visibility = View.GONE
+                binding.userOrdersAdminViewRV.visibility = View.VISIBLE
                 userOrdersAdminViewAdapter!!.setList(it)
             }
         })

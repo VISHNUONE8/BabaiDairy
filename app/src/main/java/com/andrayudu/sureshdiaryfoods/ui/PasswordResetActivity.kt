@@ -2,7 +2,11 @@ package com.andrayudu.sureshdiaryfoods.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityPasswordResetBinding
@@ -12,12 +16,30 @@ class PasswordResetActivity : AppCompatActivity() {
 
     private lateinit var binding:ActivityPasswordResetBinding
     private lateinit var mAuth: FirebaseAuth
+    private lateinit var actionBarBackButton: ImageView
+    private lateinit var actionBarTextView: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_password_reset)
+        actionBarBackButton = binding.actionbarPasswordReset.findViewById(R.id.actionbar_Back)
+        actionBarTextView = binding.actionbarPasswordReset.findViewById(R.id.actionbar_Text)
+        actionBarTextView.text = "Password Reset"
+
+
+
+        actionBarBackButton.setOnClickListener {
+            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+
+                    finish()
+                }
+            })
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         mAuth = FirebaseAuth.getInstance()
 

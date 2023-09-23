@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityLoginBinding
 import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
+import com.andrayudu.sureshdiaryfoods.utility.ProgressButton
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -21,6 +22,11 @@ class LoginActivity : AppCompatActivity() {
 
     lateinit var binding:ActivityLoginBinding
     lateinit var mAuth:FirebaseAuth
+    //this is the loginbutton which has progressbar in it..
+    lateinit var progressButton: ProgressButton
+
+    private var email:String? = null
+    private var password:String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,16 +36,37 @@ class LoginActivity : AppCompatActivity() {
 
         mAuth  = Firebase.auth
 
+        binding.progressBtnLogin.setOnClickListener {
 
-        Log.i("TAG","user id is:"+ (mAuth.currentUser?.uid))
+            val btnName = "LOGIN"
+            progressButton = ProgressButton(this,it,btnName)
+            progressButton.buttonActivated()
+            //if the validation is done then loginuser method will be called
+            if(validateInputs()){
+                loginUser()
+            }
 
-
-        binding.btnLogin.setOnClickListener {
-            loginUser()
         }
-
-
     }
+
+    private fun validateInputs(): Boolean {
+
+         email = binding.etEmail.text.toString()
+         password = binding.etPassword.text.toString()
+        if (TextUtils.isEmpty(binding.etEmail.text.toString())){
+            binding.etEmail.setError("Email cannot be empty");
+            binding.etEmail.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }else if (TextUtils.isEmpty(binding.etPassword.text.toString())){
+            binding.etPassword.setError("Password cannot be empty");
+            binding.etPassword.requestFocus();
+            progressButton.buttonFinished()
+            return false
+        }
+        return true
+    }
+
     private fun saveToken(token: String) {
 
         val mAuth = FirebaseAuth.getInstance()
@@ -59,55 +86,31 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun loginUser() {
-        Log.i("TAG","loginuser() is running")
+
         //firebase methods
-        val email = binding.etUsername.text.toString()
-        val password = binding.etLoginPass.text.toString()
-
-        if (TextUtils.isEmpty(email)){
-            binding.etUsername.setError("Email cannot be empty");
-            binding.etUsername.requestFocus();
-        }else if (TextUtils.isEmpty(password)){
-            binding.etLoginPass.setError("Password cannot be empty");
-            binding.etLoginPass.requestFocus();
-        }else{
-            Log.i("TAG","entered inti the else loop")
-            Log.i("TAG","email"+email)
-            Log.i("TAG","password"+password)
-
-
-            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener { task ->
+        mAuth.signInWithEmailAndPassword(email!!,password!!).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.i("TAG","login successful bigiluu")
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "User logged in successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@LoginActivity,"User Login successfull",Toast.LENGTH_SHORT).show()
 
-                    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
-                        if (it.isSuccessful){
-                            saveToken(it.result)
-                            Log.i("TAG","the token of this device is :"+it.result)
-
-                        }
-                    })
-
-
+                    getToken()
+                    finish()
                     startActivity(Intent(this, HomeActivity::class.java))
 
                 } else {
-                    Log.i("TAG","login error")
-
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Log in Error: " + task.exception!!.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    progressButton.buttonFinished()
+                    Toast.makeText(this@LoginActivity,"Log in Error: " + task.exception!!.message,Toast.LENGTH_SHORT).show()
                 }
             }
-
-
     }
+
+    //gets the token of the device and saves it to the token database folder
+    private fun getToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
+            if (it.isSuccessful){
+                saveToken(it.result)
+                Log.i("TAG","the token of this device is :"+it.result)
+
+            }
+        })
     }
 }

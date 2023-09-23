@@ -1,63 +1,51 @@
 package com.andrayudu.sureshdiaryfoods.fragments
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentProfileBinding
-import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
-import com.andrayudu.sureshdiaryfoods.ui.LoginActivity
-import com.andrayudu.sureshdiaryfoods.ui.PasswordResetActivity
-import com.andrayudu.sureshdiaryfoods.ui.RegisterActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
+import com.andrayudu.sureshdiaryfoods.ui.*
 
 class ProfileFragment : Fragment() {
 
-    private lateinit var mAuth: FirebaseAuth
     private lateinit var binding: FragmentProfileBinding
     private lateinit var mContext: Context
+    private lateinit var profileFragViewModel: ProfileFragViewModel
+
+
 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
     }
-    private fun logOut() {
-        mAuth.signOut()
-        activity?.finish()
-        val intent = Intent(mContext, LoginActivity::class.java)
-        startActivity(intent)
-        Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
+        profileFragViewModel  = ViewModelProvider(this)[ProfileFragViewModel::class.java]
 
 
-        mAuth = Firebase.auth
-        val userid = mAuth.currentUser?.uid
 
-        isAdmin(userid)
-        getUserData(userid)
+
+        initObservers()
+
+        profileFragViewModel.isAdmin()
+        profileFragViewModel.getUserData()
         binding.relLayoutChangePassword.setOnClickListener {
             //we will launch the password reset activity
             //for forgot password also we will be using the same activity
@@ -68,45 +56,66 @@ class ProfileFragment : Fragment() {
 
 
         binding.relLayoutLogout.setOnClickListener {
-
-            logOut()
+            //show the alert dialog to confirm once again....
+            showAlertDialog()
 
         }
 
         return binding.root
     }
 
-    private fun getUserData(userId:String?) {
-        val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId.toString())
+    private fun showAlertDialog() {
 
-        userReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val userRegisterModel = snapshot.getValue(UserRegisterModel::class.java)
-                    binding.usernameTV.text = userRegisterModel?.Name
-                    binding.limitTV.append("₹ ${userRegisterModel?.Limit}")
+                val builder = AlertDialog.Builder(mContext)
+                builder.setMessage("Are you Sure?")
+                builder.setTitle("Logout !")
+                builder.setCancelable(false)
+
+                builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->
+                    profileFragViewModel.logOut()
+
+                }))
+                builder.setNegativeButton("No",(DialogInterface.OnClickListener { dialog, which ->
+                    dialog.cancel()
+                }))
+
+                val alertDialog = builder.create()
+                alertDialog.show()
+    }
+
+    private fun initObservers() {
+        profileFragViewModel.getStatus().observe(viewLifecycleOwner, Observer {
+            if(it.equals("Logout")){
+
+                requireActivity().finish()
+                val intent = Intent(mContext, LoginActivity::class.java)
+                startActivity(intent)
+                Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
+            }
+
+            else if(it.equals("Customer")){
+                binding.customerOrAdminTv.text = "Customer"
+
+            }
+            else if (it.equals("Admin")){
+                binding.RegisterUser.visibility = View.VISIBLE
+                binding.usernameTV.text = "SURESH"
+                binding.customerOrAdminTv.text = "Admin"
+                binding.limitTV.visibility = View.GONE
+
+                binding.RegisterUser.setOnClickListener {
+                    startActivity(Intent(mContext, RegisterActivity::class.java))
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
-            }
+
+
+        })
+
+        profileFragViewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
+            binding.usernameTV.text = it?.Name
+            binding.limitTV.append("₹ ${it?.Limit}")
         })
     }
 
-    private fun isAdmin(userid:String?) {
-        //if the user is an admin
-        if (userid.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")){
-
-            binding.RegisterUser.visibility = View.VISIBLE
-            binding.emailOrMobileTV.text = "Admin"
-
-        }
-        else
-            binding.emailOrMobileTV.text = "Customer"
-
-
-        binding.RegisterUser.setOnClickListener {
-            startActivity(Intent(mContext, RegisterActivity::class.java))
-        }
-    }
 
 }

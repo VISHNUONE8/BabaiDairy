@@ -1,9 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.OrderDetails">
+<layout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@style/Theme.SureshDiaryFoods"
+        android:orientation="vertical"
+        tools:context=".ui.OrderDetails">
+
+        <include layout="@layout/actionbar_with_back"
+            android:id="@+id/actionbarOrderDetails"
+            />
+
+        <TextView
+            android:id="@+id/orderDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:text="OrderDetails:"/>
+
+        <TextView
+            android:id="@+id/dateTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Date: "/>
+        <TextView
+            android:id="@+id/orderIdTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:text="OrderId: "/>
+
+        <TextView
+            android:id="@+id/amountTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:text="Amount:" />
+        <TextView
+            android:id="@+id/statusTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:text="Status: "/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/itemsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:text="Items: "/>
+
+
+            <TextView
+                android:id="@+id/itemsDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:text=""/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

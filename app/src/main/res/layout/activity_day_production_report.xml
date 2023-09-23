@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable
+            name="dayProductionViewModel"
+            type="com.andrayudu.sureshdiaryfoods.ui.DayProductionViewModel" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@style/Theme.SureshDiaryFoods"
+        android:orientation="vertical"
+        tools:context=".ui.DayProductionReport">
+
+        <include layout="@layout/actionbar_with_back"
+            android:id="@+id/actionbarDayProd"
+            />
+
+        <!--Spinner widget-->
+      <androidx.appcompat.widget.AppCompatSpinner
+          android:id="@+id/productionSpinner"
+          android:layout_width="match_parent"
+          android:layout_height="75dp"
+          android:layout_margin="10dp"
+          android:spinnerMode="dialog"/>
+
+        <TextView
+            android:id="@+id/spinnerStatusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:gravity="center_horizontal"
+            android:text=""
+            android:textColor="@color/teal_700"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+
+        <LinearLayout
+            android:id="@+id/getProductionReportLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/datePickerLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconDrawable="@drawable/calendar_icon"
+                app:passwordToggleEnabled="true"
+                android:hint="Date"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/datePickerET"
+                    android:inputType="textEmailAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/normalBoxesTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:text="Normal Boxes:"/>
+            <TextView
+                android:id="@+id/speciallBoxesTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:text="Special Boxes:"/>
+
+            <TextView
+                android:id="@+id/sugarlessBoxesTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:text="Sugarless Boxes:" />
+            <TextView
+                android:id="@+id/sugarKovaBoxesTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:text="SugarKova Boxes:"/>
+            <TextView
+                android:id="@+id/kalakandBoxesTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:text="Kalakand Boxes:"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:id="@+id/setProductionReportLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:orientation="vertical">
+
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:errorIconDrawable="@null"
+                android:hint="Normal Boxes"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:id="@+id/normalBoxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="@={dayProductionViewModel.normalBoxes}"
+                   />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:errorIconDrawable="@null"
+            android:hint="Special Boxes"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/specialBoxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="@={dayProductionViewModel.specialBoxes}"
+               />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorIconDrawable="@null"
+                android:layout_marginTop="12dp"
+                android:hint="SugarLess Boxes"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:id="@+id/sugarlessBoxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={dayProductionViewModel.sugarlesBoxes}"
+                    android:inputType="number"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SugarKova Boxes" >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sugarKovaBoxes"
+                android:inputType="number"
+                android:text="@={dayProductionViewModel.sugarkovaBoxes}"
+               />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:hint="GenniKalakand Boxes"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/geminiKalakandLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/geminiKalakandBoxes"
+                android:inputType="number"
+                android:text="@={dayProductionViewModel.geminiKalakandBoxes}"
+
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEnterData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Enter Data" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</layout>

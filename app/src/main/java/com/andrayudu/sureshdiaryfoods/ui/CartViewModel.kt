@@ -1,6 +1,7 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -132,7 +133,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         val current = LocalDateTime.now()
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val dateformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dateformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val formatted = current.format(formatter)
         val date = current.format(dateformatter)
 
@@ -173,7 +174,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val api = retrofit.create(Api::class.java)
-            val call: Call<ResponseBody> = api.sendNotification("Hii","Woohooo","anthera ayya aipoindiii")
+            val call: Call<ResponseBody> = api.sendNotification("Hii","Alert","Mr.${order.userName} is requesting you to Accept an Order...")
             call.enqueue(object :retrofit2.Callback<ResponseBody>{
                 override fun onResponse(
                     call: Call<ResponseBody>,
@@ -202,9 +203,11 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         ordersReference.child(order.orderId!!).setValue(order)
         adminOrdersRef.child(order.orderId!!).setValue(order)
 
-        //clearing the cart after order has been successfully placed..
+        //clearing the cart after order has been successfully placed and
+        // also tell the user that the order has been successfully placed
         viewModelScope.launch(Dispatchers.IO) {
             repo.deleteAll()
+
         }
     }
 

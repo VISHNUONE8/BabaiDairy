@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,11 +9,16 @@
     android:orientation="vertical"
     tools:context=".ui.UserOrdersAdminView">
 
+    <include layout="@layout/actionbar_with_back"
+        android:id="@+id/actionbarCustomerOrders"
+        />
+
     <!--Spinner widget-->
     <Spinner
         android:id="@+id/ordersSpinner"
         android:layout_height="75dp"
         android:layout_width="match_parent"
+        android:layout_below="@id/actionbarCustomerOrders"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:spinnerMode="dropdown"
@@ -23,10 +28,28 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userOrdersAdminViewRV"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/ordersSpinner"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:layout_marginTop="20dp"/>
+    <ProgressBar
+        android:id="@+id/idPBLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        tools:visibility="visible" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/noItemsIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/idPBLoading"
+        android:layout_marginStart="20dp"
+        android:text = ""
+        android:textSize="20sp"/>
+
+</RelativeLayout>
 </layout>

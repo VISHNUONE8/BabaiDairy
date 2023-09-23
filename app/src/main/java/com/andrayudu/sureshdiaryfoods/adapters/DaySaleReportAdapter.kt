@@ -10,7 +10,7 @@ import com.andrayudu.sureshdiaryfoods.databinding.LayoutCartItemBinding
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.DaySaleReportModel
 
-class DaySaleReportAdapter(val list:ArrayList<DaySaleReportModel>):RecyclerView.Adapter<SaleReportViewHolder>() {
+class DaySaleReportAdapter():RecyclerView.Adapter<SaleReportViewHolder>() {
     private var daySaleList = ArrayList<DaySaleReportModel>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SaleReportViewHolder {
 

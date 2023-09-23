@@ -15,10 +15,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:theme="@style/Theme.SureshDiaryFoods"
         android:orientation="vertical"
         tools:context=".ui.FoodItemsActivity" >
 
-        <include layout="@layout/actionbar_home"
+        <include layout="@layout/actionbar_with_back"
             android:id="@+id/actionBarFoodItems" />
 
 

@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/Theme.SureshDiaryFoods"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -28,12 +29,13 @@
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
                 android:transitionName="logo_text"
                 android:layout_centerVertical="true"
                 android:text="SureshDairyFoods"
-
-                android:textColor="#000000"
-                android:textSize="50dp" />
+                android:textColor="@color/colorGreen"
+                android:textSize="40sp" />
 
 
 
@@ -56,15 +58,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HELLO THERE,  WELCOME BACK"
-            android:transitionName="logo_text"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:text="WELCOME BACK"
             android:id="@+id/text"
-
             android:textColor="#000000"
             android:textSize="35sp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:text="Sign In to Continue"
             android:textColor="@color/teal_700"
             android:layout_marginBottom="5dp"
@@ -75,21 +79,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
-
             android:layout_gravity="center"
             >
 
             <com.google.android.material.textfield.TextInputLayout
 
-                android:hint="Username"
+                android:hint="Email"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_height="wrap_content">
+               >
 
                 <com.google.android.material.textfield.TextInputEditText
 
-                    android:id="@+id/etUsername"
+                    android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"/>
@@ -108,30 +113,19 @@
                 <com.google.android.material.textfield.TextInputEditText
 
 
-                    android:id="@+id/etLoginPass"
+                    android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogin"
+            <include
+                android:id="@+id/progressBtnLogin"
+                layout="@layout/progress_btn_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_marginTop="24dp"
-                android:text="Login"/>
-
-<!--            <include-->
-<!--                android:id="@+id/progress_button_layout"-->
-<!--                layout="@layout/progress_btn_layout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="40dp"-->
-<!--                />-->
-
-
+                />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.andrayudu.sureshdiaryfoods.ui
 import android.Manifest
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -42,19 +44,21 @@ import com.google.firebase.messaging.ktx.messaging
 class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
 
 
+
+    private val tag = "HomeActivity"
     private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
     private lateinit var homeActivityViewModel: HomeActivityViewModel
 
 
     private lateinit var actionBarTextView: TextView
+    private lateinit var networkConnection:NetworkConnection
 
+    private val homeFragment = HomeFragment()
+    private val ordersFragment = OrdersFragment()
+    private val profileFragment = ProfileFragment()
 
-
-    val homeFragment = HomeFragment()
-    val ordersFragment = OrdersFragment()
-    val profileFragment = ProfileFragment()
-
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,75 +68,82 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         val factory = HomeActivityViewModelFactory(repository)
         homeActivityViewModel = ViewModelProvider(this, factory)[HomeActivityViewModel::class.java]
 
-
         actionBarTextView = findViewById(R.id.actionbar_Home_Text)
         actionBarTextView.text = "SureshDairyFoods"
 
-//
-        val networkConnection = NetworkConnection(applicationContext)
+         networkConnection = NetworkConnection(applicationContext)
 
-        networkConnection.observe(this, Observer {isConnected->
-            //here 'it' represents the connection status logic value
-            if (isConnected){
-                binding.navigationHostFragment.visibility = View.VISIBLE
-                binding.actionbar.visibility = View.VISIBLE
-                binding.noInternetLayout.visibility= View.GONE
-                Toast.makeText(this,"Internet Connected",Toast.LENGTH_SHORT).show()
-            }
-            else{
-                binding.navigationHostFragment.visibility = View.GONE
-                binding.actionbar.visibility = View.GONE
-                binding.noInternetLayout.visibility= View.VISIBLE
-                Toast.makeText(this,"No Internet Connection",Toast.LENGTH_SHORT).show()
-            }
-        })
+        initObservers()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
 
+        if(userId.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")){
+                subsribeToAdminNotifications()
+        }
+        //if the user is a customer then he will be subscribed to SDF channel
+        else{
+            subscribeToSDF()
+        }
+        checkPermissions()
+
+        binding.bottomNavigation.selectedItemId = R.id.Home
+        binding.bottomNavigation.setOnItemSelectedListener (this)
+        supportFragmentManager.beginTransaction().replace(
+            R.id.navigationHostFragment,HomeFragment())
+
+
+    }
+
+    private fun subscribeToSDF() {
+        Firebase.messaging.subscribeToTopic("sureshDairyFoods")
+            .addOnCompleteListener{task->
+                var msg = "Subscribed"
+                if (!task.isSuccessful){
+                    msg = "Subscribe failed"
+                }
+                Log.i(tag,"The status of customers Subscription to SDF notifications:${msg}")
+            }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    //only valid from android 13 and above versions
+    //10,11,12 versions are enabled with notifications by default
+    private fun checkPermissions() {
+
+       val perms =  arrayOf(android.Manifest.permission.POST_NOTIFICATIONS)
+       val permsRequestCode = 200
+       requestPermissions(perms,permsRequestCode)
+    }
+
+
+
+    private fun subsribeToAdminNotifications() {
         Firebase.messaging.subscribeToTopic("notifications")
             .addOnCompleteListener{task->
                 var msg = "Subscribed"
                 if (!task.isSuccessful){
                     msg = "Subscribe failed"
                 }
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                Log.i(tag,"The status of admins Subscription to notifications:${msg}")
             }
+    }
 
-
-
-
-        binding.bottomNavigation.selectedItemId = R.id.Home
-        binding.bottomNavigation.setOnItemSelectedListener (this)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navigationHostFragment
-        , HomeFragment()
-        )
-
-        homeActivityViewModel.cartItems.observe(this, Observer {
-//            updateCartUI(it)
+    private fun initObservers() {
+        networkConnection.observe(this, Observer {isConnected->
+            //here 'it' represents the connection status logic value
+            if (isConnected){
+                binding.navigationHostFragment.visibility = View.VISIBLE
+                binding.actionbar.visibility = View.VISIBLE
+                binding.noInternetLayout.visibility= View.GONE
+            }
+            else{
+                binding.navigationHostFragment.visibility = View.GONE
+                binding.actionbar.visibility = View.GONE
+                binding.noInternetLayout.visibility= View.VISIBLE
+                Toast.makeText(this,"No Internet Connection",Toast.LENGTH_LONG).show()
+            }
         })
 
     }
-//    private fun updateCartUI(cartItems: List<CartItem>?) {
-//        if(cartItems!=null && cartItems.size > 0){
-//            binding.cartView.visibility = View.VISIBLE
-//            var price =0
-//            var quantity = 0
-//
-//            for (cartItem in cartItems) {
-//                price = price +( cartItem.Price.toInt() * cartItem.Quantity.toInt())
-//                quantity = quantity + cartItem.Quantity.toInt()
-//            }
-//            tCartQuantity.setText(cartItems.size.toString())
-//            tTotalCost.setText(getString(R.string.rupee_symbol) + price.toString())
-//
-//        }
-//        else
-//        {
-//            binding.cartView.setVisibility(View.GONE)
-//            tCartQuantity.text = "0"
-//            tTotalCost.text = getString(R.string.rupee_symbol) + "0"
-//        }
-//
-//    }
 
 
 
@@ -144,8 +155,8 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (requestCode == 100){
-            if(grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == 200){
+            if( (grantResults.size > 0) && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 Toast.makeText(this, "Notification Permission Granted", Toast.LENGTH_SHORT).show()            }
         }
@@ -194,6 +205,7 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         }
 
     }
+}
 
 
 //    private val navListener =
@@ -256,7 +268,3 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 //
 //            true
 //        }
-
-
-
-}

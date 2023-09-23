@@ -1,6 +1,7 @@
 package com.andrayudu.sureshdiaryfoods.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.layout.Layout
 import androidx.databinding.DataBindingUtil
@@ -30,7 +31,7 @@ class UserOrdersAdminViewAdapter(private val clickListener: (OrderModel?) -> Uni
 
 
     override fun onBindViewHolder(holder: UserOrdersHolder, position: Int) {
-        holder.bind(NamesList[position],clickListener)
+        holder.bind(NamesList[position],clickListener,position)
     }
 
     fun setList(
@@ -53,11 +54,26 @@ class UserOrdersHolder(val binding: UserOrdersAdminViewItemBinding): RecyclerVie
     fun bind(
 
         orderModel: OrderModel,
-        clickListener: (OrderModel?) -> Unit
+        clickListener: (OrderModel?) -> Unit,
+        position: Int
     ){
 
+
+//        //if the orders date is same as above ones then we will hide the date display TV
+//        if (datesList.get(position).equals(0)){
+//            binding.dateTV.visibility = View.GONE
+//        }
+//        else{
+//            binding.dateTV.visibility = View.VISIBLE
+//            binding.dateTV.text = orderModel.date
+//        }
+
         //in database the username has been saved under userId for admins ease of information
-        binding.dateTV.text = orderModel.userName
+        binding.customerNameTV.text = orderModel.userName
+        binding.orderIdTV.text = "OrderId:${orderModel.orderId}"
+        binding.OrderValueTV.text = "OrderValue:${orderModel.orderValue}/-"
+        binding.quantityTV.text = "Quantity:${orderModel.quantity}"
+        binding.dateTV.text = "Date:${orderModel.date}"
 
         binding.cardview.setOnClickListener{
             clickListener(orderModel)

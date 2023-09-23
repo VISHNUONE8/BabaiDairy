@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         val userId = mAuth.currentUser?.uid
 
             if (userId?.isNotEmpty() == true){
-
                 val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
                 finish()

@@ -83,27 +83,6 @@ class HomeFragment : Fragment() {
 
         FoodIntent = Intent(mContext, FoodItemsActivity::class.java)
 
-
-
-        if (context?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                )
-            } != PackageManager.PERMISSION_GRANTED) {
-            activity?.let {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    111
-                )
-            }
-        }
-        else{
-            Toast.makeText(mContext,"permission granted already",Toast.LENGTH_SHORT).show()
-        }
-
-
         binding.oilCardview.setOnClickListener {
 
             FoodIntent.putExtra("itemName", "Oil")
@@ -132,14 +111,7 @@ class HomeFragment : Fragment() {
 
 
         }
-//        binding.kovaCardview.setOnClickListener {
-//            Log.i("TAG", "The  kova cardbiew is clicked")
-//
-//
-//            FoodIntent.putExtra("itemName", "Kova")
-//            startActivity(FoodIntent)
-//
-//        }
+
         binding.normalKovaTV.setOnClickListener {
 
             FoodIntent.putExtra("itemName", "Kova")
@@ -162,6 +134,7 @@ class HomeFragment : Fragment() {
         binding.bCart.setOnClickListener {
             startActivity(Intent(mContext, CartActivity::class.java))
         }
+
         homeFragmentViewModel.cartItems.observe(viewLifecycleOwner, Observer {
             updateCartUI(it)
 

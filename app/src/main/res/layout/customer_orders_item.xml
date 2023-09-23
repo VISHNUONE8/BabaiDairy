@@ -5,36 +5,29 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="4dp">
+        android:padding="2dp">
 
         <TextView
-            android:id="@+id/year"
-            android:layout_width="wrap_content"
+            android:id="@+id/dateTV"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:textColor="#464143"
-            android:text="2018"
-            android:textSize="16sp"/>
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="2dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/colorGreen"
+            android:text="10-11-2000"
+            android:textSize="20sp"/>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="2dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            app:cardCornerRadius="10dp"
             app:cardElevation="4dp"
             android:elevation="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
+            >
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -47,13 +40,14 @@
                 android:paddingTop="16dp">
 
                 <TextView
-                    android:id="@+id/dateTV"
+                    android:id="@+id/itemNameTV"
+                    android:contentDescription="mostly the first items name will be displayed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:textColor="@color/title"
                     android:textSize="16dp"
-                    android:text="date:"
+                    android:text="Items:"
                     android:textStyle="bold" />
 
                 <TextView
@@ -61,7 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="OrderId:"
-                    android:layout_below="@id/dateTV" />
+                    android:layout_below="@id/itemNameTV" />
                 <TextView
                     android:id="@+id/OrderValueTV"
                     android:layout_width="match_parent"
@@ -69,15 +63,19 @@
                     android:text="OrderValue:"
                     android:layout_below="@id/orderIdTV" />
                 <TextView
-                    android:id="@+id/quantityTV"
+                    android:id="@+id/orderStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Quantity:"
+                    android:text="Status:"
                     android:layout_below="@id/OrderValueTV" />
 
 
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorDivider"/>
     </LinearLayout>
 </layout>

@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.OrdersAdapter
@@ -27,22 +29,10 @@ import com.google.firebase.database.ValueEventListener
 class OrdersFragment : Fragment() {
 
 
-     lateinit var binding:FragmentOrdersBinding
-     var userId :String = "null"
-     lateinit var mAuth: FirebaseAuth
-    lateinit var mContext: Context
+    private lateinit var binding:FragmentOrdersBinding
+    private lateinit var ordersFragViewModel: OrdersFragViewModel
+    private lateinit var mContext: Context
     private lateinit var adapter: OrdersAdapter
-    lateinit var ordersLiveData:LiveData<List<CartItem>>
-    lateinit var CustomerOrdersLiveData:LiveData<List<CartItem>>
-
-
-
-    var ordersList = ArrayList<CartItem>()
-    var datesList = ArrayList<String>()
-     var ordersListSummary = ArrayList<String>()
-    var customerOrdersList =ArrayList<OrderModel>()
-
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -55,17 +45,62 @@ class OrdersFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_orders, container, false)
-        mAuth = FirebaseAuth.getInstance()
-        userId = mAuth.uid.toString()
+        ordersFragViewModel = ViewModelProvider(this)[OrdersFragViewModel::class.java]
 
-        isAdmin(userId)
-
-
-
-
+        initObservers()
+        ordersFragViewModel.isAdmin()
 
         return binding.root
     }
+
+    private fun initObservers() {
+        ordersFragViewModel.getStatus().observe(viewLifecycleOwner, Observer {
+
+
+             if(it.equals("Customer")){
+                 //if the user is not an admin,we will get the ordersdata and we will initialize recyclerview...
+                 initRecyclerView()
+                 ordersFragViewModel.getOrdersData()
+            }
+            else if (it.equals("Admin")){
+                 binding.idPBLoading.visibility = View.GONE
+                 binding.adminPanelLayout.visibility = View.VISIBLE
+                 binding.ordersFragmentTV.text = "Admin Panel"
+
+                 //setting the onclickListeners
+
+                 binding.relLayoutUserOrders.setOnClickListener {
+                     startActivity(Intent(mContext, UserOrdersAdminView::class.java))
+
+                 }
+                 binding.relLayoutProductionReport.setOnClickListener {
+                     startActivity(Intent(mContext, DayProductionReport::class.java))
+                 }
+                 binding.relLayoutSaleReport.setOnClickListener {
+                     startActivity(Intent(mContext, DaySaleReport::class.java))
+                 }
+                 binding.relLayoutStockReport.setOnClickListener {
+                     startActivity(Intent(mContext, StockReportActivity::class.java))
+                 }
+            }
+
+
+        })
+
+        ordersFragViewModel.getOrdersListLive().observe(viewLifecycleOwner, Observer {
+            binding.idPBLoading.visibility = View.GONE
+            if (it.isEmpty()){
+                binding.ordersRV.visibility = View.GONE
+                binding.noOrdersIndicator.visibility = View.VISIBLE
+                return@Observer
+            }
+            binding.noOrdersIndicator.visibility = View.GONE
+            binding.ordersRV.visibility = View.VISIBLE
+            adapter.setList(it,ordersFragViewModel.getDatesList())
+        })
+
+    }
+
     private fun initRecyclerView() {
         binding.ordersRV.layoutManager = LinearLayoutManager(mContext)
         adapter = OrdersAdapter ({ selectedItem: OrderModel? -> listItemClicked(selectedItem!!) })
@@ -79,73 +114,6 @@ class OrdersFragment : Fragment() {
        intent.putExtra("orderModel",orderModel)
        startActivity(intent)
 }
-
-
-    fun getOrdersData(userId:String){
-
-        datesList.clear()
-        ordersList.clear()
-
-
-           val customersordersRef =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId)
-        //getting customer orders to the customerorders list
-
-            customersordersRef.addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    //clearing the arraylist because it will load duplicate values...
-                    customerOrdersList.clear()
-                    if (snapshot.exists()){
-                        for (datasnapshot in snapshot.children){
-                            val order = datasnapshot.getValue(OrderModel::class.java)
-                            customerOrdersList.add(order!!)
-                        }
-                        adapter.setList(customerOrdersList)
-                        Log.i("TAG","the order list is:"+customerOrdersList.toString())
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-
-
-
-
-       }
-
-    private fun isAdmin(userid:String?) {
-        //if the user is an admin
-        if (userid.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")){
-
-            binding.adminPanelLayout.visibility = View.VISIBLE
-            binding.ordersFragmentTV.text = "Admin Panel"
-
-            //setting the onclickListeners
-
-            binding.relLayoutUserOrders.setOnClickListener {
-                startActivity(Intent(mContext, UserOrdersAdminView::class.java))
-
-            }
-            binding.relLayoutProductionReport.setOnClickListener {
-                startActivity(Intent(mContext, DayProductionReportManaging::class.java))
-            }
-            binding.relLayoutSaleReport.setOnClickListener {
-                startActivity(Intent(mContext, DaySaleReport::class.java))
-            }
-            binding.relLayoutStockReport.setOnClickListener {
-                startActivity(Intent(mContext, StockActivity::class.java))
-            }
-
-        }
-        //if the user is not an admin,we will get the ordersdata and we will initialize recyclerview...
-        else{
-            getOrdersData(userId)
-            initRecyclerView()
-
-        }
-    }
 
 
 
