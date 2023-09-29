@@ -20,12 +20,16 @@
             android:textColor="@color/teal_700"
             android:textSize="30sp"
             android:textStyle="bold" />
+
+
         <LinearLayout
             android:id="@+id/adminPanelLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
+
 
             <RelativeLayout
                 android:id="@+id/relLayoutUserOrders"
@@ -136,6 +140,70 @@
                 android:layout_marginStart="100dp"
                 android:src="@drawable/baseline_keyboard_arrow_right_24"/>
         </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorDivider"/>
+
+            <RelativeLayout
+                android:id="@+id/relLayoutNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    style="@style/TextAppearance.Material3.BodyLarge"
+                    android:textSize="20dp"
+                    android:text="Notifications"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="100dp"
+                    android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorDivider"/>
+            <RelativeLayout
+                android:id="@+id/RegisterUser"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+
+                >
+
+                <TextView
+                    android:id="@+id/accountInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    style="@style/TextAppearance.Material3.BodyLarge"
+                    android:textSize="20dp"
+                    android:text="RegisterUser" />
+
+                <ImageView
+                    android:id="@+id/arrow1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+            </RelativeLayout>
+
 
 
 

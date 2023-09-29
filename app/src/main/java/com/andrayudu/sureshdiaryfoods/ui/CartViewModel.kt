@@ -2,59 +2,66 @@ package com.andrayudu.sureshdiaryfoods.ui
 
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.andrayudu.sureshdiaryfoods.Api
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.lang.StringBuilder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.abs
 
 class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
-    var repo = repository
-    private val grandTotal = MutableLiveData<String?>()
-    private val cartItems = repository.cartItems
-    private val transportCharges = MutableLiveData<String?>()
-    private val userDetails = MutableLiveData<UserRegisterModel?>()
-    private var user:UserRegisterModel? = null
-    //this list will be uploaded to firebase
-    var cartItemsList: ArrayList<CartItem> = ArrayList()
 
-    var userLimit:String? = null
+
+    private val tag = "CartViewModel"
+    private val firebaseDBInstance = FirebaseDatabase.getInstance()
+
+    private val repo = repository
+    private val cartItems = repository.cartItems
+
+    private var user:UserRegisterModel? = null
+    private var cartItemsList:List<CartItem>? = null
     private var cartValue: Int? = 0
     private var transportValue: Int? = 0
-
-
-    var transportRequired:String? = null
+    var transportCharges:String? = null
     val mAuth = FirebaseAuth.getInstance()
     var userId = mAuth.currentUser?.uid
+
+    //LiveData
+    private val grandTotal = MutableLiveData<String?>()
+    private val transportChargesLive = MutableLiveData<String?>()
+    private val statusLive = MutableLiveData<String?>()
+    private val userDetails = MutableLiveData<UserRegisterModel?>()
+
 
 
 
     fun getCartValue(): String {
         return cartValue.toString()
+    }
+    fun getStatusLive(): LiveData<String?> {
+        return statusLive
     }
     fun getTransportValue(): String {
         return transportValue.toString()
@@ -63,39 +70,45 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     //this function calculates the total cost of items in the cart(without transport)
     fun cartItemsCost() {
 
-        val cartList = cartItems.value
-        if(cartList!=null) {
+         cartItemsList = cartItems.value
+
+        if(cartItemsList!=null) {
+            //this list will be uploaded to firebase soo we have to keep it up-to-date
+
             cartValue = 0
-            for (cartItem in cartList) {
+            for (cartItem in cartItemsList!!) {
                 cartValue =
-                    (cartValue!!.toInt() + (cartItem.Price.toInt() * cartItem.Quantity.toInt()))
+                    (cartValue!!.toInt() + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt()))
             }
         }
-        //for calculating the transportCost or anything related to it,we should make sure that userDetails are available with us soo...
-            viewModelScope.launch(Dispatchers.IO) {
-                val one = async { calculateTransportCharges() }
-                one.await()
-                withContext(Dispatchers.Main) {
-                    //after getting the customer details if he doesnt use our transport then we will put 0 in transport charges...
-                    grandTotal.setValue((cartValue!! + (transportCharges.value)!!.toInt()).toString())
+        //here we are calculating the Transport charges for a customer...
+        viewModelScope.launch(Dispatchers.IO) {
+
+                //if the user has transport enabled
+                if (transportCharges!!.toInt() > 0){
+                    var kovaCount = 0
+                    //kovaCountFromDb uses default context i.e Dispatchers.IO used above in viewmodelscope
+                    val kovaCountFromDb =launch {
+                        kovaCount = repository.getKovaCount()
+                    }
+                    kovaCountFromDb.join()
+                    Log.i(tag,"kova category count is calculated"+kovaCount)
+                    if (kovaCountFromDb.isCompleted){
+                        transportValue = (transportCharges!!.toInt() * kovaCount)
+                        Log.i(tag,"the transport charges for customer are:${transportValue}")
+                        transportChargesLive.postValue(transportValue.toString())
+                    }
+
                 }
-            }
-    }
-    private suspend fun calculateTransportCharges() {
-        //first we will get Kova Quantity count and then we will calculate transport charges
-        Log.i("TAG","transport required is"+transportRequired)
-        //if the user requires transport then only we will call database call else we will put transport charges 0
-        if (transportRequired == "yes"){
-            transportValue =repository.getKovaCount("Kova")
-            transportCharges.postValue(transportValue.toString())
-            }
-        else{
-            //already transportVal is 0 when declared
-            transportCharges.postValue(transportValue.toString())
+                //if the user has transport disabled i.e 0
+                else{
+                    transportChargesLive.postValue(transportValue.toString())
+                }
+
+                grandTotal.postValue((cartValue!! + (transportValue)!!.toInt()).toString())
+
         }
-
     }
-
 
     fun getCartItems():LiveData<List<CartItem>>{
         return cartItems
@@ -103,114 +116,156 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     fun getGrandTotal():LiveData<String?>{
         return grandTotal
     }
-    fun getTransportCharges():LiveData<String?>{
-        return transportCharges
-    }
 
     // this fun is used to get the customers details like name,outstanding balance
-      fun getUserDetails():LiveData<UserRegisterModel?> {
+    fun getUserDetails():LiveData<UserRegisterModel?> {
         //since the user is already in login this can never be null
         //for admins ease of viewing the order will be saved under the users name in adminOrders db folder i.e "Orders"
-         if (userId!=null && userDetails.value == null){
-             viewModelScope.launch {
-                 withContext(Dispatchers.IO){
-                     val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
-                     user = userReference.get().await().getValue(UserRegisterModel::class.java)
-                     userDetails.postValue(user)
-                     transportRequired = user?.TransportRequired
-                     Log.i("TAG","the user details are:"+user.toString())
-                 }
-             }
-         }
-        return userDetails
-         }
-
-    fun ordernow() {
-
-         val max = Date().getTime().toInt()
-        val orderId = max
-
-        val current = LocalDateTime.now()
-
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val dateformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-        val formatted = current.format(formatter)
-        val date = current.format(dateformatter)
-
-        println("Current Date and Time is: $formatted")
-
-
-        val ordersReference =  FirebaseDatabase.getInstance().getReference("CustomerOrders").child(userId!!)
-        val adminOrdersRef =  FirebaseDatabase.getInstance().getReference("Orders")
-
-
-
-        if ((userDetails.value)==null ) {
-            //it means he is either an admin or userDetailsData  is not yet received
-            //in this case we just tell the customer to wait or check internet connection..
-            Log.i("TAG","the outstanding of the customer in null Areyou the admin")
-            return
+        if (userId!=null && userDetails.value == null){
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+                    user = userReference.get().await().getValue(UserRegisterModel::class.java)
+                    userDetails.postValue(user)
+                    transportCharges = user?.TransportCharges
+                    Log.i(tag, "the transport charges are:$transportCharges")
+                }
+            }
         }
+        return userDetails
+    }
+
+    private fun createOrderId():String{
+        return StringBuilder()
+            .append(System.currentTimeMillis())
+            .append(abs(Random().nextInt(1000)))
+            .toString()
+    }
+
+    //starts the ordering procedure
+    fun placeOrder() {
+
+        val orderId = createOrderId()
+        val date = getDate()
+
+
+
         //this data is used only for posting Orders
         val name = user!!.Name
         val outstanding = user!!.Outstanding
+        val limit = user?.Limit
 
+        //orderDetails
         val order = OrderModel()
         order.userId = userId
         order.orderId = orderId.toString()
         order.userName = name
-        order.quantity =(cartItemsList.size).toString()
+        order.quantity = (cartItemsList?.size).toString()
         order.date = date
         order.orderValue = getCartValue()
+        order.transportCharges = transportCharges
+        order.grandTotal = grandTotal.value
         order.cartItemList = cartItemsList
 
 
+        viewModelScope.launch {
 
-        if ((outstanding!!.toInt())>0){
-            //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
-            order.orderStatus = "-1"
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://sureshdairyfoods-f8a5a.web.app/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val api = retrofit.create(Api::class.java)
-            val call: Call<ResponseBody> = api.sendNotification("Hii","Alert","Mr.${order.userName} is requesting you to Accept an Order...")
-            call.enqueue(object :retrofit2.Callback<ResponseBody>{
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
 
-                    try {
+            //if the limit exceeds then we will not proceed with the order
+            if (order.orderValue?.toInt()!! > (limit?.toInt())!!) {
+                Log.i(tag, "The order value is exceeding the usersLimit")
+                statusLive.postValue("Limit")
+                return@launch
+            }
+            //if the account status of the user is in hold or outstanding is -ve balance
+            // then we will place the order in hold state ie -1
+            else if ((outstanding!!.toInt()) <  0) {
+                //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
+                order.orderStatus = "-1"
+                sendNotifToAdmin(order)
+            }
+            else {
 
-                   }
-                    catch (e: IOException){
-                        e.printStackTrace()
-                    }
+                order.orderStatus = "0"
+                //orderstatus 0 implies that the orderplaced succesfully
 
-                }
+            }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.i("Sorry bro api call","failed")
-                }
-            })
-        }
-        else{
-            order.orderStatus="0"
-            //orderstatus 0 implies that the orderplaced succesfully
+            updateToDb(order)
 
-        }
-        ordersReference.child(order.orderId!!).setValue(order)
-        adminOrdersRef.child(order.orderId!!).setValue(order)
-
-        //clearing the cart after order has been successfully placed and
-        // also tell the user that the order has been successfully placed
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.deleteAll()
 
         }
     }
 
+    //updates the order details to both customerOrders and Orders db
+    private suspend fun updateToDb( order: OrderModel) {
+
+
+        //customerOrders is the db reference which is used for customers
+        val ordersReference = firebaseDBInstance.getReference("CustomerOrders").child(userId!!)
+        //Orders is the db reference which is used for Admin
+        val adminOrdersRef = firebaseDBInstance.getReference("Orders")
+
+
+        val customerDbTask = ordersReference.child(order.orderId!!).setValue(order)
+        val adminDbTask = adminOrdersRef.child(order.orderId!!).setValue(order)
+
+        //clearing the cart after order has been successfully placed and
+        // also tell the user that the order has been successfully placed
+        customerDbTask.await()
+        adminDbTask.await()
+
+        if (customerDbTask.isSuccessful && adminDbTask.isSuccessful) {
+
+            statusLive.postValue("Success")
+            repo.deleteAll()
+        }
+    }
+
+    private fun sendNotifToAdmin(order: OrderModel) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://sureshdairyfoods-f8a5a.web.app/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(Api::class.java)
+        val call: Call<ResponseBody> = api.sendNotification(
+            "edhookati",
+            "Alert",
+            "Mr.${order.userName} is requesting you to Accept an Order..."
+        )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+
+                try {
+
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.i("Sorry bro api call", "failed")
+            }
+        })
+    }
+
+    fun clearCart() {
+         viewModelScope.launch(Dispatchers.IO) {
+             repo.deleteAll()
+         }
+
+    }
+
+    private fun getDate(): String? {
+        val current = LocalDateTime.now()
+        val dateformatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val date = current.format(dateformatter)
+        return date
+    }
 
 
     //used for removing the cartItem
@@ -218,6 +273,28 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         viewModelScope.launch {
             repository.delete(cartItem.Name)
         }
+    }
+
+    //enables firebasecloudmessaging by default it is enabled only , but we are making sure once again as
+    //we need to send notification to admin incase of outstanding amount value exists...
+    fun runtimeEnableAutoInit() {
+        viewModelScope.launch(Dispatchers.IO) {
+            // [START fcm_runtime_enable_auto_init]
+            Firebase.messaging.isAutoInitEnabled = true
+            // [END fcm_runtime_enable_auto_init]
+        }
+
+    }
+
+
+}
+
+class CartViewModelFactory(private val repository: CartItemRepository): ViewModelProvider.Factory {
+    override fun<T: ViewModel> create(modelClass: Class<T>):T{
+        if(modelClass.isAssignableFrom(CartViewModel::class.java)){
+            return CartViewModel(repository) as T
+        }
+        throw IllegalAccessException("Unknown ViewModel Class")
     }
 
 }

@@ -23,7 +23,7 @@ import com.google.firebase.messaging.RemoteMessage
 class MyFirebaseMessagingService: FirebaseMessagingService() {
 
 
-
+    private val tag = "MyFirebaseMessagingService"
 
     override fun onNewToken(token: String) {
 
@@ -33,6 +33,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         //no matter if we change the login account it will not be generated
         //Called when a new token for the default Firebase project is generated.
         //This is invoked after app install when a token is first generated, and again if the token changes.
+        //it will save the token in users database too...
         saveToken(token)
         super.onNewToken(token)
     }
@@ -40,15 +41,19 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     private fun saveToken(token: String) {
 
 
+        Log.i(tag,"save token is runnin from MessagingService")
+
         val mAuth = FirebaseAuth.getInstance()
         val user = mAuth.currentUser
         val userId = user?.uid
 
-        val tokenSavingModel:TokenSavingModel = TokenSavingModel(token,user?.email,userId)
+        val tokenSavingModel = TokenSavingModel(token,user?.email,userId)
         if (userId!=null){
             val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
                 .setValue(tokenSavingModel)
-            if (postTask.isSuccessful){
+            val postTasktoUsers = FirebaseDatabase.getInstance().getReference("Users").child(userId)
+                .child("deviceToken").setValue(token)
+            if (postTask.isSuccessful && postTasktoUsers.isSuccessful){
                 Toast.makeText(this,"UserToken Saved Successfully",Toast.LENGTH_SHORT).show()
             }
         }
@@ -64,9 +69,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             // Since the notification is received directly from
             // FCM, the title and the body can be fetched
             // directly as below.
-            showNotification(
-                message.notification?.getTitle(),
-                message.notification?.getBody()
+            showNotification(message.notification?.getTitle(),message.notification?.getBody()
             )
         }
     }
@@ -98,7 +101,9 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
-            .setContentText(title)
+            .setContentTitle(title)
+            .setContentText(body)
+
 
         val notification = builder.build()
 

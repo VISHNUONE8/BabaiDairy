@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+       >
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,41 +55,54 @@
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="6dp"
                 android:layout_marginBottom="6dp"
-                android:layout_below="@id/t_food_name"
-
-                />
+                android:layout_below="@id/t_food_name" />
 
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/i_plus"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                app:srcCompat="@drawable/ic_plus"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
                 android:layout_below="@id/t_price"
-                android:background="?attr/actionBarItemBackground"/>
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/t_count"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_toStartOf="@id/i_plus"
-                android:layout_marginTop="50dp"
-                android:hint="0"
-                android:imeOptions="actionDone"
-                android:gravity="center"
-                android:inputType="number"
-                android:textColor="@color/grey_text"
-                 />
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_minus"
-                android:id="@+id/i_minus"
-                android:background="?attr/actionBarItemBackground"
-                android:layout_below="@id/t_price"
-                android:layout_toStartOf="@id/t_count"
-              />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:srcCompat="@drawable/ic_minus"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/i_minus"
+                    android:background="?attr/actionBarItemBackground"
+                    />
+
+                <EditText
+                    android:id="@+id/t_count"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:hint="0"
+                    android:imeOptions="actionDone"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:textColor="@color/grey_text"
+                    android:importantForAutofill="no" />
+
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/i_plus"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:srcCompat="@drawable/ic_plus"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/actionBarItemBackground"/>
+
+
+
+            </LinearLayout>
+
+
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

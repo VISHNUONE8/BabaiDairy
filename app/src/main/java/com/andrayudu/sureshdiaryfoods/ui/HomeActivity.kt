@@ -1,7 +1,5 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
-import android.Manifest
-import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -12,97 +10,80 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.adapters.ToolbarBindingAdapter
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.room.Index.Order
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModelFactory
 import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.fragments.HomeFragment
 import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
 import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
-import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
-import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
-import com.andrayudu.sureshdiaryfoods.model.CartItem
-import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
-import com.google.android.gms.tasks.OnCompleteListener
+import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragViewModel
+import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
 
-
-
     private val tag = "HomeActivity"
+
     private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
     private lateinit var homeActivityViewModel: HomeActivityViewModel
 
 
+    //UI components
     private lateinit var actionBarTextView: TextView
+
+
     private lateinit var networkConnection:NetworkConnection
 
-    private val homeFragment = HomeFragment()
-    private val ordersFragment = OrdersFragment()
-    private val profileFragment = ProfileFragment()
+
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
-        val dao = FoodItemDatabase.getInstance(application).cartItemDao
-        val repository = CartItemRepository(dao)
-        val factory = HomeActivityViewModelFactory(repository)
-        homeActivityViewModel = ViewModelProvider(this, factory)[HomeActivityViewModel::class.java]
+        homeActivityViewModel = ViewModelProvider(this)[HomeActivityViewModel::class.java]
 
-        actionBarTextView = findViewById(R.id.actionbar_Home_Text)
-        actionBarTextView.text = "SureshDairyFoods"
+        networkConnection = NetworkConnection(applicationContext)
 
-         networkConnection = NetworkConnection(applicationContext)
-
+        initViews()
         initObservers()
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-        if(userId.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")){
-                subsribeToAdminNotifications()
-        }
-        //if the user is a customer then he will be subscribed to SDF channel
-        else{
-            subscribeToSDF()
-        }
+        //checking whether the user is an admin or not
+        //so that we can give a subscription to notif channel...
+        homeActivityViewModel.userOrAdmin()
         checkPermissions()
+
 
         binding.bottomNavigation.selectedItemId = R.id.Home
         binding.bottomNavigation.setOnItemSelectedListener (this)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navigationHostFragment,HomeFragment())
-
 
     }
 
-    private fun subscribeToSDF() {
-        Firebase.messaging.subscribeToTopic("sureshDairyFoods")
-            .addOnCompleteListener{task->
-                var msg = "Subscribed"
-                if (!task.isSuccessful){
-                    msg = "Subscribe failed"
-                }
-                Log.i(tag,"The status of customers Subscription to SDF notifications:${msg}")
-            }
+
+    private fun initViews() {
+        actionBarTextView = findViewById(R.id.actionbar_Home_Text)
+        actionBarTextView.text = "SureshDairyFoods"
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     //only valid from android 13 and above versions
@@ -115,17 +96,6 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     }
 
 
-
-    private fun subsribeToAdminNotifications() {
-        Firebase.messaging.subscribeToTopic("notifications")
-            .addOnCompleteListener{task->
-                var msg = "Subscribed"
-                if (!task.isSuccessful){
-                    msg = "Subscribe failed"
-                }
-                Log.i(tag,"The status of admins Subscription to notifications:${msg}")
-            }
-    }
 
     private fun initObservers() {
         networkConnection.observe(this, Observer {isConnected->
@@ -146,8 +116,6 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     }
 
 
-
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -163,6 +131,42 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     }
 
 
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+
+
+        when(item.itemId){
+            R.id.Home ->{
+                if (binding.bottomNavigation.selectedItemId != R.id.Home){
+                    replaceFragment(HomeFragment())
+                }
+            }
+            R.id.Orders ->{
+
+                if (binding.bottomNavigation.selectedItemId != R.id.Orders){
+                    replaceFragment(OrdersFragment())
+                }
+
+            }
+            R.id.Profile ->{
+                if (binding.bottomNavigation.selectedItemId != R.id.Profile){
+                    replaceFragment(ProfileFragment())
+                }
+            }
+            else->{
+                return false
+            }
+        }
+        return true
+
+    }
+
+    private fun replaceFragment(fragment:Fragment){
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.navigationHostFragment,fragment)
+        transaction.commit()
+
+    }
     private fun setNavController() {
 
         //for using navigation graph
@@ -180,91 +184,4 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.Home ->{
-                supportFragmentManager.beginTransaction().replace(R.id.navigationHostFragment,homeFragment).commit()
-
-                return true
-            }
-            R.id.Orders ->{
-                supportFragmentManager.beginTransaction().replace(R.id.navigationHostFragment,ordersFragment).commit()
-
-                return true
-            }
-            R.id.Profile ->{
-                supportFragmentManager.beginTransaction().replace(R.id.navigationHostFragment,profileFragment).commit()
-
-                return true
-            }
-            else->{
-                return false
-            }
-
-
-        }
-
-    }
 }
-
-
-//    private val navListener =
-//        BottomNavigationView.OnNavigationItemSelectedListener { item: MenuItem ->
-//            // By using switch we can easily get
-//            // the selected fragment
-//            // by using there id.
-//            val itemId = item.itemId
-//
-//            if (itemId == R.id.Home && previousItem!="Home" ) {
-//                actionBarTextView.text = "Home"
-//
-//                if (previousItem == "Profile"){
-//                    previousItem = "Home"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myProfileFragment_to_myHomeFragment)
-//                }
-//                else{
-//                    previousItem = "Home"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myOrdersFragment_to_myHomeFragment)
-//
-//
-//                }
-//
-//            }
-//
-//
-//            else if(itemId == R.id.Orders && previousItem !="Orders") {
-//                //the else part is nothing but the orders part is clicked...
-//                actionBarTextView.text = "Orders"
-//                if (previousItem == "Home"){
-//                    previousItem = "Orders"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myHomeFragment_to_myOrdersFragment)
-//                }
-//                else{
-//                    previousItem = "Orders"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myProfileFragment_to_myOrdersFragment)
-//
-//                }
-//            }
-//
-//            else if (itemId == R.id.Profile && previousItem !="Profile") {
-//                actionBarTextView.text = "Profile"
-//
-//                if (previousItem == "Home"){
-//                    previousItem = "Profile"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myHomeFragment_to_myProfileFragment)
-//
-//                }
-//                else{
-//                    previousItem = "Profile"
-//                    findNavController(R.id.navigationHostFragment).navigate(R.id.action_myOrdersFragment_to_myProfileFragment)
-//
-//
-//                }
-//
-//            }
-//
-//            // It will help to replace the
-//            // one fragment to other.
-//
-//            true
-//        }

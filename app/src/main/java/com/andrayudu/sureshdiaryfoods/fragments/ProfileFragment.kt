@@ -43,25 +43,25 @@ class ProfileFragment : Fragment() {
 
 
         initObservers()
+        initClickListeners()
 
-        profileFragViewModel.isAdmin()
         profileFragViewModel.getUserData()
+
+        return binding.root
+    }
+
+    private fun initClickListeners() {
         binding.relLayoutChangePassword.setOnClickListener {
             //we will launch the password reset activity
             //for forgot password also we will be using the same activity
             startActivity(Intent(mContext, PasswordResetActivity::class.java))
         }
 
-
-
-
         binding.relLayoutLogout.setOnClickListener {
             //show the alert dialog to confirm once again....
             showAlertDialog()
 
         }
-
-        return binding.root
     }
 
     private fun showAlertDialog() {
@@ -85,35 +85,24 @@ class ProfileFragment : Fragment() {
 
     private fun initObservers() {
         profileFragViewModel.getStatus().observe(viewLifecycleOwner, Observer {
-            if(it.equals("Logout")){
+                if(it.equals("Logout")){
 
-                requireActivity().finish()
-                val intent = Intent(mContext, LoginActivity::class.java)
-                startActivity(intent)
-                Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
-            }
-
-            else if(it.equals("Customer")){
-                binding.customerOrAdminTv.text = "Customer"
-
-            }
-            else if (it.equals("Admin")){
-                binding.RegisterUser.visibility = View.VISIBLE
-                binding.usernameTV.text = "SURESH"
-                binding.customerOrAdminTv.text = "Admin"
-                binding.limitTV.visibility = View.GONE
-
-                binding.RegisterUser.setOnClickListener {
-                    startActivity(Intent(mContext, RegisterActivity::class.java))
+                    requireActivity().finish()
+                    val intent = Intent(mContext, LoginActivity::class.java)
+                    startActivity(intent)
+                    Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
                 }
-            }
-
 
         })
 
         profileFragViewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
-            binding.usernameTV.text = it?.Name
-            binding.limitTV.append("₹ ${it?.Limit}")
+            if(it!=null){
+                binding.idPBLoading.visibility = View.GONE
+                binding.usernameTV.text = it.Name
+                binding.limitTV.text = ("Limit:₹ ${it.Limit}")
+                binding.roleTV.text = it.role
+            }
+
         })
     }
 

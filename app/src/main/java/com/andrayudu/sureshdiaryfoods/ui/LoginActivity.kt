@@ -1,9 +1,12 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -17,27 +20,41 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginActivity : AppCompatActivity() {
 
-    lateinit var binding:ActivityLoginBinding
-    lateinit var mAuth:FirebaseAuth
-    //this is the loginbutton which has progressbar in it..
-    lateinit var progressButton: ProgressButton
 
+    private val tag = "LoginActivity"
+
+    private lateinit var binding:ActivityLoginBinding
+    private lateinit var mAuth:FirebaseAuth
     private var email:String? = null
     private var password:String? = null
+
+    //UI components
+    private lateinit var progressButton: ProgressButton
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-
         mAuth  = Firebase.auth
 
+        initClickListeners()
+    }
+
+    private fun initClickListeners() {
         binding.progressBtnLogin.setOnClickListener {
 
+            hideKeyboard(this)
             val btnName = "LOGIN"
             progressButton = ProgressButton(this,it,btnName)
             progressButton.buttonActivated()
@@ -49,6 +66,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+
+    //checks whether email or password is empty...
     private fun validateInputs(): Boolean {
 
          email = binding.etEmail.text.toString()
@@ -67,34 +86,45 @@ class LoginActivity : AppCompatActivity() {
         return true
     }
 
+    //saving device token to UserTokens database in the background IOthread..
     private fun saveToken(token: String) {
 
-        val mAuth = FirebaseAuth.getInstance()
-        val user = mAuth.currentUser
-        val userId = user?.uid
+        CoroutineScope(Dispatchers.IO).launch{
+            val mAuth = FirebaseAuth.getInstance()
+            val user = mAuth.currentUser
+            val userId = user?.uid
 
-        val tokenSavingModel = TokenSavingModel(token,user?.email,userId)
-        if (userId!=null){
-            val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
-                .setValue(tokenSavingModel)
-            if (postTask.isSuccessful){
-                Toast.makeText(this,"UserToken Saved Successfully",Toast.LENGTH_SHORT).show()
+            val tokenSavingModel = TokenSavingModel(token,user?.email,userId)
+            if (userId!=null){
+                val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
+                    .setValue(tokenSavingModel)
+                val postTasktoUsers = FirebaseDatabase.getInstance().getReference("Users").child(userId)
+                    .child("deviceToken").setValue(token)
+
+                postTask.await()
+                postTasktoUsers.await()
+
+                if (postTask.isSuccessful && postTasktoUsers.isSuccessful) {
+                    Log.i(tag,"saving token is successful")
+                }
             }
+
         }
 
     }
 
 
+    //logs the user in using firebaseAuth signIn methodss...
     private fun loginUser() {
 
         //firebase methods
         mAuth.signInWithEmailAndPassword(email!!,password!!).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this@LoginActivity,"User Login successfull",Toast.LENGTH_SHORT).show()
-
                     getToken()
                     finish()
                     startActivity(Intent(this, HomeActivity::class.java))
+                    Toast.makeText(this@LoginActivity,"User Login successfull",Toast.LENGTH_SHORT).show()
+
 
                 } else {
                     progressButton.buttonFinished()
@@ -113,4 +143,18 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+
+    //hides the keyboard and this is invoked on clicking login button
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
 }

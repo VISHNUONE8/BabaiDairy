@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,8 +19,13 @@ import com.andrayudu.sureshdiaryfoods.utility.ProgressButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
 
 class RegisterActivity : AppCompatActivity() {
+
+
+    val tag = "RegisterActivity"
 
     private lateinit var binding:ActivityRegisterBinding
     //this is the registerbutton which has progressbar on it....
@@ -38,10 +42,12 @@ class RegisterActivity : AppCompatActivity() {
     private var email:String? = null
     private var password:String? = null
     private var limit:String? = null
+    private var outstanding:String? = null
     private var phoneNo:String? = null
     private var kovaPrice:String? = null
     private var gheePrice:String? = null
     private var otherSweetsPrice:String? = null
+    private var tranportCharges:String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,17 +57,9 @@ class RegisterActivity : AppCompatActivity() {
 
         actionBarBackButton = binding.actionbarRegister.findViewById(R.id.actionbar_Back)
         actionBarTextView = binding.actionbarRegister.findViewById(R.id.actionbar_Text)
-        actionBarTextView.text = "Password Reset"
+        actionBarTextView.text = "RegisterUser"
 
-        actionBarBackButton.setOnClickListener {
-            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
-                override fun handleOnBackPressed() {
 
-                    finish()
-                }
-            })
-            onBackPressedDispatcher.onBackPressed()
-        }
 
         mAuth = FirebaseAuth.getInstance()
         userReference = FirebaseDatabase.getInstance().getReference("Users")
@@ -73,7 +71,16 @@ class RegisterActivity : AppCompatActivity() {
 
 
 
+        initClickListeners()
 
+    }
+
+    private fun initClickListeners() {
+
+
+        binding.checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                binding.etTransportChargesLayout.visibility = if(isChecked) View.VISIBLE else View.GONE
+        }
 
         binding.progressBtnRegister.setOnClickListener { view: View? ->
 
@@ -90,6 +97,15 @@ class RegisterActivity : AppCompatActivity() {
 
         }
 
+        actionBarBackButton.setOnClickListener {
+            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+
+                    finish()
+                }
+            })
+            onBackPressedDispatcher.onBackPressed()
+        }
 
     }
 
@@ -102,10 +118,13 @@ class RegisterActivity : AppCompatActivity() {
         email = binding.etRegEmail.text.toString()
         password = binding.etRegPass.text.toString()
         limit = binding.Limit.text.toString()
+        outstanding = binding.outstanding.text.toString()
         phoneNo = binding.Phonenumber.text.toString()
         kovaPrice= binding.etRegKova.text.toString()
         gheePrice = binding.etRegGhee.text.toString()
         otherSweetsPrice = binding.etRegOtherSweets.text.toString()
+        tranportCharges = binding.etTransportCharges.text.toString()
+
 
 
         if (TextUtils.isEmpty(binding.fullName.text.toString())) {
@@ -133,6 +152,12 @@ class RegisterActivity : AppCompatActivity() {
             progressButton.buttonFinished()
             return false
         }
+        else if (TextUtils.isEmpty(outstanding)) {
+            binding.outstanding.setError("this field cannot be empty");
+            binding.outstanding.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }
         else if (validatePhoneno(phoneNo!!)!!.equals(false)){
             binding.Phonenumber.requestFocus()
             progressButton.buttonFinished()
@@ -151,6 +176,14 @@ class RegisterActivity : AppCompatActivity() {
         } else if (TextUtils.isEmpty(binding.etRegOtherSweets.text.toString())) {
             binding.etRegOtherSweets.setError("this field cannot be empty");
             binding.etRegOtherSweets.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }
+        //if the transportRequired checkbox is checked and no input entered in transport charges edittext box
+        //then we will throw error
+        else if(binding.checkbox.isChecked && TextUtils.isEmpty(tranportCharges)){
+            binding.etTransportCharges.setError("this field cannot be empty")
+            binding.etTransportCharges.requestFocus()
             progressButton.buttonFinished()
             return false
         }
@@ -223,17 +256,12 @@ class RegisterActivity : AppCompatActivity() {
                 startActivity(Intent(this,HomeActivity::class.java))
             }
         }
-
-
-
-
-
     }
     private fun saveUsertoDB(userId:String){
 
-        val transportRequired:String = if (binding.checkbox.isChecked) "Yes" else "No"
-
-        userReference.child(userId).setValue(UserRegisterModel(name,phoneNo,email,limit,userId,transportRequired))
+        val transportCharges:String = if (binding.checkbox.isChecked) binding.etTransportCharges.text.toString() else "0"
+        val role = "Customer"
+        userReference.child(userId).setValue(UserRegisterModel(name,email,limit,outstanding,phoneNo,transportCharges,userId,null,role))
         createSpecialPrices(userId)
 
     }

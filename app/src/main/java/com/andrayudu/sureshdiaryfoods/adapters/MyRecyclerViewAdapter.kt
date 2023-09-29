@@ -43,6 +43,7 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
 
     fun setList(foodItems:List<FoodItem>){
         foodItemsList.addAll(foodItems)
+        notifyDataSetChanged()
     }
 
 
@@ -99,8 +100,8 @@ class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(
 
         binding.iPlus.setOnClickListener{
 
-            foodItemsList.get(adapterPosition).Quantity= ((foodItemsList.get(adapterPosition).Quantity).toInt() + 1).toString()
-            binding.tCount.setText(foodItemsList.get(adapterPosition).Quantity.toString())
+            foodItemsList.get(bindingAdapterPosition).Quantity= ((foodItemsList.get(bindingAdapterPosition).Quantity!!).toInt() + 1).toString()
+            binding.tCount.setText(foodItemsList.get(bindingAdapterPosition).Quantity.toString())
             //now we should update this into cart database on demand
             clickListener(foodItem)
 
@@ -108,13 +109,13 @@ class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(
         }
         binding.iMinus.setOnClickListener{
 
-            if (foodItemsList.get(adapterPosition).Quantity.toInt() !=0) {
+            if (foodItemsList.get(bindingAdapterPosition).Quantity!!.toInt() !=0) {
 
 
-                foodItemsList.get(adapterPosition).Quantity =
-                    ((foodItemsList.get(adapterPosition).Quantity).toInt() - 1).toString()
+                foodItemsList.get(bindingAdapterPosition).Quantity =
+                    ((foodItemsList.get(bindingAdapterPosition).Quantity)!!.toInt() - 1).toString()
 
-                binding.tCount.setText(foodItemsList.get(adapterPosition).Quantity.toString())
+                binding.tCount.setText(foodItemsList.get(bindingAdapterPosition).Quantity.toString())
                 //now we should update this into cart database on demand
 
                 Log.i("the list you want is:", "" + foodItemsList.toString())

@@ -9,24 +9,24 @@ data class FoodItem (
 
     @PrimaryKey
     @ColumnInfo(name = "fooditem_name")
-    var Name: String="",
+    var Name: String="food",
 
 
     @ColumnInfo(name = "item_price")
-    var Price: String="",
+    var Price: String?=null,
 
     @ColumnInfo(name = "item_quantity")
-    var Quantity: String="0",
+    var Quantity: String?=null,
 
     @ColumnInfo(name = "item_category")
-    var Category: String="",
+    var Category: String?=null,
     @ColumnInfo(name = "item_preference")
-    var Preference: String="0",
+    var Preference: String?="0",
 
 
 ):Comparable<FoodItem> {
-    override fun compareTo(compareFoodItem: FoodItem): Int {
-        val comparePreference = compareFoodItem.Preference.toInt()
-        return (Preference.toInt() - comparePreference)
+    override fun compareTo(other: FoodItem): Int {
+        val comparePreference = other.Preference!!.toInt()
+        return (Preference!!.toInt() - comparePreference)
     }
 }

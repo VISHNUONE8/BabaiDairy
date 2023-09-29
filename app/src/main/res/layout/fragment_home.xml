@@ -29,7 +29,8 @@
         android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
         android:layout_below="@id/titleTV"
-        android:padding="5dp"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="5dp"
         >
 
         <LinearLayout
@@ -64,8 +65,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_below="@id/titleTV"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="5dp"
         android:layout_marginTop="10dp"
-        android:padding="5dp"
         android:layout_alignBaseline="@id/milkCardview"
         android:layout_toEndOf="@id/milkCardview">
 
@@ -103,7 +105,8 @@
         android:layout_marginLeft="30dp"
         android:layout_below="@id/titleTV"
         android:layout_marginTop="10dp"
-        android:padding="5dp"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="5dp"
         android:layout_alignBaseline="@id/milkCardview"
         android:layout_toEndOf="@id/gheeCardview">
 
@@ -139,9 +142,10 @@
         android:id="@+id/kovaCardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:padding="10dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@id/gheeCardview"
+        app:cardCornerRadius="5dp"
         app:cardBackgroundColor="@android:color/transparent">
 
         <LinearLayout
@@ -160,6 +164,7 @@
 
             <ImageView
                 android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
@@ -232,6 +237,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:layout_marginLeft="40dp"
                 android:src="@mipmap/othersweets_image"
                 />
@@ -267,6 +273,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:src="@mipmap/mixture_image"
             />
 

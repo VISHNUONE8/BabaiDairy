@@ -8,6 +8,16 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface Api {
+
+    @FormUrlEncoded
+    @POST("sendToUsers")
+    fun sendNotificationToUser(
+        @Field("userToken")token:String,
+        @Field("notifTitle")title:String,
+        @Field("notifBody")body:String
+    ):Call<ResponseBody>
+
+
     @FormUrlEncoded
     @POST("send")
    fun  sendNotification(
@@ -15,4 +25,7 @@ interface Api {
         @Field("title")title:String,
         @Field("body")body:String
     ):Call<ResponseBody>
+
+
+
 }

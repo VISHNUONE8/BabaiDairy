@@ -6,14 +6,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.FoodItemsViewModelFactory
 import com.andrayudu.sureshdiaryfoods.MyRecyclerViewAdapter
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityFoodItemsBinding
@@ -21,22 +18,24 @@ import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
-import kotlinx.coroutines.*
 
 class FoodItemsActivity : AppCompatActivity() {
 
 
+
+    private val tag = "FoodItemsActivity"
+
     private lateinit var binding:ActivityFoodItemsBinding
     private lateinit var foodItemsViewModel: FoodItemsViewModel
     private lateinit var adapter: MyRecyclerViewAdapter
+    private var itemName:String? = null
 
+    //UI components
     private lateinit var actionBarBackButton: ImageView
     private lateinit var actionBarTextView: TextView
-
     private lateinit var tTotalCost:TextView
     private lateinit var tCartQuantity:TextView
 
-    private val TAG = "FoodItemsActivity"
 
 
 
@@ -48,17 +47,59 @@ class FoodItemsActivity : AppCompatActivity() {
         val repository = CartItemRepository(dao)
         val factory = FoodItemsViewModelFactory(repository)
         foodItemsViewModel = ViewModelProvider(this,factory)[FoodItemsViewModel::class.java]
+        binding.myViewModel = foodItemsViewModel
+        binding.lifecycleOwner = this
+
+
+        itemName = intent.getStringExtra("itemName")
+
+        initViews()
+        initObservers()
+        initClickListeners()
+        initRecyclerView()
+
+
+        foodItemsViewModel.getSpecialPricesSnapshot()
 
 
 
+    }
 
-        actionBarBackButton = binding.actionBarFoodItems.findViewById(R.id.actionbar_Back)
-        actionBarTextView = binding.actionBarFoodItems.findViewById(R.id.actionbar_Text)
+    private fun initObservers() {
+
+        foodItemsViewModel.cartItems.observe(this) {
+
+            updateCartUI(it)
+
+        }
+
+        foodItemsViewModel.getStatus().observe(this) {
+            if (it != null) {
+                //indicates the special prices snapshot is loaded...
+                if (it.equals("loaded")) {
+                    Log.i(tag, "calling LoadItems now...")
+                    foodItemsViewModel.loadItems(itemName)
+                }
+            }
+        }
+
+        foodItemsViewModel.getFirebaseFoodItems().observe(this) {
+            Log.i("MY TAG", it.toString())
+            //as soon as the items load we will hide the progress bar
+            binding.idPBLoading.visibility = View.INVISIBLE
+            adapter.setList(it)
+        }
+    }
+
+    private fun initClickListeners() {
 
 
+        binding.bCart.setOnClickListener {
+            startActivity(Intent(this, CartActivity::class.java))
+        }
 
         actionBarBackButton.setOnClickListener {
-            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true){
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
 
                     finish()
@@ -66,107 +107,49 @@ class FoodItemsActivity : AppCompatActivity() {
             })
             onBackPressedDispatcher.onBackPressed()
         }
+    }
 
-
-
+    private fun initViews() {
+        actionBarBackButton = binding.actionBarFoodItems.findViewById(R.id.actionbar_Back)
+        actionBarTextView = binding.actionBarFoodItems.findViewById(R.id.actionbar_Text)
         tTotalCost = binding.tTotalPrice
         tCartQuantity = binding.tCartCount
-        binding.myViewModel = foodItemsViewModel
-        binding.lifecycleOwner = this
-
-
-        binding.bCart.setOnClickListener {
-            startActivity(Intent(this, CartActivity::class.java))
-        }
-
-        foodItemsViewModel.message.observe(this, Observer{
-            it.getContentIfNotHandled()?.let {
-                Toast.makeText(this,it, Toast.LENGTH_SHORT).show()
-            }
-        })
-
-
-
-        val itemName = intent.getStringExtra("itemName")
         actionBarTextView.text = itemName
-
-
-        initRecyclerView()
-
-        // until the firebase values load we will be displaying a loading symbol
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val special= async {
-                foodItemsViewModel.getSpecialPricesSnapshot()
-            }
-            special.await()
-            foodItemsViewModel.getFirebaseData(itemName)
-
-
-        }
-
-
 
     }
 
     private fun initRecyclerView(){
         binding.foodItemsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecyclerViewAdapter(this,{selectedItem:FoodItem->listItemClicked(selectedItem)})
+        adapter = MyRecyclerViewAdapter(this){selectedItem:FoodItem->listItemClicked(selectedItem)}
         binding.foodItemsRecyclerView.adapter = adapter
-
-
-
-        displayFoodItemsList()
-
-
-        foodItemsViewModel.cartItems.observe(this, Observer {
-
-            adapter.notifyDataSetChanged()
-            updateCartUI(it)
-
-        })
-
-
     }
 
     private fun updateCartUI(cartItems: List<CartItem>?) {
-        if(cartItems!=null && cartItems.size > 0){
+        if(cartItems!=null && cartItems.isNotEmpty()){
             binding.cartView.visibility = View.VISIBLE
             var price =0
-            var quantity = 0
 
             for (cartItem in cartItems) {
-                price = price +( cartItem.Price.toInt() * cartItem.Quantity.toInt())
+                price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt())
 //                quantity = quantity + cartItem.Quantity.toInt()
             }
-            tCartQuantity.setText(cartItems.size.toString())
-            tTotalCost.setText(getString(R.string.rupee_symbol) + price.toString())
+            tCartQuantity.text = (cartItems.size.toString())
+            tTotalCost.text = (getString(R.string.rupee_symbol_new,price.toString()))
 
         }
         else
         {
-            binding.cartView.setVisibility(View.GONE)
+            binding.cartView.visibility = (View.GONE)
             tCartQuantity.text = "0"
-            tTotalCost.text = getString(R.string.rupee_symbol) + "0"
+            tTotalCost.text = getString(R.string.rupee_symbol_new,"0")
         }
 
     }
 
-    private fun displayFoodItemsList(){
-        foodItemsViewModel.firebaseFoodItems.observe(this, Observer {
-            Log.i("MY TAG",it.toString())
-            //as soon as the items load we will hide the progress bar
-            binding.idPBLoading.visibility = View.INVISIBLE
-            adapter.setList(it)
-            adapter.notifyDataSetChanged()
-        })
-    }
 
-
+    //invokes on clicking the recyclerview items
     private fun listItemClicked(foodItem: FoodItem){
-        Toast.makeText(this,"Selected food is ${foodItem.Name}",Toast.LENGTH_SHORT).show()
             foodItemsViewModel.insert(foodItem)
-
     }
 
 

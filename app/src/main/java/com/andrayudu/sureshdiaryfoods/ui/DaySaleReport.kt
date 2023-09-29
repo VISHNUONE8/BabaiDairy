@@ -48,7 +48,7 @@ class DaySaleReport : AppCompatActivity() {
 
         actionBarBackButton = binding.actionbarDaySale.findViewById(R.id.actionbar_Back)
         actionBarTextView = binding.actionbarDaySale.findViewById(R.id.actionbar_Text)
-        actionBarTextView.text = "Password Reset"
+        actionBarTextView.text = "DaySale Report"
 
 
 
@@ -168,23 +168,28 @@ class DaySaleReport : AppCompatActivity() {
     fun validateEntries():Boolean{
         if (binding.customerNameAuto.text.toString().isEmpty()){
             binding.customerNameAuto.setError("This cannot be empty")
+            binding.customerNameAuto.requestFocus()
             return false
 
         }
         if (binding.normalBoxET.text.toString().isEmpty()){
             binding.normalBoxET.setError("This cannot be empty")
+            binding.normalBoxET.requestFocus()
             return false
         }
         if (binding.specialBoxET.text.toString().isEmpty()){
             binding.specialBoxET.setError("This cannot be empty")
+            binding.specialBoxET.requestFocus()
             return false
         }
         if (binding.billNoET.text.toString().isEmpty()){
             binding.billNoET.setError("This cannot be empty")
+            binding.billNoET.requestFocus()
             return false
         }
         if (binding.billAmountET.text.toString().isEmpty()){
             binding.billAmountET.setError("This cannot be empty")
+            binding.billAmountET.requestFocus()
             return false
         }
         return true

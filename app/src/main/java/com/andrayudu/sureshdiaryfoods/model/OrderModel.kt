@@ -11,10 +11,14 @@ data class OrderModel(
     var quantity:String?=null,
     var date:String?=null,
     var orderValue:String?=null,
+    var transportCharges:String?=null,
+    var grandTotal:String?=null,
     var orderStatus:String?=null,
     var cartItemList:List<CartItem>?=null
 ):Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -33,6 +37,8 @@ data class OrderModel(
         parcel.writeString(quantity)
         parcel.writeString(date)
         parcel.writeString(orderValue)
+        parcel.writeString(transportCharges)
+        parcel.writeString(grandTotal)
         parcel.writeString(orderStatus)
         parcel.writeTypedList(cartItemList)
     }

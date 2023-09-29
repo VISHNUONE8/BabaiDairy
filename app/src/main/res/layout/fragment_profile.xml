@@ -29,6 +29,15 @@
                 android:layout_centerVertical="true"
                 android:src="@drawable/navigation_account" />
 
+
+            <ProgressBar
+                android:id="@+id/idPBLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                tools:visibility="visible" />
+
             <TextView
                 android:id="@+id/usernameTV"
                 android:layout_width="wrap_content"
@@ -42,7 +51,7 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/customer_or_admin_tv"
+                android:id="@+id/roleTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/usernameTV"
@@ -56,7 +65,7 @@
                 android:id="@+id/limitTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/customer_or_admin_tv"
+                android:layout_below="@+id/roleTV"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/profile_imageIV"
@@ -66,38 +75,7 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/RegisterUser"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:visibility="gone"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
 
-            >
-
-            <TextView
-                android:id="@+id/accountInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                style="@style/TextAppearance.Material3.BodyLarge"
-                android:textSize="20dp"
-                android:text="RegisterUser" />
-
-            <ImageView
-                android:id="@+id/arrow1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/colorDivider"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"

@@ -85,6 +85,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
+
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -97,6 +98,24 @@
 
                 android:id="@+id/Limit"
                 android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:errorIconDrawable="@null"
+            android:hint="Outstanding"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/outstanding"
+                android:inputType="numberSigned"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -173,6 +192,27 @@
 
                 android:id="@+id/etRegOtherSweets"
 
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+
+            android:id="@+id/etTransportChargesLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="TransportCharge"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/etTransportCharges"
                 android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

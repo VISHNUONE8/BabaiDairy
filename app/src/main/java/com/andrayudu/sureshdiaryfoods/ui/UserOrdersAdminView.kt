@@ -81,6 +81,7 @@ class UserOrdersAdminView : AppCompatActivity() {
             binding.noItemsIndicator.text = "No Accepted Orders For now..."
             return
         }
+        binding.userOrdersAdminViewRV.visibility = View.VISIBLE
         userOrdersAdminViewAdapter?.setList(acceptedOrders)
     }
     private fun loadRequestedOrders() {
@@ -91,6 +92,7 @@ class UserOrdersAdminView : AppCompatActivity() {
             binding.noItemsIndicator.text = "No Requested Orders For now..."
             return
         }
+        binding.userOrdersAdminViewRV.visibility = View.VISIBLE
         userOrdersAdminViewAdapter?.setList(requestedOrders)
 
     }

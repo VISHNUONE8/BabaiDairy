@@ -11,19 +11,18 @@ data class CartItem (
 
     @PrimaryKey
     @ColumnInfo(name = "item_name")
-    var Name :String="",
+    var Name :String="food",
 
     @ColumnInfo(name = "item_price")
-    var Price: String="0",
+    var Price: String?=null,
 
     @ColumnInfo(name = "quantity")
-    var Quantity:String="0",
+    var Quantity:String?=null,
 
     @ColumnInfo(name = "item_category")
-    var Category: String="",
+    var Category: String?=null,
 
-    @ColumnInfo(name = "order_date")
-    var Date: String="",
+
 
 ):Parcelable {
     constructor(parcel: Parcel) : this(
@@ -31,7 +30,6 @@ data class CartItem (
         parcel.readString().toString(),
         parcel.readString().toString(),
         parcel.readString().toString(),
-        parcel.readString().toString()
     ) {
     }
 
@@ -40,7 +38,6 @@ data class CartItem (
         parcel.writeString(Price)
         parcel.writeString(Quantity)
         parcel.writeString(Category)
-        parcel.writeString(Date)
     }
 
     override fun describeContents(): Int {

@@ -29,26 +29,12 @@ class ProfileFragViewModel:ViewModel() {
     }
 
 
-    fun isAdmin() {
-        //if the user is an admin
-        if (userId.equals("LcYIRtG0z4PuSI5tCdgRMUxaBjG3")) {
-
-            statusObserver.postValue("Admin")
-
-        }
-        else
-        {
-            statusObserver.postValue("Customer")
-        }
-
-
-    }
 
     fun getUserData() {
 
-        val userReference =
-            FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+
         viewModelScope.launch(Dispatchers.IO) {
+            val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
             userReference.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {

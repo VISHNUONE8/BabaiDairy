@@ -20,8 +20,19 @@
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="400dp"
+            android:layout_below="@id/actionbarCart"
             android:id="@+id/cart_RecyclerView"
             android:background="@color/grey"/>
+
+        <TextView
+            android:id="@+id/clearCartTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CLEAR CART"
+            android:textSize="20sp"
+            android:layout_below="@id/cart_RecyclerView"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/colorAccent"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,21 +40,15 @@
             android:id="@+id/bill_layout"
             android:background="@color/white"
             android:layout_below="@+id/cart_RecyclerView"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:padding="8dp">
 
-            <TextView
-                android:id="@+id/limitTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="UserLimit:"
-                />
+
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/t_title"
-                android:layout_below="@+id/limitTV"
                 android:text="Billing_details:"
                 android:textStyle="bold"
                 android:textColor="@color/grey_text"

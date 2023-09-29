@@ -48,11 +48,16 @@ class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewH
     ){
 
 
-        binding.tName.text = cartItem!!.Name
-        binding.tPrice.text = "₹ "+cartItem.Price
-        binding.tQuantity.text = cartItem.Quantity
-        binding.tTotalPrice.text = "₹ "+(cartItem.Quantity.toInt() * cartItem.Price.toInt())
+        if (cartItem!=null){
 
+
+            binding.tName.text = cartItem.Name
+            binding.tPrice.text = "₹ "+cartItem.Price
+            binding.tQuantity.text = cartItem.Quantity
+            binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt())
+
+
+        }
 
         binding.iDelete.setOnClickListener{
             //onClicking the delete icon , the cartItem willbe passed into the function which will remove it from cartlist table

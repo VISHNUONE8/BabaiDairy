@@ -3,7 +3,7 @@
     <style name="Theme.SureshDiaryFoods" parent="Theme.MaterialComponents.Light.NoActionBar">
   <!-- default value  <style name="Theme.SureshDiaryFoods" parent="Theme.MaterialComponents.DayNight.DarkActionBar"> -->
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimary">@color/colorGreen</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
