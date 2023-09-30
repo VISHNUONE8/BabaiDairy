@@ -18,6 +18,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Collections
 
+//this viewmodel is used by both HomeFragment and FoodItemsActivity but not in a shared way
+//for sharedviewmodel instance see homeActivity viewmodel as it is shared by ordersFrag and HomeActivity
+//note: for sharing we should by viewModels() and by activityviewModels()
 class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel() {
 
 
@@ -30,7 +33,6 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     val cartItems = repository.cartItems
     private val status = MutableLiveData<String>()
     private val firebaseFoodItems =  MutableLiveData<List<FoodItem>>()
-
 
 
     fun getStatus():LiveData<String>{

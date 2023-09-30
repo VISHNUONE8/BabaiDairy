@@ -27,11 +27,7 @@ class ProfileFragViewModel:ViewModel() {
     fun getUserDetails():LiveData<UserRegisterModel?>{
         return userDetails
     }
-
-
-
     fun getUserData() {
-
 
         viewModelScope.launch(Dispatchers.IO) {
             val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
@@ -49,7 +45,6 @@ class ProfileFragViewModel:ViewModel() {
 
         }
     }
-
 
     fun logOut() {
         mAuth.signOut()

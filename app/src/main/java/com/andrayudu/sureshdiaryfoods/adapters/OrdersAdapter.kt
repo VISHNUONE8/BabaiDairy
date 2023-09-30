@@ -1,9 +1,11 @@
 package com.andrayudu.sureshdiaryfoods.adapters
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.andrayudu.sureshdiaryfoods.R
@@ -16,8 +18,9 @@ class OrdersAdapter( private val clickListener: (OrderModel?)->Unit) : RecyclerV
 
 
     val tag = "OrdersAdapter"
-    private var customerOrdersList1 = ArrayList<OrderModel>()
-    private var datesList1 = ArrayList<Int>()
+
+    private val customerOrdersList1 = ArrayList<OrderModel>()
+    private val datesList1 = ArrayList<Int>()
 
 
 
@@ -46,7 +49,6 @@ class OrdersAdapter( private val clickListener: (OrderModel?)->Unit) : RecyclerV
         datesList1.clear()
         customerOrdersList1.addAll(customerOrdersList)
         datesList1.addAll(datesList)
-        Log.i(tag,"the dates list values are:"+datesList1.toString())
         notifyDataSetChanged()
 
     }
@@ -67,20 +69,45 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
             binding.dateTV.text = orderModel.date
         }
 
+        val orderStatusStr = getOrderStatus(orderModel.orderStatus)
         val cartItems = orderModel.cartItemList
         val firstItemName = cartItems?.get(0)?.Name
         val firstItemQuantity = cartItems?.get(0)?.Quantity
-        binding.itemNameTV.text = "Items: $firstItemName * $firstItemQuantity ...."
-        binding.orderIdTV.text = "OrderId:${orderModel.orderId}"
-        binding.OrderValueTV.text = "Amount:${orderModel.orderValue}"
-        binding.orderStatus.text = "Status:${orderModel.orderStatus}"
+        val itemNames = "Items: $firstItemName * $firstItemQuantity ...."
+        val orderId = "OrderId:${orderModel.orderId}"
+        val orderValue = "Amount:${orderModel.orderValue}"
+        val orderStatus = "Status:${orderStatusStr}"
+
+
+        binding.itemNameTV.text = itemNames
+        binding.orderIdTV.text = orderId
+        binding.OrderValueTV.text = orderValue
+        binding.orderStatus.text = orderStatus
 
         binding.cardview.setOnClickListener{
             clickListener(orderModel)
         }
 
 
+    }
 
+    private fun getOrderStatus(orderStatus: String?): String? {
+        when(orderStatus){
+            "-1"-> {
+                binding.orderStatus.setTextColor(Color.parseColor("#F44336"))
+                return "Pending"
+            }
 
+            "0"->{
+                binding.orderStatus.setTextColor(Color.parseColor("#FFA500"))
+                return "Placed"
+            }
+
+            "1"->{
+                binding.orderStatus.setTextColor(Color.parseColor("#0F9D58"))
+                return "Dispatched"
+            }
+        }
+        return orderStatus
     }
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +25,7 @@ class OrdersFragment : Fragment() {
     private val TAG = "OrdersFragment"
 
     private lateinit var binding:FragmentOrdersBinding
-    private lateinit var ordersFragViewModel: OrdersFragViewModel
+    private val sharedViewModel : HomeActivityViewModel by activityViewModels()
     private lateinit var mContext: Context
     private lateinit var adapter: OrdersAdapter
 
@@ -39,22 +40,21 @@ class OrdersFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_orders, container, false)
-        ordersFragViewModel = ViewModelProvider(this)[OrdersFragViewModel::class.java]
 
         initObservers()
+        initRecyclerView()
 
-        ordersFragViewModel.userOrAdmin()
+
         return binding.root
     }
 
+    //loads customer UI if the user is an admin
     private fun initCustomersUI() {
-        Log.i(TAG, "customer ui is loaded")
-        initRecyclerView()
-        ordersFragViewModel.loadOrdersData()
+        sharedViewModel.loadOrdersData()
     }
 
+    //loads customer UI if the user is an admin
     private fun initAdminUI() {
-        Log.i(TAG, "admin ui is loaded")
         binding.adminPanelLayout.visibility = View.VISIBLE
         binding.ordersFragmentTV.text = getString(R.string.adminPanel)
         //setting the onclickListeners as only admin has access to them...
@@ -62,8 +62,9 @@ class OrdersFragment : Fragment() {
     }
 
     private fun initObservers() {
-        ordersFragViewModel.getOrdersListLive().observe(viewLifecycleOwner) {
+        sharedViewModel.getOrdersListLive().observe(viewLifecycleOwner) {
             binding.idPBLoading.visibility = View.GONE
+            //if the customers has no previous orders then No orders Yet will be displayed..
             if (it.isEmpty()){
                 binding.ordersRV.visibility = View.GONE
                 binding.noOrdersIndicator.visibility = View.VISIBLE
@@ -71,13 +72,14 @@ class OrdersFragment : Fragment() {
             }
             binding.noOrdersIndicator.visibility = View.GONE
             binding.ordersRV.visibility = View.VISIBLE
-            adapter.setList(it,ordersFragViewModel.getDatesList())
+            adapter.setList(it,sharedViewModel.getDatesList())
         }
 
-        ordersFragViewModel.getUserRoleLive().observe(viewLifecycleOwner, Observer {
+        //everytime the fragment is clicked ,it will go inside this
+        // as last change in the activity viewmodel will be posted on clicking fragment.. as we are using activityviewModels()
+        sharedViewModel.getUserLive().observe(viewLifecycleOwner, Observer {
             binding.idPBLoading.visibility = View.GONE
-            if(it.equals("Admin")){
-                Log.i(TAG,"admin ui is loaded using livedata")
+            if(it!!.role.equals("Admin")){
                initAdminUI()
             }
             else{
@@ -88,6 +90,7 @@ class OrdersFragment : Fragment() {
 
     }
 
+    //only admin calls this method as these are admin exclusive features..
     private fun initClickListeners() {
         binding.relLayoutUserOrders.setOnClickListener {
             startActivity(Intent(mContext, UserOrdersAdminView::class.java))

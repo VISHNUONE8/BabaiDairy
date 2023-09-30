@@ -29,8 +29,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var mContext: Context
     private lateinit var foodIntent: Intent
-    //this view-model is shared b/w foodItemsActivity and this fragment
-    // (normally by viewModels() should be added below but it is working without it..)
     private lateinit var homeFragmentViewModel: FoodItemsViewModel
 
     //UI components

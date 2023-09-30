@@ -4,20 +4,18 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import androidx.room.Index.Order
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.fragments.HomeFragment
@@ -25,17 +23,7 @@ import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
 import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
-import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragViewModel
-import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -43,8 +31,7 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
-    private lateinit var homeActivityViewModel: HomeActivityViewModel
-
+    private val viewModel:HomeActivityViewModel by viewModels()
 
     //UI components
     private lateinit var actionBarTextView: TextView
@@ -52,15 +39,10 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     private lateinit var networkConnection:NetworkConnection
 
-
-
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
-        homeActivityViewModel = ViewModelProvider(this)[HomeActivityViewModel::class.java]
 
         networkConnection = NetworkConnection(applicationContext)
 
@@ -69,7 +51,7 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
         //checking whether the user is an admin or not
         //so that we can give a subscription to notif channel...
-        homeActivityViewModel.userOrAdmin()
+        viewModel.userOrAdmin()
         checkPermissions()
 
 
@@ -80,8 +62,9 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
 
     private fun initViews() {
+        val actionBarText = "SureshDairyFoods"
         actionBarTextView = findViewById(R.id.actionbar_Home_Text)
-        actionBarTextView.text = "SureshDairyFoods"
+        actionBarTextView.text = actionBarText
     }
 
 
@@ -99,7 +82,6 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     private fun initObservers() {
         networkConnection.observe(this, Observer {isConnected->
-            //here 'it' represents the connection status logic value
             if (isConnected){
                 binding.navigationHostFragment.visibility = View.VISIBLE
                 binding.actionbar.visibility = View.VISIBLE
@@ -124,13 +106,11 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == 200){
-            if( (grantResults.size > 0) && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if( (grantResults.isNotEmpty()) && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 Toast.makeText(this, "Notification Permission Granted", Toast.LENGTH_SHORT).show()            }
         }
     }
-
-
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
@@ -161,6 +141,7 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     }
 
+    //replaces the fragment as a transaction...
     private fun replaceFragment(fragment:Fragment){
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.navigationHostFragment,fragment)

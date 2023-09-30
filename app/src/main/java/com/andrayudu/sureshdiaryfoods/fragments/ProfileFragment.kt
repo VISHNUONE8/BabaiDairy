@@ -24,8 +24,6 @@ class ProfileFragment : Fragment() {
     private lateinit var profileFragViewModel: ProfileFragViewModel
 
 
-
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -61,6 +59,9 @@ class ProfileFragment : Fragment() {
             //show the alert dialog to confirm once again....
             showAlertDialog()
 
+        }
+        binding.relLayoutAbout.setOnClickListener {
+            startActivity(Intent(mContext,AdminPanelActivity::class.java))
         }
     }
 
@@ -98,9 +99,13 @@ class ProfileFragment : Fragment() {
         profileFragViewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
             if(it!=null){
                 binding.idPBLoading.visibility = View.GONE
+                val role = it.role
+                if (role.equals("Admin")){
+                    binding.limitTV.visibility = View.INVISIBLE
+                }
                 binding.usernameTV.text = it.Name
                 binding.limitTV.text = ("Limit:₹ ${it.Limit}")
-                binding.roleTV.text = it.role
+                binding.roleTV.text = role
             }
 
         })
