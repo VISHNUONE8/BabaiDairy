@@ -1,12 +1,17 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -57,6 +62,7 @@ class FoodItemsActivity : AppCompatActivity() {
         initObservers()
         initClickListeners()
         initRecyclerView()
+
 
 
         foodItemsViewModel.getSpecialPricesSnapshot()
@@ -130,8 +136,13 @@ class FoodItemsActivity : AppCompatActivity() {
             var price =0
 
             for (cartItem in cartItems) {
-                price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt())
-//                quantity = quantity + cartItem.Quantity.toInt()
+                // every 1 box of kova implies 3kgs so price should be multiplied by 3
+                if (cartItem.Category?.equals("Kova") == true || cartItem.Category?.equals("KovaSpl") == true){
+                    price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt() * 3 )
+                }
+                else{
+                    price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt())
+                }
             }
             tCartQuantity.text = (cartItems.size.toString())
             tTotalCost.text = (getString(R.string.rupee_symbol_new,price.toString()))
@@ -146,11 +157,45 @@ class FoodItemsActivity : AppCompatActivity() {
 
     }
 
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+
 
     //invokes on clicking the recyclerview items
     private fun listItemClicked(foodItem: FoodItem){
-            foodItemsViewModel.insert(foodItem)
+        foodItemsViewModel.insert(foodItem)
+        hideKeyboard(this)
+        Toast.makeText(this,"Cart Updated",Toast.LENGTH_SHORT).show()
     }
+
+    private fun showAlertDialog() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Please Click")
+        builder.setTitle("Logout !")
+        builder.setCancelable(false)
+
+        builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->
+
+        }))
+        builder.setNegativeButton("No",(DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }))
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
+
 
 
 }

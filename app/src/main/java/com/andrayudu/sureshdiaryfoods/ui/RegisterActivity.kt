@@ -44,9 +44,28 @@ class RegisterActivity : AppCompatActivity() {
     private var limit:String? = null
     private var outstanding:String? = null
     private var phoneNo:String? = null
-    private var kovaPrice:String? = null
-    private var gheePrice:String? = null
-    private var otherSweetsPrice:String? = null
+    var normalKovaPrice: String?=null
+    var splKovaPrice: String?=null
+    var sugarKovaPrice: String?=null
+    var sugarLessKovaPrice: String?=null
+    var buffaloMilkPrice: String?=null
+    var cowMilkPrice: String?=null
+    var skimmedMilkPrice: String?=null
+    var hundredBoiledPrice: String?=null
+    var seventyBoiledPrice: String?=null
+    var fiftyBoiledPrice: String?=null
+    var agraPanPrice: String?=null
+    var kajuBytesPrice: String?=null
+    var killiPrice: String?=null
+    var soanPapdiPrice: String?=null
+    var splSoanPapdiPrice: String?=null
+    var chakodiPrice: String?=null
+    var dhalMixturePrice: String?=null
+    var marwadiMixture: String?=null
+    var moongDalPrice: String?=null
+    var splMixturePrice: String?=null
+
+
     private var tranportCharges:String? = null
 
 
@@ -120,14 +139,33 @@ class RegisterActivity : AppCompatActivity() {
         limit = binding.Limit.text.toString()
         outstanding = binding.outstanding.text.toString()
         phoneNo = binding.Phonenumber.text.toString()
-        kovaPrice= binding.etRegKova.text.toString()
-        gheePrice = binding.etRegGhee.text.toString()
-        otherSweetsPrice = binding.etRegOtherSweets.text.toString()
+         normalKovaPrice  = binding.normalKovaEt.getText().toString()
+         splKovaPrice  = binding.splKovaEt.getText().toString()
+         sugarKovaPrice  = binding.sugarKovaEt.getText().toString()
+         sugarLessKovaPrice  = binding.sugarLessEt.getText().toString()
+         buffaloMilkPrice  = binding.buffaloMilkEt.getText().toString()
+         cowMilkPrice  = binding.cowMilkEt.getText().toString()
+         skimmedMilkPrice  = binding.skimmedMilkEt.getText().toString()
+         hundredBoiledPrice  = binding.hundredboiledEt.getText().toString()
+         seventyBoiledPrice  = binding.seventyBoiledEt.getText().toString()
+         fiftyBoiledPrice  = binding.fiftyBoiledEt.getText().toString()
+         agraPanPrice  = binding.agraPanEt.getText().toString()
+         kajuBytesPrice  = binding.kajuBytesEt.getText().toString()
+         killiPrice  = binding.killiEt.getText().toString()
+         soanPapdiPrice  = binding.soanPapdiEt.getText().toString()
+         splSoanPapdiPrice  = binding.splSoanPapdiEt.getText().toString()
+         chakodiPrice  = binding.chakodiEt.getText().toString()
+         dhalMixturePrice  = binding.dhalMixtureEt.getText().toString()
+         marwadiMixture  = binding.marwadiMixtureEt.getText().toString()
+         moongDalPrice  = binding.moongDalEt.getText().toString()
+         splMixturePrice  = binding.splMixtureEt.getText().toString()
+
+
         tranportCharges = binding.etTransportCharges.text.toString()
 
 
 
-        if (TextUtils.isEmpty(binding.fullName.text.toString())) {
+        if (TextUtils.isEmpty(name)) {
             binding.fullName.setError("Name cannot be empty");
             binding.fullName.requestFocus()
             progressButton.buttonFinished()
@@ -163,19 +201,109 @@ class RegisterActivity : AppCompatActivity() {
             progressButton.buttonFinished()
             return false
         }
-        else if (TextUtils.isEmpty(binding.etRegKova.text.toString())) {
-            binding.etRegKova.setError("this field cannot be empty");
-            binding.etRegKova.requestFocus()
+        else if (TextUtils.isEmpty(normalKovaPrice)) {
+            binding.normalKovaEt.setError("this field cannot be empty");
+            binding.normalKovaEt.requestFocus()
             progressButton.buttonFinished()
             return false
-        } else if (TextUtils.isEmpty(binding.etRegGhee.text.toString())) {
-            binding.etRegGhee.setError("this field cannot be empty");
-            binding.etRegGhee.requestFocus()
+        } else if (TextUtils.isEmpty(splKovaPrice)) {
+            binding.splKovaEt.setError("this field cannot be empty");
+            binding.splKovaEt.requestFocus()
             progressButton.buttonFinished()
             return false
-        } else if (TextUtils.isEmpty(binding.etRegOtherSweets.text.toString())) {
-            binding.etRegOtherSweets.setError("this field cannot be empty");
-            binding.etRegOtherSweets.requestFocus()
+        } else if (TextUtils.isEmpty(sugarKovaPrice)) {
+            binding.sugarKovaEt.setError("this field cannot be empty");
+            binding.sugarKovaEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(sugarKovaPrice)) {
+            binding.sugarKovaEt.setError("this field cannot be empty");
+            binding.sugarKovaEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(sugarLessKovaPrice)) {
+            binding.sugarLessEt.setError("this field cannot be empty");
+            binding.sugarLessEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(buffaloMilkPrice)) {
+            binding.buffaloMilkEt.setError("this field cannot be empty");
+            binding.buffaloMilkEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(cowMilkPrice)) {
+            binding.cowMilkEt.setError("this field cannot be empty");
+            binding.cowMilkEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(skimmedMilkPrice)) {
+            binding.skimmedMilkEt.setError("this field cannot be empty");
+            binding.skimmedMilkEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(hundredBoiledPrice)) {
+            binding.hundredboiledEt.setError("this field cannot be empty");
+            binding.hundredboiledEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(seventyBoiledPrice)) {
+            binding.seventyBoiledEt.setError("this field cannot be empty");
+            binding.seventyBoiledEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(fiftyBoiledPrice)) {
+            binding.fiftyBoiledEt.setError("this field cannot be empty");
+            binding.fiftyBoiledEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(agraPanPrice)) {
+            binding.agraPanEt.setError("this field cannot be empty");
+            binding.agraPanEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(kajuBytesPrice)) {
+            binding.kajuBytesEt.setError("this field cannot be empty");
+            binding.kajuBytesEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(killiPrice)) {
+            binding.killiEt.setError("this field cannot be empty");
+            binding.killiEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(soanPapdiPrice)) {
+            binding.soanPapdiEt.setError("this field cannot be empty");
+            binding.soanPapdiEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(splSoanPapdiPrice)) {
+            binding.splSoanPapdiEt.setError("this field cannot be empty");
+            binding.splSoanPapdiEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(chakodiPrice)) {
+            binding.chakodiEt.setError("this field cannot be empty");
+            binding.chakodiEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        } else if (TextUtils.isEmpty(dhalMixturePrice)) {
+            binding.dhalMixtureEt.setError("this field cannot be empty");
+            binding.dhalMixtureEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }else if (TextUtils.isEmpty(marwadiMixture)) {
+            binding.marwadiMixtureEt.setError("this field cannot be empty");
+            binding.marwadiMixtureEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }else if (TextUtils.isEmpty(moongDalPrice)) {
+            binding.moongDalEt.setError("this field cannot be empty");
+            binding.moongDalEt.requestFocus()
+            progressButton.buttonFinished()
+            return false
+        }else if (TextUtils.isEmpty(splMixturePrice)) {
+            binding.splMixtureEt.setError("this field cannot be empty");
+            binding.splMixtureEt.requestFocus()
             progressButton.buttonFinished()
             return false
         }
@@ -192,8 +320,8 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     fun validateEmail(email: String): Boolean? {
-        val emailValidate: String = email
-        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+        val  emailValidate: String = email
+         val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
         return if (emailValidate.isEmpty()) {
             binding.etRegEmail.setError("Field cannot be Empty")
             false
@@ -244,17 +372,62 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun createSpecialPrices(userId:String){
-        val kovaPrice: String = binding.etRegKova.getText().toString()
-        val gheePrice: String = binding.etRegGhee.getText().toString()
-        val otherSweetsPrice: String = binding.etRegOtherSweets.getText().toString()
-       val specialpriceSetting =  specialPricesReference.child(userId).setValue(SpecialPricesModel(kovaPrice,gheePrice,otherSweetsPrice))
-        specialpriceSetting.addOnCompleteListener {
+    private fun createSpecialPrices(userId:String?,customerName:String?){
+        val normalKovaPrice  = binding.normalKovaEt.getText().toString()
+        val splKovaPrice  = binding.splKovaEt.getText().toString()
+        val sugarKovaPrice  = binding.sugarKovaEt.getText().toString()
+        val sugarLessKovaPrice  = binding.sugarLessEt.getText().toString()
+        val buffaloMilkPrice  = binding.buffaloMilkEt.getText().toString()
+        val cowMilkPrice  = binding.cowMilkEt.getText().toString()
+        val skimmedMilkPrice  = binding.skimmedMilkEt.getText().toString()
+        val hundredBoiledPrice  = binding.hundredboiledEt.getText().toString()
+        val seventyBoiledPrice  = binding.seventyBoiledEt.getText().toString()
+        val fiftyBoiledPrice  = binding.fiftyBoiledEt.getText().toString()
+        val agraPanPrice  = binding.agraPanEt.getText().toString()
+        val kajuBytesPrice  = binding.kajuBytesEt.getText().toString()
+        val killiPrice  = binding.killiEt.getText().toString()
+        val soanPapdiPrice  = binding.soanPapdiEt.getText().toString()
+        val splSoanPapdiPrice  = binding.splSoanPapdiEt.getText().toString()
+        val chakodiPrice  = binding.chakodiEt.getText().toString()
+        val dhalMixturePrice  = binding.dhalMixtureEt.getText().toString()
+        val marwadiMixture  = binding.marwadiMixtureEt.getText().toString()
+        val moongDalPrice  = binding.moongDalEt.getText().toString()
+        val splMixturePrice  = binding.splMixtureEt.getText().toString()
 
-            if (it.isSuccessful){
-                finish()
-                startActivity(Intent(this,HomeActivity::class.java))
+        if (userId!=null) {
+
+             val specialPricesModel = SpecialPricesModel()
+             specialPricesModel.customerName = name
+             specialPricesModel.normalKovaPrice = normalKovaPrice
+             specialPricesModel.splKovaPrice = splKovaPrice
+             specialPricesModel.sugarKovaPrice = sugarKovaPrice
+             specialPricesModel.sugarLessKovaPrice = sugarLessKovaPrice
+             specialPricesModel.buffaloMilkPrice = buffaloMilkPrice
+             specialPricesModel.cowMilkPrice = cowMilkPrice
+             specialPricesModel.skimmedMilkPrice = skimmedMilkPrice
+             specialPricesModel.hundredBoiledPrice = hundredBoiledPrice
+             specialPricesModel.seventyBoiledPrice = seventyBoiledPrice
+             specialPricesModel.fiftyBoiledPrice = fiftyBoiledPrice
+             specialPricesModel.agraPanPrice = agraPanPrice
+             specialPricesModel.kajuBytesPrice = kajuBytesPrice
+             specialPricesModel.killiPrice = killiPrice
+             specialPricesModel.soanPapdiPrice = soanPapdiPrice
+             specialPricesModel.splSoanPapdiPrice = splSoanPapdiPrice
+            specialPricesModel.chakodiPrice = chakodiPrice
+            specialPricesModel.dhalMixturePrice = dhalMixturePrice
+            specialPricesModel.marwadiMixture = marwadiMixture
+            specialPricesModel.moongDalPrice = moongDalPrice
+             specialPricesModel.splMixturePrice = splMixturePrice
+
+            val specialpriceSetting = specialPricesReference.child(userId)
+                .setValue(specialPricesModel)
+            specialpriceSetting.addOnCompleteListener {
+
+                if (it.isSuccessful) {
+                    finish()
+                }
             }
+
         }
     }
     private fun saveUsertoDB(userId:String){
@@ -262,7 +435,7 @@ class RegisterActivity : AppCompatActivity() {
         val transportCharges:String = if (binding.checkbox.isChecked) binding.etTransportCharges.text.toString() else "0"
         val role = "Customer"
         userReference.child(userId).setValue(UserRegisterModel(name,email,limit,outstanding,phoneNo,transportCharges,userId,null,role))
-        createSpecialPrices(userId)
+        createSpecialPrices(userId,name)
 
     }
     private fun createUser() {

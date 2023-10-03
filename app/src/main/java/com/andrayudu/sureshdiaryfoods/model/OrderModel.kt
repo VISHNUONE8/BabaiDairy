@@ -14,9 +14,13 @@ data class OrderModel(
     var transportCharges:String?=null,
     var grandTotal:String?=null,
     var orderStatus:String?=null,
+    var transportCompany:String?=null,
+    var transportLrNo:String?=null,
     var cartItemList:List<CartItem>?=null
 ):Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -40,6 +44,8 @@ data class OrderModel(
         parcel.writeString(transportCharges)
         parcel.writeString(grandTotal)
         parcel.writeString(orderStatus)
+        parcel.writeString(transportCompany)
+        parcel.writeString(transportLrNo)
         parcel.writeTypedList(cartItemList)
     }
 

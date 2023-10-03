@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Collections
 
 //this viewmodel is used by both HomeFragment and FoodItemsActivity but not in a shared way
 //for sharedviewmodel instance see homeActivity viewmodel as it is shared by ordersFrag and HomeActivity
@@ -46,17 +45,18 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     fun insert(foodItem: FoodItem) {
         viewModelScope.launch(Dispatchers.IO)
         {
-            //by this time the quantity value is changed to 0 already
+            //if the foodItem quantity is 0 then the item will be deleted from the cart...
             if(foodItem.Quantity.equals("0")){
                 Log.i("this condition is executed","now"+foodItem.Name)
                 repository.delete(foodItem.Name)
             }
             else{
-                val current = LocalDateTime.now()
-
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                val formatted = current.format(formatter)
-                val newRowId = repository.insert(CartItem(foodItem.Name,foodItem.Price,foodItem.Quantity.toString(),foodItem.Category))
+                val cartItem = CartItem()
+                cartItem.Name = foodItem.Name
+                cartItem.Quantity = foodItem.Quantity
+                cartItem.Category = foodItem.Category
+                cartItem.Price = foodItem.Price
+                val newRowId = repository.insert(cartItem)
                 withContext(Dispatchers.Main) {
                     if (newRowId > -1) {
                         Log.i("insert is successful","bro")
@@ -82,6 +82,7 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             FirebaseDatabase.getInstance().getReference("SpecialPrices").child(userId.toString())
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        specialPricesModel = SpecialPricesModel()
                         if (snapshot.exists()) {
                             specialPricesModel = snapshot.getValue(SpecialPricesModel::class.java)
                             Log.i(tag,"specialprice snap loaded")
@@ -100,33 +101,96 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
 
     fun getSpecialPrice(foodItem: FoodItem?):FoodItem?{
 
-        var specificPrice:String? = null
+        var splPrice:String? = null
 
         when(foodItem?.Category){
+
             "Kova"-> {
 
-                 specificPrice = specialPricesModel?.kovaPrice
-                 Log.i(tag,"kova price for this customer is:"+specificPrice)
+                //In normal Kova the items SugarKova and sugarLess have splPricess...
 
+                if (foodItem.Name == "SugarKova"){
+                    splPrice = specialPricesModel?.sugarKovaPrice
+                }
+                else if (foodItem.Name == "SugarLessKova"){
+                    splPrice = specialPricesModel?.sugarLessKovaPrice
+                }
+                //for all normalKova Category items the price is normalKovaPrice of user...
+                else{
+                    splPrice = specialPricesModel?.normalKovaPrice
+                }
 
             }
-//            "SpecialKova"->{
-//
-//                val specificPrice = specialPriceSnapshot.child("SpecialKova").getValue().toString()
-//                item.Price = specificPrice
-//
-//
-//            }
+
+            "KovaSpl"->{
+                //for all splKova items the price will be same..
+                splPrice =  specialPricesModel?.splKovaPrice
+            }
+
+            "Milk"->{
+
+                if (foodItem.Name == "BuffaloMilk"){
+                    splPrice = specialPricesModel?.buffaloMilkPrice
+                }
+                else if (foodItem.Name == "CowMilk"){
+                    splPrice = specialPricesModel?.cowMilkPrice
+                }
+                else if (foodItem.Name == "SkimmedMilk"){
+                    splPrice = specialPricesModel?.skimmedMilkPrice
+                }
+
+            }
+
             "Ghee"->{
 
-                 specificPrice = specialPricesModel?.gheePrice
-
+                if (foodItem.Name == "100% Boiled"){
+                    splPrice = specialPricesModel?.hundredBoiledPrice
+                }
+                else if (foodItem.Name == "70% Boiled"){
+                    splPrice = specialPricesModel?.seventyBoiledPrice
+                }
+                else if (foodItem.Name == "50% Boiled"){
+                    splPrice = specialPricesModel?.fiftyBoiledPrice
+                }
             }
 //
             "OtherSweets"->{
                 //other sweets has many different items so based on the item we should get price
-                 specificPrice = specialPricesModel?.otherSweetsPrice
+                if (foodItem.Name == "AgraPan"){
+                    splPrice = specialPricesModel?.agraPanPrice
+                }
+                else if (foodItem.Name == "KajuBytes"){
+                    splPrice = specialPricesModel?.kajuBytesPrice
+                }
+                else if (foodItem.Name == "Killi"){
+                    splPrice = specialPricesModel?.killiPrice
+                }
+                else if (foodItem.Name == "SoanPapdi"){
+                    splPrice = specialPricesModel?.soanPapdiPrice
+                }
+                else if (foodItem.Name == "SplSoanPapdi"){
+                    splPrice = specialPricesModel?.splSoanPapdiPrice
+                }
             }
+
+            "Hot"->{
+                if (foodItem.Name == "Chakodi"){
+                    splPrice = specialPricesModel?.chakodiPrice
+                }
+                else if (foodItem.Name == "DhalMixture"){
+                    splPrice = specialPricesModel?.dhalMixturePrice
+                }
+                else if (foodItem.Name == "MarwadiMixture"){
+                    splPrice = specialPricesModel?.marwadiMixture
+                }
+                else if (foodItem.Name == "MoongDal"){
+                    splPrice = specialPricesModel?.moongDalPrice
+                }
+                else if (foodItem.Name == "SpecialMixture"){
+                    splPrice = specialPricesModel?.splMixturePrice
+                }
+            }
+
 
             else->{
                 //if the item doesnt belong to any above categories its price will stay same...
@@ -134,13 +198,14 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             }
 
         }
-        if (specificPrice!=null){
-            foodItem?.Price = specificPrice!!
+        if (splPrice!=null){
+            foodItem?.Price = splPrice
             Log.i("spl price is:",""+foodItem?.Price)
 
         }
         return foodItem
     }
+    //for every foodItem we will change the price to userSpecific price i.e specialPrice by calling getSpecialPrice() method
     fun loadItems(itemName:String?) {
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -148,17 +213,23 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                 FirebaseDatabase.getInstance().getReference("FoodItems").child(itemName.toString())
                     .addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
+                            foodItemsList.clear()
                             if (snapshot.exists()) {
-
                                 for (dataSnapshot in snapshot.children) {
                                     val foodItem: FoodItem? = dataSnapshot.getValue(FoodItem::class.java)
 
                                     Log.i(tag,"the item is "+foodItem!!.Name)
                                     //if the users special price snap is null then it will show normal prices
                                     val splPriceAddedItem = getSpecialPrice(foodItem)
-                                    foodItemsList.add(splPriceAddedItem!!)
+                                    if (splPriceAddedItem!=null){
+                                        foodItemsList.add(splPriceAddedItem)
+                                    }
+
                                 }
-                                Collections.sort(foodItemsList)
+                                //java method
+//                                Collections.sort(foodItemsList)
+                                //kotlin method
+                                foodItemsList.sort()
                                 firebaseFoodItems.postValue(foodItemsList)
 
 

@@ -2,6 +2,7 @@ package com.andrayudu.sureshdiaryfoods.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,8 +13,10 @@ import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityOrderDetailsBinding
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 
+//this activity displays order details to only the customer...
 class OrderDetails : AppCompatActivity() {
 
+    private val tag = "OrderDetails"
 
     private lateinit var binding:ActivityOrderDetailsBinding
 
@@ -76,11 +79,20 @@ class OrderDetails : AppCompatActivity() {
 
     private fun setOrderDetails(orderModel: OrderModel?) {
         if (orderModel!=null){
-            val orderStatusStr = getOrderStatus(orderModel.orderStatus)
+
+            val orderStatus = (orderModel.orderStatus)
+            val orderStatusStr = getOrderStatus(orderStatus)
+
+            //when the order is dispatched via a transport it will have transport company and lr...
+            if (orderStatus == "1"){
+                binding.transportNameDisplay.text = orderModel.transportCompany
+                binding.lrNoDisplay.text = orderModel.transportLrNo
+            }
             binding.dateTV.append(orderModel.date)
             binding.orderIdTV.append(orderModel.orderId)
             binding.amountTV.append("${orderModel.orderValue}/-")
             binding.statusTV.append(orderStatusStr)
+            binding.itemsDisplay.setMovementMethod(ScrollingMovementMethod())
             for (item in orderModel.cartItemList!!){
                 binding.itemsDisplay.append("${item.Name} * ${item.Quantity}\n")
             }

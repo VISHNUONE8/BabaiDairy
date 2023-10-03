@@ -6,13 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentHomeBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
@@ -26,6 +30,9 @@ import com.andrayudu.sureshdiaryfoods.ui.FoodItemsViewModelFactory
 class HomeFragment : Fragment() {
 
 
+
+    private val TAG = "HomeFragment"
+    private val sharedViewModel:HomeActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     private lateinit var mContext: Context
     private lateinit var foodIntent: Intent
@@ -56,6 +63,7 @@ class HomeFragment : Fragment() {
         homeFragmentViewModel = ViewModelProvider(this,factory)[FoodItemsViewModel::class.java]
 
 
+        binding.outstandingScrollTV.isSelected  = true
         foodIntent = Intent(mContext, FoodItemsActivity::class.java)
 
         initViews()
@@ -71,6 +79,11 @@ class HomeFragment : Fragment() {
         homeFragmentViewModel.cartItems.observe(viewLifecycleOwner) {
             updateCartUI(it)
         }
+
+        sharedViewModel.getUserLive().observe(viewLifecycleOwner, Observer {
+            binding.outstandingScrollTV.text = "Hi,${it?.Name}  Welcome to SureshDairyFoods Your Outstanding Balance as of Today is:  ₹${it?.Outstanding}"
+            Log.i(TAG,"users outstanding is:"+it?.Outstanding)
+        })
     }
 
     private fun initClickListeners() {
@@ -109,6 +122,16 @@ class HomeFragment : Fragment() {
         binding.speciallKovaTV.setOnClickListener {
 
             foodIntent.putExtra("itemName", "SpecialKova")
+            startActivity(foodIntent)
+        }
+        binding.sugarKovaTV.setOnClickListener {
+
+            foodIntent.putExtra("itemName", "SugarKova")
+            startActivity(foodIntent)
+        }
+        binding.sugarLessKovaTV.setOnClickListener {
+
+            foodIntent.putExtra("itemName", "SugarLessKova")
             startActivity(foodIntent)
         }
         binding.kovaLayout.setOnClickListener {

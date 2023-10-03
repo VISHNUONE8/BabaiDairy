@@ -2,6 +2,7 @@ package com.andrayudu.sureshdiaryfoods.adapters
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -15,6 +16,7 @@ import com.andrayudu.sureshdiaryfoods.model.FoodItem
 class CartAdapter( private val clickListener: (CartItem?)->Unit) : RecyclerView.Adapter<CartItemsViewHolder>(){
 
     private val foodItemsList = ArrayList<CartItem>()
+    private val tag = "CartAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemsViewHolder {
         val layoutInflater
@@ -42,20 +44,28 @@ class CartAdapter( private val clickListener: (CartItem?)->Unit) : RecyclerView.
 }
 
 class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewHolder(binding.root){
+    private val tag = "CartItemsViewHolder"
+
     fun bind(
         cartItem: CartItem?,
         clickListener: (CartItem?) -> Unit
     ){
 
-
         if (cartItem!=null){
-
 
             binding.tName.text = cartItem.Name
             binding.tPrice.text = "₹ "+cartItem.Price
-            binding.tQuantity.text = cartItem.Quantity
-            binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt())
+            Log.i(tag,"the category is :"+cartItem.Category)
+            if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
+                val kovaInKgs = cartItem.Quantity!!.toInt() * 3
+                binding.tQuantity.text = "${kovaInKgs} kgs    (${cartItem.Quantity} boxes) "
+                binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt() * 3)
+            }
+            else{
+                binding.tQuantity.text = cartItem.Quantity
+                binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt())
 
+            }
 
         }
 

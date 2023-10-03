@@ -77,8 +77,15 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
             cartValue = 0
             for (cartItem in cartItemsList!!) {
-                cartValue =
-                    (cartValue!!.toInt() + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt()))
+                if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
+                    cartValue =
+                        (cartValue!! + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt() * 3))
+                }
+                else{
+                    cartValue =
+                        (cartValue!!.toInt() + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt()))
+                }
+
             }
         }
         //here we are calculating the Transport charges for a customer...

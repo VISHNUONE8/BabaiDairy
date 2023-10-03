@@ -60,7 +60,7 @@ class ProfileFragment : Fragment() {
             showAlertDialog()
 
         }
-        binding.relLayoutAbout.setOnClickListener {
+        binding.relLayoutAdminPanel.setOnClickListener {
             startActivity(Intent(mContext,AdminPanelActivity::class.java))
         }
     }
@@ -101,10 +101,11 @@ class ProfileFragment : Fragment() {
                 binding.idPBLoading.visibility = View.GONE
                 val role = it.role
                 if (role.equals("Admin")){
-                    binding.limitTV.visibility = View.INVISIBLE
+                    binding.outstandingTV.visibility = View.INVISIBLE
+                    binding.relLayoutAdminPanel.visibility = View.VISIBLE
                 }
                 binding.usernameTV.text = it.Name
-                binding.limitTV.text = ("Limit:₹ ${it.Limit}")
+                binding.outstandingTV.text = ("Outstanding:₹ ${it.Outstanding}")
                 binding.roleTV.text = role
             }
 

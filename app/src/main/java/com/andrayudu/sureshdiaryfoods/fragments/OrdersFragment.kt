@@ -53,13 +53,7 @@ class OrdersFragment : Fragment() {
         sharedViewModel.loadOrdersData()
     }
 
-    //loads customer UI if the user is an admin
-    private fun initAdminUI() {
-        binding.adminPanelLayout.visibility = View.VISIBLE
-        binding.ordersFragmentTV.text = getString(R.string.adminPanel)
-        //setting the onclickListeners as only admin has access to them...
-        initClickListeners()
-    }
+
 
     private fun initObservers() {
         sharedViewModel.getOrdersListLive().observe(viewLifecycleOwner) {
@@ -78,39 +72,14 @@ class OrdersFragment : Fragment() {
         //everytime the fragment is clicked ,it will go inside this
         // as last change in the activity viewmodel will be posted on clicking fragment.. as we are using activityviewModels()
         sharedViewModel.getUserLive().observe(viewLifecycleOwner, Observer {
-            binding.idPBLoading.visibility = View.GONE
-            if(it!!.role.equals("Admin")){
-               initAdminUI()
-            }
-            else{
+
                initCustomersUI()
-            }
+
         })
 
 
     }
 
-    //only admin calls this method as these are admin exclusive features..
-    private fun initClickListeners() {
-        binding.relLayoutUserOrders.setOnClickListener {
-            startActivity(Intent(mContext, UserOrdersAdminView::class.java))
-        }
-        binding.relLayoutProductionReport.setOnClickListener {
-            startActivity(Intent(mContext, DayProductionReport::class.java))
-        }
-        binding.relLayoutSaleReport.setOnClickListener {
-            startActivity(Intent(mContext, DaySaleReport::class.java))
-        }
-        binding.relLayoutStockReport.setOnClickListener {
-            startActivity(Intent(mContext, StockReportActivity::class.java))
-        }
-        binding.relLayoutNotifications.setOnClickListener {
-            startActivity(Intent(mContext, NotificationsActivity::class.java))
-        }
-        binding.RegisterUser.setOnClickListener {
-            startActivity(Intent(mContext, RegisterActivity::class.java))
-        }
-    }
 
     private fun initRecyclerView() {
         binding.ordersRV.layoutManager = LinearLayoutManager(mContext)

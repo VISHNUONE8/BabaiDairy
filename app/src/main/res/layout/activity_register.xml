@@ -149,13 +149,13 @@
             android:layout_height="wrap_content"
             app:errorIconDrawable="@null"
             android:layout_marginTop="12dp"
-            android:hint="KovaPrice"
+            android:hint="NormalKovaPrice"
             >
 
             <com.google.android.material.textfield.TextInputEditText
 
 
-                android:id="@+id/etRegKova"
+                android:id="@+id/normalKovaEt"
                 android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -167,11 +167,220 @@
             android:layout_height="wrap_content"
             app:errorIconDrawable="@null"
             android:layout_marginTop="12dp"
-            android:hint="GheePrice"
+            android:hint="SplKovaPrice"
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etRegGhee"
+
+
+                android:id="@+id/splKovaEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SugarKovaPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/sugarKovaEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SugarLessKovaPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/sugarLessEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="BuffaloMilkPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/buffaloMilkEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="CowMilkPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/cowMilkEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SkimmedMilkPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/skimmedMilkEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="100BoiledPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/hundredboiledEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="70BoiledPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/seventyBoiledEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="50BoiledPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/fiftyBoiledEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="AgraPanPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/agraPanEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="KajuBytesPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/kajuBytesEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="KilliPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/killiEt"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SoanPapdiPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/soanPapdiEt"
 
                 android:inputType="number"
                 android:layout_width="match_parent"
@@ -184,13 +393,109 @@
             android:layout_height="wrap_content"
             app:errorIconDrawable="@null"
             android:layout_marginTop="12dp"
-            android:hint="OtherSweetsPrice"
+            android:hint="SplSoanPapdiPrice"
             >
 
             <com.google.android.material.textfield.TextInputEditText
 
 
-                android:id="@+id/etRegOtherSweets"
+                android:id="@+id/splSoanPapdiEt"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="ChakodiPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/chakodiEt"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="DhalMixturePrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/dhalMixtureEt"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="MarwadiMixture"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/marwadiMixtureEt"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="MoongDalPrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/moongDalEt"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorIconDrawable="@null"
+            android:layout_marginTop="12dp"
+            android:hint="SplMixturePrice"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+
+
+                android:id="@+id/splMixtureEt"
 
                 android:inputType="number"
                 android:layout_width="match_parent"
@@ -239,8 +544,6 @@
             android:layout_height="40dp"
             android:layout_marginTop="24dp"
             />
-
-
 
     </LinearLayout>
 
