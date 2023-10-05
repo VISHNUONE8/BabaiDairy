@@ -11,7 +11,8 @@ data class UserRegisterModel (var Name:String?=null,
                               var TransportCharges:String?=null,
                               var userId:String?=null,
                               var deviceToken:String?=null,
-                              var role:String?=null
+                              var role:String?=null,
+
 
 ):Parcelable {
     constructor(parcel: Parcel) : this(
