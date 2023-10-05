@@ -21,7 +21,7 @@ import com.andrayudu.sureshdiaryfoods.model.FoodItem
 import kotlinx.coroutines.*
 import java.util.*
 
-class MyRecyclerViewAdapter(private val context: Context,private val clickListener: (FoodItem)->Unit):RecyclerView.Adapter<MyViewHolder>() {
+class MyRecyclerViewAdapter(private val context: Context,private val clickListener: (FoodItem)->Unit,private val pencilListener: (FoodItem) -> Unit):RecyclerView.Adapter<MyViewHolder>() {
 
     
     private val foodItemsList = ArrayList<FoodItem>()
@@ -38,7 +38,7 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(mContext,position,foodItemsList,foodItemsList[position],clickListener)
+        holder.bind(mContext,position,foodItemsList,foodItemsList[position],clickListener,pencilListener)
     }
 
     fun setList(foodItems:List<FoodItem>){
@@ -54,11 +54,13 @@ class MyRecyclerViewAdapter(private val context: Context,private val clickListen
 
 class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(binding.root){
 
+    private val tag = "MyViewHolder"
     fun bind(
          context: Context,position: Int,
         foodItemsList: ArrayList<FoodItem>,
         foodItem: FoodItem,
-        clickListener: (FoodItem) -> Unit
+        clickListener: (FoodItem) -> Unit,
+         pencilListener: (FoodItem) -> Unit
     ){
 
         var Quantity = "0"
@@ -82,21 +84,21 @@ class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(
         binding.tFoodName.text = foodItem.Name
         binding.tPrice.text = (" ₹ ${foodItem.Price}")
 
-        binding.tCount.setOnEditorActionListener(object :OnEditorActionListener{
-            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-                if (actionId == EditorInfo.IME_ACTION_DONE)
-                {
-                    foodItemsList.get(position).Quantity= v?.text.toString()
-
-                    binding.tCount.setText(foodItemsList.get(position).Quantity.toString())
-                    //now we should update this into cart database on demand
-                    clickListener(foodItem)
-
-                    return true
-                }
-                return false
-            }
-        })
+//        binding.tCount.setOnEditorActionListener(object :OnEditorActionListener{
+//            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+//                if (actionId == EditorInfo.IME_ACTION_DONE)
+//                {
+//                    foodItemsList.get(position).Quantity= v?.text.toString()
+//
+//                    binding.tCount.setText(foodItemsList.get(position).Quantity.toString())
+//                    //now we should update this into cart database on demand
+//                    clickListener(foodItem)
+//
+//                    return true
+//                }
+//                return false
+//            }
+//        })
 
         binding.iPlus.setOnClickListener{
 
@@ -122,7 +124,10 @@ class MyViewHolder(val binding:FoodItemCardviewBinding):RecyclerView.ViewHolder(
                 clickListener(foodItem)
             }
 
+        }
 
+        binding.pencilIV.setOnClickListener {
+            pencilListener(foodItem)
         }
     }
 

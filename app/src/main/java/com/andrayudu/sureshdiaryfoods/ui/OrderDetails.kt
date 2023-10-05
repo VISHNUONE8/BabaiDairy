@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -85,6 +86,8 @@ class OrderDetails : AppCompatActivity() {
 
             //when the order is dispatched via a transport it will have transport company and lr...
             if (orderStatus == "1"){
+                binding.transportNameLayout.visibility = View.VISIBLE
+                binding.lrNumberLayout.visibility = View.VISIBLE
                 binding.transportNameDisplay.text = orderModel.transportCompany
                 binding.lrNoDisplay.text = orderModel.transportLrNo
             }

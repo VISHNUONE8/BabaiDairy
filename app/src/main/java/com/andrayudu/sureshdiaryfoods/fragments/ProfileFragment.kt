@@ -52,7 +52,8 @@ class ProfileFragment : Fragment() {
         binding.relLayoutChangePassword.setOnClickListener {
             //we will launch the password reset activity
             //for forgot password also we will be using the same activity
-            startActivity(Intent(mContext, PasswordResetActivity::class.java))
+//            startActivity(Intent(mContext, PasswordResetActivity::class.java))
+            Toast.makeText(mContext,"ComingSOON!",Toast.LENGTH_SHORT).show()
         }
 
         binding.relLayoutLogout.setOnClickListener {
@@ -62,6 +63,9 @@ class ProfileFragment : Fragment() {
         }
         binding.relLayoutAdminPanel.setOnClickListener {
             startActivity(Intent(mContext,AdminPanelActivity::class.java))
+        }
+        binding.relLayoutAbout.setOnClickListener {
+            Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF PURE JOY",Toast.LENGTH_SHORT).show()
         }
     }
 

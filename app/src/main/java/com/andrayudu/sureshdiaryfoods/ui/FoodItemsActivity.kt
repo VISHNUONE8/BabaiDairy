@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -126,7 +127,8 @@ class FoodItemsActivity : AppCompatActivity() {
 
     private fun initRecyclerView(){
         binding.foodItemsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecyclerViewAdapter(this){selectedItem:FoodItem->listItemClicked(selectedItem)}
+        adapter = MyRecyclerViewAdapter(this,{selectedItem:FoodItem->listItemClicked(selectedItem)},
+            {selectedItem:FoodItem->pencilClicked(selectedItem)})
         binding.foodItemsRecyclerView.adapter = adapter
     }
 
@@ -175,8 +177,39 @@ class FoodItemsActivity : AppCompatActivity() {
     private fun listItemClicked(foodItem: FoodItem){
         foodItemsViewModel.insert(foodItem)
         hideKeyboard(this)
-        Toast.makeText(this,"Cart Updated",Toast.LENGTH_SHORT).show()
     }
+
+    //invokes on clicking the recyclerview items
+    private fun pencilClicked(foodItem: FoodItem){
+      showAlertDialogButtonClicked(foodItem)
+    }
+
+    fun showAlertDialogButtonClicked(foodItem: FoodItem) {
+        // Create an alert builder
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Enter Quantity")
+
+        // set the custom layout
+        val customLayout: View = layoutInflater.inflate(R.layout.quantity_dialog, null)
+        builder.setView(customLayout)
+        customLayout.findViewById<EditText>(R.id.quantityEt).requestFocus()
+
+        // add a button
+        builder.setPositiveButton("OK") { dialog: DialogInterface?, which: Int ->
+            // send data from the AlertDialog to the Activity
+            val editText = customLayout.findViewById<EditText>(R.id.quantityEt)
+            foodItem.Quantity = editText.text.toString()
+            foodItemsViewModel.insert(foodItem)
+            adapter.notifyDataSetChanged()
+        }
+        builder.setNegativeButton("Cancel",(DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }))
+        // create and show the alert dialog
+        val dialog = builder.create()
+        dialog.show()
+    }
+
 
     private fun showAlertDialog() {
 
