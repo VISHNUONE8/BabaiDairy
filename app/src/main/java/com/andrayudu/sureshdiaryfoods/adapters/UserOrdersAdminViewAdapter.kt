@@ -68,6 +68,7 @@ class UserOrdersHolder(val binding: UserOrdersAdminViewItemBinding): RecyclerVie
 //            binding.dateTV.text = orderModel.date
 //        }
 
+
         //in database the username has been saved under userId for admins ease of information
         binding.customerNameTV.text = orderModel.userName
         binding.orderIdTV.text = "OrderId:${orderModel.orderId}"

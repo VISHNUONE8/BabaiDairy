@@ -46,6 +46,11 @@ dependencies {
     def room_version = "2.4.3"
     def nav_version = "2.5.3"
     def retrofit_version = "2.9.0"
+
+    // for ripple effect
+    implementation 'com.balysv:material-ripple:1.0.2'
+
+
 //Splash Screen API
     implementation("androidx.core:core-splashscreen:1.0.0")
 //SwipeDecorator

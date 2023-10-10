@@ -29,4 +29,11 @@ data class FoodItem (
         val comparePreference = other.Preference!!.toInt()
         return (Preference!!.toInt() - comparePreference)
     }
+
+    class comparatorOne:Comparator<FoodItem>{
+        override fun compare(o1: FoodItem?, o2: FoodItem?): Int {
+            TODO("Not yet implemented")
+        }
+
+    }
 }

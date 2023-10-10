@@ -12,6 +12,8 @@ data class UserRegisterModel (var Name:String?=null,
                               var userId:String?=null,
                               var deviceToken:String?=null,
                               var role:String?=null,
+                              var updatedAt:String?=null,
+                              var isExpanded:Boolean = false
 
 
 ):Parcelable {
@@ -24,7 +26,9 @@ data class UserRegisterModel (var Name:String?=null,
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readBoolean()
     ) {
     }
 
@@ -38,6 +42,8 @@ data class UserRegisterModel (var Name:String?=null,
         parcel.writeString(userId)
         parcel.writeString(deviceToken)
         parcel.writeString(role)
+        parcel.writeString(updatedAt)
+        parcel.writeBoolean(isExpanded)
     }
 
     override fun describeContents(): Int {
