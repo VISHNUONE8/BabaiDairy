@@ -154,8 +154,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_below="@id/h_pay"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
                 android:layout_alignParentBottom="true"
+                android:visibility="gone"
+                tools:visibility = "visible"
+                />
+            <include
+                android:id="@+id/progressBtnPayNow"
+                layout="@layout/progress_btn_layout"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_above="@id/progressBtnOrderNow"
                 android:visibility="gone"
                 tools:visibility = "visible"
                 />

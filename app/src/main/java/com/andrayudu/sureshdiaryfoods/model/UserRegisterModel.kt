@@ -5,29 +5,32 @@ import android.os.Parcelable
 
 data class UserRegisterModel (var Name:String?=null,
                               var Email:String?=null,
-                              var Limit:String?=null,
-                              var Outstanding:String?=null,
+                              var Limit:Int=0,
+                              var Outstanding:Int=0,
                               var Mobile:String?=null,
-                              var TransportCharges:String?=null,
+                              var TransportCharges:Int=0,
                               var userId:String?=null,
                               var deviceToken:String?=null,
                               var role:String?=null,
+                              //whenever the outstanding is updated,this val will also be updated...
                               var updatedAt:String?=null,
-                              var isExpanded:Boolean = false
+                              var isExpanded:Boolean = false,
+                              var onHold:Boolean = false
 
 
 ):Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
+        parcel.readInt(),
+        parcel.readInt(),
+        parcel.readString(),
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+        parcel.readBoolean(),
         parcel.readBoolean()
     ) {
     }
@@ -35,15 +38,16 @@ data class UserRegisterModel (var Name:String?=null,
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(Name)
         parcel.writeString(Email)
-        parcel.writeString(Limit)
-        parcel.writeString(Outstanding)
+        parcel.writeInt(Limit)
+        parcel.writeInt(Outstanding)
         parcel.writeString(Mobile)
-        parcel.writeString(TransportCharges)
+        parcel.writeInt(TransportCharges)
         parcel.writeString(userId)
         parcel.writeString(deviceToken)
         parcel.writeString(role)
         parcel.writeString(updatedAt)
         parcel.writeBoolean(isExpanded)
+        parcel.writeBoolean(onHold)
     }
 
     override fun describeContents(): Int {

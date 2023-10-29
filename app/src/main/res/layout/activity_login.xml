@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/Theme.SureshDiaryFoods"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:theme="@style/Theme.SureshDiaryFoods"
         android:background="#fff"
         tools:context=".ui.LoginActivity">
 
@@ -128,5 +123,4 @@
                 />
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </layout>

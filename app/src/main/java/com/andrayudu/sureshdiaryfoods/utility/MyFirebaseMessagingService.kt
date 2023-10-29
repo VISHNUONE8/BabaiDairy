@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.model.ProductionReportModel
 import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -84,7 +84,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
 
         val notificationManager = NotificationManagerCompat.from(this)
-        val intent = Intent(this, ProductionReportModel::class.java)
+        val intent = Intent(this, HomeActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent,
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE

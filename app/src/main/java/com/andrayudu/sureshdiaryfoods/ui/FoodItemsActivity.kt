@@ -10,14 +10,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.MyRecyclerViewAdapter
+import com.andrayudu.sureshdiaryfoods.adapters.MyRecyclerViewAdapter
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityFoodItemsBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
@@ -126,8 +125,11 @@ class FoodItemsActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView(){
+        val dao = FoodItemDatabase.getInstance(this.application).cartItemDao
+        val cartRepo = CartItemRepository(dao)
+
         binding.foodItemsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecyclerViewAdapter(this,{selectedItem:FoodItem->listItemClicked(selectedItem)},
+        adapter = MyRecyclerViewAdapter(this,cartRepo,{selectedItem:FoodItem->listItemClicked(selectedItem)},
             {selectedItem:FoodItem->pencilClicked(selectedItem)})
         binding.foodItemsRecyclerView.adapter = adapter
     }
@@ -138,13 +140,9 @@ class FoodItemsActivity : AppCompatActivity() {
             var price =0
 
             for (cartItem in cartItems) {
-                // every 1 box of kova implies 3kgs so price should be multiplied by 3
-                if (cartItem.Category?.equals("Kova") == true || cartItem.Category?.equals("KovaSpl") == true){
-                    price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt() * 3 )
-                }
-                else{
-                    price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt())
-                }
+
+                    price += cartItem.ItemTotalPrice!!.toInt()
+
             }
             tCartQuantity.text = (cartItems.size.toString())
             tTotalCost.text = (getString(R.string.rupee_symbol_new,price.toString()))
@@ -198,7 +196,7 @@ class FoodItemsActivity : AppCompatActivity() {
         builder.setPositiveButton("OK") { dialog: DialogInterface?, which: Int ->
             // send data from the AlertDialog to the Activity
             val editText = customLayout.findViewById<EditText>(R.id.quantityEt)
-            foodItem.Quantity = editText.text.toString()
+            foodItem.Quantity = editText.text.toString().toInt()
             foodItemsViewModel.insert(foodItem)
             adapter.notifyDataSetChanged()
         }
@@ -208,25 +206,6 @@ class FoodItemsActivity : AppCompatActivity() {
         // create and show the alert dialog
         val dialog = builder.create()
         dialog.show()
-    }
-
-
-    private fun showAlertDialog() {
-
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage("Please Click")
-        builder.setTitle("Logout !")
-        builder.setCancelable(false)
-
-        builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->
-
-        }))
-        builder.setNegativeButton("No",(DialogInterface.OnClickListener { dialog, which ->
-            dialog.cancel()
-        }))
-
-        val alertDialog = builder.create()
-        alertDialog.show()
     }
 
 

@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
@@ -27,22 +26,20 @@ import com.andrayudu.sureshdiaryfoods.ui.FoodItemsActivity
 import com.andrayudu.sureshdiaryfoods.ui.FoodItemsViewModel
 import com.andrayudu.sureshdiaryfoods.ui.FoodItemsViewModelFactory
 
+/*Done clearCoding , mostly no testing required...  , check livedata if possible....*/
 class HomeFragment : Fragment() {
 
-
-
     private val TAG = "HomeFragment"
-    private val sharedViewModel:HomeActivityViewModel by activityViewModels()
+
+    private val sharedViewModel: HomeActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     private lateinit var mContext: Context
     private lateinit var foodIntent: Intent
-    private lateinit var homeFragmentViewModel: FoodItemsViewModel
+    private lateinit var foodItemsViewModel: FoodItemsViewModel
 
     //UI components
     private lateinit var tTotalCost: TextView
     private lateinit var tCartQuantity: TextView
-
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -50,8 +47,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
@@ -60,10 +56,12 @@ class HomeFragment : Fragment() {
         val dao = FoodItemDatabase.getInstance(requireActivity().application).cartItemDao
         val repository = CartItemRepository(dao)
         val factory = FoodItemsViewModelFactory(repository)
-        homeFragmentViewModel = ViewModelProvider(this,factory)[FoodItemsViewModel::class.java]
+        foodItemsViewModel = ViewModelProvider(this, factory)[FoodItemsViewModel::class.java]
 
 
-        binding.outstandingScrollTV.isSelected  = true
+        //this is used for making the scrolling text scrollable...
+        binding.outstandingScrollTV.isSelected = true
+
         foodIntent = Intent(mContext, FoodItemsActivity::class.java)
 
         initViews()
@@ -76,14 +74,16 @@ class HomeFragment : Fragment() {
 
     private fun initObservers() {
 
-        homeFragmentViewModel.cartItems.observe(viewLifecycleOwner) {
+        foodItemsViewModel.cartItems.observe(viewLifecycleOwner) {
             updateCartUI(it)
         }
 
-        sharedViewModel.getUserLive().observe(viewLifecycleOwner, Observer {
-            binding.outstandingScrollTV.text = "Hi,${it?.Name}  Welcome to SureshDairyFoods Your Outstanding Balance as of Today is:  ₹${it?.Outstanding}"
-            Log.i(TAG,"users outstanding is:"+it?.Outstanding)
-        })
+        sharedViewModel.userLive.observe(viewLifecycleOwner) { userDetails ->
+            userDetails?.let {
+                binding.outstandingScrollTV.text =
+                    getString(R.string.scrolling_text, userDetails.Name, userDetails.Outstanding)
+            }
+        }
     }
 
     private fun initClickListeners() {
@@ -142,6 +142,11 @@ class HomeFragment : Fragment() {
             startActivity(foodIntent)
 
         }
+        binding.paneerCardView.setOnClickListener {
+            foodIntent.putExtra("itemName", "Paneer")
+            startActivity(foodIntent)
+
+        }
 
         binding.bCart.setOnClickListener {
             startActivity(Intent(mContext, CartActivity::class.java))
@@ -157,21 +162,18 @@ class HomeFragment : Fragment() {
 
     //updates the cartUI bar at the bottom
     private fun updateCartUI(cartItems: List<CartItem>?) {
-        if((cartItems != null) && cartItems.isNotEmpty()){
+        if (!cartItems.isNullOrEmpty()) {
             binding.cartView.visibility = View.VISIBLE
-            var price =0
+            var price = 0
             var quantity = 0
-
             for (cartItem in cartItems) {
-                price += (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt())
-                quantity += cartItem.Quantity!!.toInt()
+                price += (cartItem.Price * cartItem.Quantity)
+                quantity += cartItem.Quantity
             }
             tCartQuantity.text = cartItems.size.toString()
             tTotalCost.text = getString(R.string.rupee_symbol_new, price.toString())
 
-        }
-        else
-        {
+        } else {
             binding.cartView.visibility = View.GONE
             tCartQuantity.text = "0"
             tTotalCost.text = getString(R.string.rupee_symbol_new, "0")
@@ -180,12 +182,10 @@ class HomeFragment : Fragment() {
     }
 
     //expands and contracts the Kova cardView
-    private fun expand(){
-        val v = if(binding.hiddenLayout.visibility == View.GONE)
-            View.VISIBLE
-        else
-            View.GONE
-        TransitionManager.beginDelayedTransition(binding.kovaLayout,AutoTransition())
+    private fun expand() {
+        val v = if (binding.hiddenLayout.visibility == View.GONE) View.VISIBLE
+        else View.GONE
+        TransitionManager.beginDelayedTransition(binding.kovaLayout, AutoTransition())
         binding.hiddenLayout.visibility = v
 
     }

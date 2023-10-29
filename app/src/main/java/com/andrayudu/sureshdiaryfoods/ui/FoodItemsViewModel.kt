@@ -46,8 +46,7 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
         viewModelScope.launch(Dispatchers.IO)
         {
             //if the foodItem quantity is 0 then the item will be deleted from the cart...
-            if(foodItem.Quantity.equals("0")){
-                Log.i("this condition is executed","now"+foodItem.Name)
+            if(foodItem.Quantity == 0){
                 repository.delete(foodItem.Name)
             }
             else{
@@ -56,6 +55,14 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                 cartItem.Quantity = foodItem.Quantity
                 cartItem.Category = foodItem.Category
                 cartItem.Price = foodItem.Price
+                //calculating cartItem Total Price i.e quantity * price
+                if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
+                    cartItem.ItemTotalPrice = (cartItem.Quantity.toInt() * cartItem.Price!!.toInt() * 3)
+                }
+                else{
+                    cartItem.ItemTotalPrice =(cartItem.Quantity.toInt() * cartItem.Price!!.toInt())
+
+                }
                 val newRowId = repository.insert(cartItem)
                 withContext(Dispatchers.Main) {
                     if (newRowId > -1) {
@@ -79,7 +86,7 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             val mAuth = FirebaseAuth.getInstance()
             val userId = mAuth.currentUser?.uid
 
-            FirebaseDatabase.getInstance().getReference("SpecialPrices").child(userId.toString())
+            FirebaseDatabase.getInstance().getReference("SpecialPricesTesting").child(userId.toString())
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         specialPricesModel = SpecialPricesModel()
@@ -99,9 +106,9 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     }
 
 
-    fun getSpecialPrice(foodItem: FoodItem?):FoodItem?{
+    fun getSpecialPrice(foodItem: FoodItem?):FoodItem{
 
-        var splPrice:String? = null
+        var splPrice = 0
 
         when(foodItem?.Category){
 
@@ -110,33 +117,33 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                 //In normal Kova the items SugarKova and sugarLess have splPricess...
 
                 if (foodItem.Name == "SugarKova"){
-                    splPrice = specialPricesModel?.sugarKovaPrice
+                    splPrice = specialPricesModel!!.sugarKovaPrice
                 }
                 else if (foodItem.Name == "SugarLessKova"){
-                    splPrice = specialPricesModel?.sugarLessKovaPrice
+                    splPrice = specialPricesModel!!.sugarLessKovaPrice
                 }
                 //for all normalKova Category items the price is normalKovaPrice of user...
                 else{
-                    splPrice = specialPricesModel?.normalKovaPrice
+                    splPrice = specialPricesModel!!.normalKovaPrice
                 }
 
             }
 
             "KovaSpl"->{
                 //for all splKova items the price will be same..
-                splPrice =  specialPricesModel?.splKovaPrice
+                splPrice =  specialPricesModel!!.splKovaPrice
             }
 
             "Milk"->{
 
                 if (foodItem.Name == "BuffaloMilk"){
-                    splPrice = specialPricesModel?.buffaloMilkPrice
+                    splPrice = specialPricesModel!!.buffaloMilkPrice
                 }
                 else if (foodItem.Name == "CowMilk"){
-                    splPrice = specialPricesModel?.cowMilkPrice
+                    splPrice = specialPricesModel!!.cowMilkPrice
                 }
                 else if (foodItem.Name == "SkimmedMilk"){
-                    splPrice = specialPricesModel?.skimmedMilkPrice
+                    splPrice = specialPricesModel!!.skimmedMilkPrice
                 }
 
             }
@@ -144,73 +151,72 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             "Ghee"->{
 
                 if (foodItem.Name == "100% Boiled"){
-                    splPrice = specialPricesModel?.hundredBoiledPrice
+                    splPrice = specialPricesModel!!.hundredBoiledPrice
                 }
                 else if (foodItem.Name == "70% Boiled"){
-                    splPrice = specialPricesModel?.seventyBoiledPrice
+                    splPrice = specialPricesModel!!.seventyBoiledPrice
                 }
                 else if (foodItem.Name == "50% Boiled"){
-                    splPrice = specialPricesModel?.fiftyBoiledPrice
+                    splPrice = specialPricesModel!!.fiftyBoiledPrice
                 }
             }
 //
             "OtherSweets"->{
                 //other sweets has many different items so based on the item we should get price
                 if (foodItem.Name == "AgraPan"){
-                    splPrice = specialPricesModel?.agraPanPrice
+                    splPrice = specialPricesModel!!.agraPanPrice
                 }
                 else if (foodItem.Name == "KajuBytes"){
-                    splPrice = specialPricesModel?.kajuBytesPrice
+                    splPrice = specialPricesModel!!.kajuBytesPrice
                 }
                 else if (foodItem.Name == "Killi"){
-                    splPrice = specialPricesModel?.killiPrice
+                    splPrice = specialPricesModel!!.killiPrice
                 }
                 else if (foodItem.Name == "SoanPapdi"){
-                    splPrice = specialPricesModel?.soanPapdiPrice
+                    splPrice = specialPricesModel!!.soanPapdiPrice
                 }
                 else if (foodItem.Name == "SplSoanPapdi"){
-                    splPrice = specialPricesModel?.splSoanPapdiPrice
+                    splPrice = specialPricesModel!!.splSoanPapdiPrice
                 }
             }
 
             "Hot"->{
                 if (foodItem.Name == "Chakodi"){
-                    splPrice = specialPricesModel?.chakodiPrice
+                    splPrice = specialPricesModel!!.chakodiPrice
                 }
                 else if (foodItem.Name == "DhalMixture"){
-                    splPrice = specialPricesModel?.dhalMixturePrice
+                    splPrice = specialPricesModel!!.dhalMixturePrice
                 }
                 else if (foodItem.Name == "MarwadiMixture"){
-                    splPrice = specialPricesModel?.marwadiMixture
+                    splPrice = specialPricesModel!!.marwadiMixture
                 }
                 else if (foodItem.Name == "MoongDal"){
-                    splPrice = specialPricesModel?.moongDalPrice
+                    splPrice = specialPricesModel!!.moongDalPrice
                 }
                 else if (foodItem.Name == "SpecialMixture"){
-                    splPrice = specialPricesModel?.splMixturePrice
+                    splPrice = specialPricesModel!!.splMixturePrice
                 }
             }
-
 
             else->{
                 //if the item doesnt belong to any above categories its price will stay same...
+                 splPrice = foodItem!!.Price
 
             }
 
         }
-        if (splPrice!=null){
             foodItem?.Price = splPrice
             Log.i("spl price is:",""+foodItem?.Price)
+            return foodItem
 
         }
-        return foodItem
-    }
+
     //for every foodItem we will change the price to userSpecific price i.e specialPrice by calling getSpecialPrice() method
     fun loadItems(itemName:String?) {
         viewModelScope.launch(Dispatchers.IO) {
 
             if (firebaseFoodItems.value == null) {
-                FirebaseDatabase.getInstance().getReference("FoodItems").child(itemName.toString())
+                FirebaseDatabase.getInstance().getReference("FoodItemsTesting").child(itemName.toString())
                     .addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             foodItemsList.clear()

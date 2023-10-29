@@ -8,12 +8,13 @@ data class OrderModel(
     var userId:String?=null,
     var userName:String?=null,
     var orderId:String?=null,
-    var quantity:String?=null,
+    //orderValue means just the price of order without Transport
+    var orderValue:Int=0,
+    var quantity:Int=0,
     var date:String?=null,
-    var orderValue:String?=null,
-    var transportCharges:String?=null,
-    var grandTotal:String?=null,
-    var orderStatus:String?=null,
+    var transportCharges:Int=0,
+    var grandTotal:Int=0,
+    var orderStatus:Int = 0,
     var transportCompany:String?=null,
     var transportLrNo:String?=null,
     var cartItemList:List<CartItem>?=null
@@ -22,12 +23,12 @@ data class OrderModel(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readInt(),
+        parcel.readInt(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+        parcel.readInt(),
+        parcel.readInt(),
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.createTypedArrayList(CartItem)
@@ -38,12 +39,12 @@ data class OrderModel(
         parcel.writeString(userId)
         parcel.writeString(userName)
         parcel.writeString(orderId)
-        parcel.writeString(quantity)
+        parcel.writeInt(orderValue)
+        parcel.writeInt(quantity)
         parcel.writeString(date)
-        parcel.writeString(orderValue)
-        parcel.writeString(transportCharges)
-        parcel.writeString(grandTotal)
-        parcel.writeString(orderStatus)
+        parcel.writeInt(transportCharges)
+        parcel.writeInt(grandTotal)
+        parcel.writeInt(orderStatus)
         parcel.writeString(transportCompany)
         parcel.writeString(transportLrNo)
         parcel.writeTypedList(cartItemList)

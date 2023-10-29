@@ -5,13 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.CustomerOrdersItemBinding
-import com.andrayudu.sureshdiaryfoods.databinding.OrdersItemBinding
-import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 
 class OrdersAdapter( private val clickListener: (OrderModel?)->Unit) : RecyclerView.Adapter<OrdersViewHolder>(){
@@ -61,7 +58,7 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
     ){
 
         //if the orders date is same as above ones then we will hide the date display TV
-        if (datesList.get(position).equals(0)){
+        if (datesList[position] == 0){
             binding.dateTV.visibility = View.GONE
         }
         else{
@@ -75,7 +72,7 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
         val firstItemQuantity = cartItems?.get(0)?.Quantity
         val itemNames = "Items: $firstItemName * $firstItemQuantity ...."
         val orderId = "OrderId:${orderModel.orderId}"
-        val orderValue = "Amount:${orderModel.orderValue}"
+        val orderValue = "Amount:${orderModel.grandTotal}"
         val orderStatus = "Status:${orderStatusStr}"
 
 
@@ -91,23 +88,23 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
 
     }
 
-    private fun getOrderStatus(orderStatus: String?): String? {
+    private fun getOrderStatus(orderStatus: Int): String? {
         when(orderStatus){
-            "-1"-> {
+            -1-> {
                 binding.orderStatus.setTextColor(Color.parseColor("#F44336"))
                 return "Pending"
             }
 
-            "0"->{
+            0->{
                 binding.orderStatus.setTextColor(Color.parseColor("#FFA500"))
                 return "Placed"
             }
 
-            "1"->{
+            1->{
                 binding.orderStatus.setTextColor(Color.parseColor("#0F9D58"))
                 return "Dispatched"
             }
         }
-        return orderStatus
+        return "orderStatus"
     }
 }

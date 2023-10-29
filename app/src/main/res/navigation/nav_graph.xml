@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/favouritesFragment">
+
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.andrayudu.sureshdiaryfoods.fragments.HomeFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment"
+        android:label="Favourites"
+        tools:layout="@layout/fragment_orders" />
+
+    <fragment
+        android:id="@+id/albumsFragment"
+        android:name="com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment"
+        android:label="Albums"
+        tools:layout="@layout/fragment_profile" />
+
+</navigation>

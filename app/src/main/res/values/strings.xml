@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">SureshDairyFoods</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="rupee_symbol_new">₹%1$s </string>
     <string name="rupee_symbol">₹ </string>
     <string name="adminPanel">Admin Panel</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="scrolling_text">Hi,%1$s  Welcome to SureshDairyFoods Your Outstanding Balance as of Today is:  ₹%2$d</string>
+    <string name="amount_display">%1$s/-</string>
+    <string name="progress_btn">Progress Btn</string>
+    <string name="outstanding">Outstanding:</string>
 
 </resources>

@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:theme="@style/Theme.SureshDiaryFoods"
-        tools:context=".activities.HomeActivity">
+        tools:context=".ui.HomeActivity">
 
         <include layout="@layout/actionbar_home"
             android:id="@+id/actionbar"

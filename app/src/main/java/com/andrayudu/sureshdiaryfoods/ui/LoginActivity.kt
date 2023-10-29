@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityLoginBinding
@@ -38,16 +39,21 @@ class LoginActivity : AppCompatActivity() {
 
     //UI components
     private lateinit var progressButton: ProgressButton
-
+    private lateinit var progressBtnLogin:View
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        installSplashScreen()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         mAuth  = Firebase.auth
 
+        val btnName = "LOGIN"
+        progressBtnLogin = binding.progressBtnLogin
+        //initiating progressButton
+        progressButton = ProgressButton(this,progressBtnLogin,btnName)
         initClickListeners()
     }
 
@@ -55,8 +61,6 @@ class LoginActivity : AppCompatActivity() {
         binding.progressBtnLogin.setOnClickListener {
 
             hideKeyboard(this)
-            val btnName = "LOGIN"
-            progressButton = ProgressButton(this,it,btnName)
             progressButton.buttonActivated()
             //if the validation is done then loginuser method will be called
             if(validateInputs()){
@@ -70,14 +74,14 @@ class LoginActivity : AppCompatActivity() {
     //checks whether email or password is empty...
     private fun validateInputs(): Boolean {
 
-         email = binding.etEmail.text.toString()
-         password = binding.etPassword.text.toString()
-        if (TextUtils.isEmpty(binding.etEmail.text.toString())){
+         email = binding.etEmail.text?.trim().toString()
+         password = binding.etPassword.text?.trim().toString()
+        if (TextUtils.isEmpty(email)){
             binding.etEmail.setError("Email cannot be empty");
             binding.etEmail.requestFocus()
             progressButton.buttonFinished()
             return false
-        }else if (TextUtils.isEmpty(binding.etPassword.text.toString())){
+        }else if (TextUtils.isEmpty(password)){
             binding.etPassword.setError("Password cannot be empty");
             binding.etPassword.requestFocus();
             progressButton.buttonFinished()
@@ -155,6 +159,19 @@ class LoginActivity : AppCompatActivity() {
             view = View(activity)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val user = mAuth.currentUser
+
+        if (user!=null) {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+        }
+        else {
+            //stays in the current activity to login
+        }
     }
 
 }

@@ -57,24 +57,24 @@ class OrderDetails : AppCompatActivity() {
     }
 
     //based on orderStatus it will name it accordingly..
-    private fun getOrderStatus(orderStatus: String?): String? {
+    private fun getOrderStatus(orderStatus: Int): String {
         when(orderStatus){
-            "-1"-> {
+            -1-> {
                 binding.statusTV.setTextColor(ContextCompat.getColor(this,R.color.colorAccent))
                 return "Pending"
             }
 
-            "0"->{
+            0->{
                 binding.statusTV.setTextColor(ContextCompat.getColor(this,R.color.colorOrange))
                 return "Placed"
             }
 
-            "1"->{
+            1->{
                 binding.statusTV.setTextColor(ContextCompat.getColor(this,R.color.colorGreen))
                 return "Dispatched"
             }
         }
-        return orderStatus
+        return "orderStatus"
     }
 
 
@@ -85,7 +85,7 @@ class OrderDetails : AppCompatActivity() {
             val orderStatusStr = getOrderStatus(orderStatus)
 
             //when the order is dispatched via a transport it will have transport company and lr...
-            if (orderStatus == "1"){
+            if (orderStatus == 1){
                 binding.transportNameLayout.visibility = View.VISIBLE
                 binding.lrNumberLayout.visibility = View.VISIBLE
                 binding.transportNameDisplay.text = orderModel.transportCompany

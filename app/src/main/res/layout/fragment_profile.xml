@@ -61,17 +61,34 @@
                 android:includeFontPadding="false"
                 android:text="          "
                 android:textSize="14sp" />
-             <TextView
-                android:id="@+id/outstandingTV"
-                android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_below="@+id/roleTV"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@+id/profile_imageIV"
-                android:includeFontPadding="false"
-                android:text="Outstanding:"
-                android:textSize="14sp" />
+                android:layout_toEndOf="@+id/profile_imageIV">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="10dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/outstanding"
+                    android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/outstandingTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:includeFontPadding="false"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
 
         </RelativeLayout>
 

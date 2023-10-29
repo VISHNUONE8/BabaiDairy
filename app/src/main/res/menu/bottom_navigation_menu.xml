@@ -9,6 +9,10 @@
         android:id="@+id/Orders"
         android:icon="@drawable/baseline_orders_24"
         android:title="Orders" />
+    <item
+        android:id="@+id/Payments"
+        android:icon="@drawable/currency_rupee"
+        android:title="Payments" />
 
     <item
         android:id="@+id/Profile"

@@ -11,17 +11,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentProfileBinding
 import com.andrayudu.sureshdiaryfoods.ui.*
 
 class ProfileFragment : Fragment() {
 
+    private val TAG = "ProfileFragment"
+
+
+    private val sharedViewModel: HomeActivityViewModel by activityViewModels()
+
+
+    //UI related
     private lateinit var binding: FragmentProfileBinding
     private lateinit var mContext: Context
-    private lateinit var profileFragViewModel: ProfileFragViewModel
 
 
     override fun onAttach(context: Context) {
@@ -35,35 +42,24 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
-        profileFragViewModel  = ViewModelProvider(this)[ProfileFragViewModel::class.java]
-
-
-
-
         initObservers()
         initClickListeners()
 
-        profileFragViewModel.getUserData()
+        sharedViewModel.loadUserData()
 
         return binding.root
     }
 
     private fun initClickListeners() {
         binding.relLayoutChangePassword.setOnClickListener {
-            //we will launch the password reset activity
-            //for forgot password also we will be using the same activity
-//            startActivity(Intent(mContext, PasswordResetActivity::class.java))
-            Toast.makeText(mContext,"ComingSOON!",Toast.LENGTH_SHORT).show()
+            startActivity(Intent(mContext, PasswordResetActivity::class.java))
         }
 
         binding.relLayoutLogout.setOnClickListener {
             //show the alert dialog to confirm once again....
             showAlertDialog()
+        }
 
-        }
-        binding.relLayoutAdminPanel.setOnClickListener {
-            startActivity(Intent(mContext,AdminPanelActivity::class.java))
-        }
         binding.relLayoutAbout.setOnClickListener {
             Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF PURE JOY",Toast.LENGTH_SHORT).show()
         }
@@ -77,7 +73,7 @@ class ProfileFragment : Fragment() {
                 builder.setCancelable(false)
 
                 builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->
-                    profileFragViewModel.logOut()
+                    sharedViewModel.logOut()
 
                 }))
                 builder.setNegativeButton("No",(DialogInterface.OnClickListener { dialog, which ->
@@ -89,8 +85,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initObservers() {
-        profileFragViewModel.getStatus().observe(viewLifecycleOwner, Observer {
-                if(it.equals("Logout")){
+
+        //EventObserver
+        sharedViewModel.eventNotifyLiveData.observe(viewLifecycleOwner, Observer {
+            it.getContentIfNotHandled()?.let {msg->
+                if(msg == "Logout"){
 
                     requireActivity().finish()
                     val intent = Intent(mContext, LoginActivity::class.java)
@@ -98,22 +97,19 @@ class ProfileFragment : Fragment() {
                     Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
                 }
 
+            }
         })
 
-        profileFragViewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
-            if(it!=null){
+        sharedViewModel.userLive.observe(viewLifecycleOwner) { userDetails->
+
+            userDetails?.let {
                 binding.idPBLoading.visibility = View.GONE
-                val role = it.role
-                if (role.equals("Admin")){
-                    binding.outstandingTV.visibility = View.INVISIBLE
-                    binding.relLayoutAdminPanel.visibility = View.VISIBLE
-                }
-                binding.usernameTV.text = it.Name
-                binding.outstandingTV.text = ("Outstanding:₹ ${it.Outstanding}")
+                val role = userDetails.role
+                binding.usernameTV.text = userDetails.Name
+                binding.outstandingTV.text = getString(R.string.amount_display,("${userDetails.Outstanding}"))
                 binding.roleTV.text = role
             }
-
-        })
+        }
     }
 
 

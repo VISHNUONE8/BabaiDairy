@@ -14,10 +14,13 @@ data class CartItem (
     var Name :String="food",
 
     @ColumnInfo(name = "item_price")
-    var Price: String?=null,
+    var Price: Int=0,
+
+    @ColumnInfo(name = "item_total_price")
+    var ItemTotalPrice: Int=0,
 
     @ColumnInfo(name = "quantity")
-    var Quantity:String?=null,
+    var Quantity:Int=0,
 
     @ColumnInfo(name = "item_category")
     var Category: String?=null,
@@ -27,16 +30,17 @@ data class CartItem (
 ):Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString().toString(),
+        parcel.readInt(),
+        parcel.readInt(),
+        parcel.readInt(),
         parcel.readString().toString(),
-        parcel.readString().toString(),
-        parcel.readString().toString(),
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(Name)
-        parcel.writeString(Price)
-        parcel.writeString(Quantity)
+        parcel.writeInt(Price)
+        parcel.writeInt(ItemTotalPrice)
+        parcel.writeInt(Quantity)
         parcel.writeString(Category)
     }
 

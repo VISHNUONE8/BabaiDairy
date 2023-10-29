@@ -13,27 +13,26 @@ data class FoodItem (
 
 
     @ColumnInfo(name = "item_price")
-    var Price: String?=null,
+    var Price: Int=0,
 
     @ColumnInfo(name = "item_quantity")
-    var Quantity: String?=null,
+    var Quantity: Int=0,
 
     @ColumnInfo(name = "item_category")
     var Category: String?=null,
     @ColumnInfo(name = "item_preference")
-    var Preference: String?="0",
+    var Preference: Int=0,
 
 
 ):Comparable<FoodItem> {
+    //the below method sorts the foodItems based on their preference
     override fun compareTo(other: FoodItem): Int {
-        val comparePreference = other.Preference!!.toInt()
-        return (Preference!!.toInt() - comparePreference)
+        val comparePreference = other.Preference
+        return (Preference - comparePreference)
     }
 
-    class comparatorOne:Comparator<FoodItem>{
-        override fun compare(o1: FoodItem?, o2: FoodItem?): Int {
-            TODO("Not yet implemented")
-        }
-
-    }
+//    class comparatorOne : Comparator<FoodItem> {
+//        override fun compare(o1: FoodItem?, o2: FoodItem?): Int {
+//        }
+//    }
 }

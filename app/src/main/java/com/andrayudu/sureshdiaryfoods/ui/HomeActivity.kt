@@ -1,21 +1,23 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.fragments.HomeFragment
@@ -23,14 +25,15 @@ import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
 import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.andrayudu.sureshdiaryfoods.fragments.PaymentHistoryFragment
+import com.google.android.material.navigation.NavigationBarView
 
-class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
+/*Done clearCoding*/
+class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListener {
 
     private val tag = "HomeActivity"
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var navController: NavController
     private val viewModel:HomeActivityViewModel by viewModels()
 
     //UI components
@@ -47,11 +50,12 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         networkConnection = NetworkConnection(applicationContext)
 
         initViews()
+        initOnbackPressedDispatcher()
+
         initObservers()
 
-        //checking whether the user is an admin or not
-        //so that we can give a subscription to notif channel...
-        viewModel.userOrAdmin()
+        //below function fetches the users outstanding and subscribes him to the SDF Notif channel
+        viewModel.userInit()
         checkPermissions()
 
 
@@ -59,6 +63,35 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         binding.bottomNavigation.setOnItemSelectedListener (this)
 
     }
+
+    private fun initOnbackPressedDispatcher() {
+        onBackPressedDispatcher.addCallback(this,object :OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                //on pressing back from home Activity we should display a dialog are you sure you want to exit ...
+                showAlertDialog()
+            }
+
+        })
+    }
+
+    private fun showAlertDialog() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Are you Sure You want to exit the Application?")
+        builder.setTitle("Exit !")
+        builder.setCancelable(false)
+
+        builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->
+            finishAffinity()
+        }))
+        builder.setNegativeButton("No",(DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }))
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
+
 
 
     private fun initViews() {
@@ -98,6 +131,7 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     }
 
 
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -128,6 +162,13 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
                 }
 
             }
+            R.id.Payments ->{
+
+                if (binding.bottomNavigation.selectedItemId != R.id.Payments){
+                    replaceFragment(PaymentHistoryFragment())
+                }
+
+            }
             R.id.Profile ->{
                 if (binding.bottomNavigation.selectedItemId != R.id.Profile){
                     replaceFragment(ProfileFragment())
@@ -146,22 +187,6 @@ class HomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.navigationHostFragment,fragment)
         transaction.commit()
-
-    }
-    private fun setNavController() {
-
-        //for using navigation graph
-        try {
-            val navHostFragment = supportFragmentManager
-                .findFragmentById(R.id.navigationHostFragment) as NavHostFragment
-            navController = navHostFragment.navController
-            binding.bottomNavigation.setupWithNavController(navController)
-
-        } catch (e: Exception) {
-            e.message?.let {
-
-            }
-        }
 
     }
 

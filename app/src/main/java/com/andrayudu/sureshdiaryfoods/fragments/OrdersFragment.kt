@@ -43,20 +43,16 @@ class OrdersFragment : Fragment() {
 
         initObservers()
         initRecyclerView()
+        sharedViewModel.loadOrdersData()
+
 
 
         return binding.root
     }
 
-    //loads customer UI if the user is an admin
-    private fun initCustomersUI() {
-        sharedViewModel.loadOrdersData()
-    }
-
-
 
     private fun initObservers() {
-        sharedViewModel.getOrdersListLive().observe(viewLifecycleOwner) {
+        sharedViewModel.ordersListLive.observe(viewLifecycleOwner) {
             binding.idPBLoading.visibility = View.GONE
             //if the customers has no previous orders then No orders Yet will be displayed..
             if (it.isEmpty()){
@@ -66,16 +62,9 @@ class OrdersFragment : Fragment() {
             }
             binding.noOrdersIndicator.visibility = View.GONE
             binding.ordersRV.visibility = View.VISIBLE
-            adapter.setList(it,sharedViewModel.getDatesList())
+            adapter.setList(it,sharedViewModel.datesList)
         }
 
-        //everytime the fragment is clicked ,it will go inside this
-        // as last change in the activity viewmodel will be posted on clicking fragment.. as we are using activityviewModels()
-        sharedViewModel.getUserLive().observe(viewLifecycleOwner, Observer {
-
-               initCustomersUI()
-
-        })
 
 
     }

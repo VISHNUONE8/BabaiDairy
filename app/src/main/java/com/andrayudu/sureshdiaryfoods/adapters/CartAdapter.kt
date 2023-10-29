@@ -1,7 +1,5 @@
 package com.andrayudu.sureshdiaryfoods.adapters
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,9 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.LayoutCartItemBinding
-import com.andrayudu.sureshdiaryfoods.databinding.SubitemCardviewBinding
 import com.andrayudu.sureshdiaryfoods.model.CartItem
-import com.andrayudu.sureshdiaryfoods.model.FoodItem
 
 class CartAdapter( private val clickListener: (CartItem?)->Unit) : RecyclerView.Adapter<CartItemsViewHolder>(){
 
@@ -59,14 +55,12 @@ class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewH
             if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
                 val kovaInKgs = cartItem.Quantity!!.toInt() * 3
                 binding.tQuantity.text = "${kovaInKgs} kgs    (${cartItem.Quantity} boxes) "
-                binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt() * 3)
             }
             else{
-                binding.tQuantity.text = cartItem.Quantity
-                binding.tTotalPrice.text = "₹ "+(cartItem.Quantity!!.toInt() * cartItem.Price!!.toInt())
+                binding.tQuantity.text = cartItem.Quantity.toString()
 
             }
-
+            binding.tTotalPrice.text ="₹" +cartItem.ItemTotalPrice
         }
 
         binding.iDelete.setOnClickListener{

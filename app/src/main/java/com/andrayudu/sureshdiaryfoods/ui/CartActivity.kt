@@ -1,5 +1,6 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -147,11 +148,10 @@ class CartActivity : AppCompatActivity() {
                     ).show()
                 }
                 else if (it.equals("Success")){
-                    Toast.makeText(
-                        this,
-                        "Order Placed Successfully",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this,"Order Placed Successfully",Toast.LENGTH_LONG).show()
+                    val intent = Intent(this,HomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 }
             }
 

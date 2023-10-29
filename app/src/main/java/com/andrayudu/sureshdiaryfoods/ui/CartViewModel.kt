@@ -1,7 +1,6 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.andrayudu.sureshdiaryfoods.Api
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
@@ -9,7 +8,6 @@ import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -24,7 +22,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import java.lang.StringBuilder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -42,9 +39,9 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
     private var user:UserRegisterModel? = null
     private var cartItemsList:List<CartItem>? = null
-    private var cartValue: Int? = 0
+    private var cartValue: Int = 0
     private var transportValue: Int? = 0
-    var transportCharges:String? = null
+    var transportCharges:Int = 0
     val mAuth = FirebaseAuth.getInstance()
     var userId = mAuth.currentUser?.uid
 
@@ -57,8 +54,8 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
 
 
-    fun getCartValue(): String {
-        return cartValue.toString()
+    fun getCartValue(): Int {
+        return cartValue
     }
     fun getStatusLive(): LiveData<String?> {
         return statusLive
@@ -79,20 +76,25 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
             for (cartItem in cartItemsList!!) {
                 if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
                     cartValue =
-                        (cartValue!! + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt() * 3))
+                        (cartValue + (cartItem.Price * cartItem.Quantity * 3))
                 }
                 else{
                     cartValue =
-                        (cartValue!!.toInt() + (cartItem.Price!!.toInt() * cartItem.Quantity!!.toInt()))
+                        (cartValue + (cartItem.Price * cartItem.Quantity))
                 }
 
+
             }
+//            viewModelScope.launch {
+//                Log.i(tag,"the kova count is:"+repo.getKovaCount())
+//
+//            }
         }
         //here we are calculating the Transport charges for a customer...
         viewModelScope.launch(Dispatchers.IO) {
 
                 //if the user has transport enabled
-                if (transportCharges!!.toInt() > 0){
+                if (transportCharges > 0){
                     var kovaCount = 0
                     //kovaCountFromDb uses default context i.e Dispatchers.IO used above in viewmodelscope
                     val kovaCountFromDb =launch {
@@ -101,7 +103,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
                     kovaCountFromDb.join()
                     Log.i(tag,"kova category count is calculated"+kovaCount)
                     if (kovaCountFromDb.isCompleted){
-                        transportValue = (transportCharges!!.toInt() * kovaCount)
+                        transportValue = (transportCharges * kovaCount)
                         Log.i(tag,"the transport charges for customer are:${transportValue}")
                         transportChargesLive.postValue(transportValue.toString())
                     }
@@ -112,7 +114,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
                     transportChargesLive.postValue(transportValue.toString())
                 }
 
-                grandTotal.postValue((cartValue!! + (transportValue)!!.toInt()).toString())
+                grandTotal.postValue((cartValue + (transportValue)!!).toString())
 
         }
     }
@@ -131,10 +133,10 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         if (userId!=null && userDetails.value == null){
             viewModelScope.launch {
                 withContext(Dispatchers.IO){
-                    val userReference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+                    val userReference = FirebaseDatabase.getInstance().getReference("UsersTesting").child(userId!!)
                     user = userReference.get().await().getValue(UserRegisterModel::class.java)
                     userDetails.postValue(user)
-                    transportCharges = user?.TransportCharges
+                    transportCharges = user?.TransportCharges!!
                     Log.i(tag, "the transport charges are:$transportCharges")
                 }
             }
@@ -165,13 +167,13 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         //orderDetails
         val order = OrderModel()
         order.userId = userId
-        order.orderId = orderId.toString()
+        order.orderId = orderId
         order.userName = name
-        order.quantity = (cartItemsList?.size).toString()
+        order.quantity = (cartItemsList?.size)!!
         order.date = date
         order.orderValue = getCartValue()
         order.transportCharges = transportCharges
-        order.grandTotal = grandTotal.value
+        order.grandTotal = grandTotal.value!!.toInt()
         order.cartItemList = cartItemsList
 
 
@@ -179,21 +181,21 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
 
             //if the limit exceeds then we will not proceed with the order
-            if (order.orderValue?.toInt()!! > (limit?.toInt())!!) {
+            if (order.orderValue > (limit)!!) {
                 Log.i(tag, "The order value is exceeding the usersLimit")
                 statusLive.postValue("Limit")
                 return@launch
             }
             //if the account status of the user is in hold or outstanding is -ve balance
             // then we will place the order in hold state ie -1
-            else if ((outstanding!!.toInt()) <  0) {
+            else if ((outstanding) <  0) {
                 //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
-                order.orderStatus = "-1"
-                sendNotifToAdmin(order)
+                order.orderStatus = -1
+//                sendNotifToAdmin(order)
             }
             else {
 
-                order.orderStatus = "0"
+                order.orderStatus = 0
                 //orderstatus 0 implies that the orderplaced succesfully
 
             }
@@ -209,9 +211,9 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
 
         //customerOrders is the db reference which is used for customers
-        val ordersReference = firebaseDBInstance.getReference("CustomerOrders").child(userId!!)
+        val ordersReference = firebaseDBInstance.getReference("CustomerOrdersTesting").child(userId!!)
         //Orders is the db reference which is used for Admin
-        val adminOrdersRef = firebaseDBInstance.getReference("Orders")
+        val adminOrdersRef = firebaseDBInstance.getReference("OrdersTesting")
 
 
         val customerDbTask = ordersReference.child(order.orderId!!).setValue(order)
