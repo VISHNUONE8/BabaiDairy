@@ -21,18 +21,14 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
 class LoginActivity : AppCompatActivity() {
 
 
-    private val tag = "LoginActivity"
+    private val TAG = "LoginActivity"
 
-    private lateinit var binding:ActivityLoginBinding
     private lateinit var mAuth:FirebaseAuth
     private var email:String? = null
     private var password:String? = null
@@ -40,8 +36,7 @@ class LoginActivity : AppCompatActivity() {
     //UI components
     private lateinit var progressButton: ProgressButton
     private lateinit var progressBtnLogin:View
-
-
+    private lateinit var binding:ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +45,15 @@ class LoginActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         mAuth  = Firebase.auth
 
-        val btnName = "LOGIN"
+        initProgressBtn()
+        initClickListeners()
+    }
+
+    private fun initProgressBtn() {
+        val btnName = "LOG IN"
         progressBtnLogin = binding.progressBtnLogin
         //initiating progressButton
-        progressButton = ProgressButton(this,progressBtnLogin,btnName)
-        initClickListeners()
+        progressButton = ProgressButton(this, progressBtnLogin, btnName)
     }
 
     private fun initClickListeners() {
@@ -76,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
 
          email = binding.etEmail.text?.trim().toString()
          password = binding.etPassword.text?.trim().toString()
+
         if (TextUtils.isEmpty(email)){
             binding.etEmail.setError("Email cannot be empty");
             binding.etEmail.requestFocus()
@@ -94,7 +94,6 @@ class LoginActivity : AppCompatActivity() {
     private fun saveToken(token: String) {
 
         CoroutineScope(Dispatchers.IO).launch{
-            val mAuth = FirebaseAuth.getInstance()
             val user = mAuth.currentUser
             val userId = user?.uid
 
@@ -102,14 +101,21 @@ class LoginActivity : AppCompatActivity() {
             if (userId!=null){
                 val postTask = FirebaseDatabase.getInstance().getReference("UserTokens").child(userId)
                     .setValue(tokenSavingModel)
-                val postTasktoUsers = FirebaseDatabase.getInstance().getReference("Users").child(userId)
+                val postTasktoUsers = FirebaseDatabase.getInstance().getReference("UsersTesting").child(userId)
                     .child("deviceToken").setValue(token)
 
                 postTask.await()
                 postTasktoUsers.await()
 
                 if (postTask.isSuccessful && postTasktoUsers.isSuccessful) {
-                    Log.i(tag,"saving token is successful")
+                    withContext(Dispatchers.Main){
+                        progressButton.buttonFinished()
+                        finish()
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                        Toast.makeText(this@LoginActivity,"User Login Success",Toast.LENGTH_SHORT).show()
+                        Log.i(TAG,"saving token is successful")
+                    }
+
                 }
             }
 
@@ -120,14 +126,12 @@ class LoginActivity : AppCompatActivity() {
 
     //logs the user in using firebaseAuth signIn methodss...
     private fun loginUser() {
-
-        //firebase methods
-        mAuth.signInWithEmailAndPassword(email!!,password!!).addOnCompleteListener { task ->
+        try {
+            //firebase methods
+            mAuth.signInWithEmailAndPassword(email!!,password!!).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+
                     getToken()
-                    finish()
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    Toast.makeText(this@LoginActivity,"User Login successfull",Toast.LENGTH_SHORT).show()
 
 
                 } else {
@@ -135,6 +139,11 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity,"Log in Error: " + task.exception!!.message,Toast.LENGTH_SHORT).show()
                 }
             }
+        }catch (e:Exception){
+            Log.e(TAG,"The exception is : ${e.message.toString()}")
+        }
+
+
     }
 
     //gets the token of the device and saves it to the token database folder
@@ -165,6 +174,8 @@ class LoginActivity : AppCompatActivity() {
         super.onStart()
         val user = mAuth.currentUser
 
+
+        //if there is an user already logged in,then it will go to HomeActivity
         if (user!=null) {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)

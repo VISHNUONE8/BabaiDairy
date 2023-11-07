@@ -3,8 +3,8 @@ package com.andrayudu.sureshdiaryfoods.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -15,7 +15,7 @@ import com.andrayudu.sureshdiaryfoods.databinding.ActivityOrderDetailsBinding
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 
 //this activity displays order details to only the customer...
-class OrderDetails : AppCompatActivity() {
+class OrderDetailsActivity : AppCompatActivity() {
 
     private val tag = "OrderDetails"
 
@@ -35,6 +35,8 @@ class OrderDetails : AppCompatActivity() {
 
         val orderModel = intent.getParcelableExtra<OrderModel>("orderModel")
         setOrderDetails(orderModel)
+
+
 
     }
 
@@ -83,6 +85,19 @@ class OrderDetails : AppCompatActivity() {
 
             val orderStatus = (orderModel.orderStatus)
             val orderStatusStr = getOrderStatus(orderStatus)
+            val dispatchedTotal = orderModel.dispatchedGrandTotal
+            val grandTotal = orderModel.grandTotal
+
+
+
+            binding.dateTV.append(orderModel.date)
+            binding.orderIdTV.append(orderModel.orderId)
+            binding.amountTV.text = ("Amount: ${orderModel.orderValue}/-")
+            binding.statusTV.append(orderStatusStr)
+            binding.itemsDisplay.setMovementMethod(ScrollingMovementMethod())
+            for (item in orderModel.cartItemList!!){
+                binding.itemsDisplay.append("${item.Name} * ${item.Quantity}\n")
+            }
 
             //when the order is dispatched via a transport it will have transport company and lr...
             if (orderStatus == 1){
@@ -90,15 +105,18 @@ class OrderDetails : AppCompatActivity() {
                 binding.lrNumberLayout.visibility = View.VISIBLE
                 binding.transportNameDisplay.text = orderModel.transportCompany
                 binding.lrNoDisplay.text = orderModel.transportLrNo
+                //if the order is dispatched then,dispatched grand total should be shown as price
+                binding.amountTV.text = ("Amount: ${orderModel.dispatchedGrandTotal}/-")
+
+                //if there is a difference between dispatchTotal and grandTotal then only 'changed' animation should appear
+                if (grandTotal!=dispatchedTotal && dispatchedTotal > 0){
+                    binding.changedTV.visibility = View.VISIBLE
+                    val rotateAnim = AnimationUtils.loadAnimation(this,R.anim.rotate_anim)
+                    rotateAnim.fillAfter = true
+                    binding.changedTV.animation = rotateAnim
+                }
             }
-            binding.dateTV.append(orderModel.date)
-            binding.orderIdTV.append(orderModel.orderId)
-            binding.amountTV.append("${orderModel.orderValue}/-")
-            binding.statusTV.append(orderStatusStr)
-            binding.itemsDisplay.setMovementMethod(ScrollingMovementMethod())
-            for (item in orderModel.cartItemList!!){
-                binding.itemsDisplay.append("${item.Name} * ${item.Quantity}\n")
-            }
+
         }
 
     }

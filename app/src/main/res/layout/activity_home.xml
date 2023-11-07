@@ -42,11 +42,11 @@
         </LinearLayout>
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/navigationHostFragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/actionbar"
             android:layout_above="@id/bottomNavigation"
-            android:name="androidx.navigation.fragment.NavHostFragment"
             app:navGraph="@navigation/app_navigation"
             app:defaultNavHost="true"
             >

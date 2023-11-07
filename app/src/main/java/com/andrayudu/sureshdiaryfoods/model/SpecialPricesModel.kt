@@ -22,4 +22,7 @@ data class SpecialPricesModel(
     var dhalMixturePrice: Int = 0,
     var marwadiMixture: Int = 0,
     var moongDalPrice: Int = 0,
-    var splMixturePrice: Int = 0)
+    var splMixturePrice: Int = 0,
+    var halfKgPaneerPrice: Int = 0,
+    var oneKgPaneerPrice: Int = 0,
+    var fiveKgPaneerPrice: Int = 0)

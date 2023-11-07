@@ -27,7 +27,9 @@ abstract class FoodItemDatabase :RoomDatabase(){
                         FoodItemDatabase::class.java,
                         "fooditem_database"
                     ).fallbackToDestructiveMigration()
-                            //the above code snippet migrates old db to new db
+                        //the above code snippet -since we are not exporting the database schema,if we change the version number,it will try to migrate the old data to new data scheme
+                        // when trying if there are no migration codes/methods writtened it will throw illegalState Exception
+                        // so,fallback will create a new database everytime the version number is changed and there will be no error...
                         .build()
                     INSTANCE = instance
                 }

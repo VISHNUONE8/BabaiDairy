@@ -2,20 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/Home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/navigarion_home"
         android:title="Home" />
     <item
-        android:id="@+id/Orders"
+        android:id="@+id/ordersFragment"
         android:icon="@drawable/baseline_orders_24"
         android:title="Orders" />
     <item
-        android:id="@+id/Payments"
+        android:id="@+id/paymentsFragment"
         android:icon="@drawable/currency_rupee"
         android:title="Payments" />
 
     <item
-        android:id="@+id/Profile"
+        android:id="@+id/profileFragment"
         android:icon="@drawable/navigation_account"
         android:title="Profile" />
 

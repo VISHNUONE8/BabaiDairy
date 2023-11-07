@@ -42,7 +42,11 @@
 
 
         <activity
-            android:name=".ui.OrderDetails"
+            android:name=".ui.OrderDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SureshDiaryFoods" />
+        <activity
+            android:name=".ui.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <activity

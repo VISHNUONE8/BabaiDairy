@@ -12,8 +12,12 @@ data class OrderModel(
     var orderValue:Int=0,
     var quantity:Int=0,
     var date:String?=null,
+    //transportCost means the order transport price...
+    var orderTransportCost:Int=0,
+    //transportCharges means the users transport charge
     var transportCharges:Int=0,
     var grandTotal:Int=0,
+    var dispatchedGrandTotal:Int=0,
     var orderStatus:Int = 0,
     var transportCompany:String?=null,
     var transportLrNo:String?=null,
@@ -26,6 +30,8 @@ data class OrderModel(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString(),
+        parcel.readInt(),
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
@@ -42,8 +48,10 @@ data class OrderModel(
         parcel.writeInt(orderValue)
         parcel.writeInt(quantity)
         parcel.writeString(date)
+        parcel.writeInt(orderTransportCost)
         parcel.writeInt(transportCharges)
         parcel.writeInt(grandTotal)
+        parcel.writeInt(dispatchedGrandTotal)
         parcel.writeInt(orderStatus)
         parcel.writeString(transportCompany)
         parcel.writeString(transportLrNo)

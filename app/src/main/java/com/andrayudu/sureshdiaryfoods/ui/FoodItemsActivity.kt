@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -16,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.adapters.MyRecyclerViewAdapter
+import com.andrayudu.sureshdiaryfoods.adapters.FoodItemsRVAdapter
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityFoodItemsBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
@@ -26,23 +25,18 @@ import com.andrayudu.sureshdiaryfoods.model.FoodItem
 
 class FoodItemsActivity : AppCompatActivity() {
 
+    private val TAG = "FoodItemsActivity"
 
-
-    private val tag = "FoodItemsActivity"
-
-    private lateinit var binding:ActivityFoodItemsBinding
     private lateinit var foodItemsViewModel: FoodItemsViewModel
-    private lateinit var adapter: MyRecyclerViewAdapter
-    private var itemName:String? = null
+    private var itemNameFromIntent:String? = null
 
     //UI components
     private lateinit var actionBarBackButton: ImageView
     private lateinit var actionBarTextView: TextView
     private lateinit var tTotalCost:TextView
     private lateinit var tCartQuantity:TextView
-
-
-
+    private lateinit var binding:ActivityFoodItemsBinding
+    private lateinit var adapter: FoodItemsRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,22 +45,20 @@ class FoodItemsActivity : AppCompatActivity() {
         val dao = FoodItemDatabase.getInstance(application).cartItemDao
         val repository = CartItemRepository(dao)
         val factory = FoodItemsViewModelFactory(repository)
+
         foodItemsViewModel = ViewModelProvider(this,factory)[FoodItemsViewModel::class.java]
         binding.myViewModel = foodItemsViewModel
         binding.lifecycleOwner = this
 
 
-        itemName = intent.getStringExtra("itemName")
+        itemNameFromIntent = intent.getStringExtra("itemName")
 
         initViews()
         initObservers()
         initClickListeners()
         initRecyclerView()
 
-
-
         foodItemsViewModel.getSpecialPricesSnapshot()
-
 
 
     }
@@ -83,14 +75,12 @@ class FoodItemsActivity : AppCompatActivity() {
             if (it != null) {
                 //indicates the special prices snapshot is loaded...
                 if (it.equals("loaded")) {
-                    Log.i(tag, "calling LoadItems now...")
-                    foodItemsViewModel.loadItems(itemName)
+                    foodItemsViewModel.loadItems(itemNameFromIntent)
                 }
             }
         }
 
         foodItemsViewModel.getFirebaseFoodItems().observe(this) {
-            Log.i("MY TAG", it.toString())
             //as soon as the items load we will hide the progress bar
             binding.idPBLoading.visibility = View.INVISIBLE
             adapter.setList(it)
@@ -120,7 +110,7 @@ class FoodItemsActivity : AppCompatActivity() {
         actionBarTextView = binding.actionBarFoodItems.findViewById(R.id.actionbar_Text)
         tTotalCost = binding.tTotalPrice
         tCartQuantity = binding.tCartCount
-        actionBarTextView.text = itemName
+        actionBarTextView.text = itemNameFromIntent
 
     }
 
@@ -129,7 +119,7 @@ class FoodItemsActivity : AppCompatActivity() {
         val cartRepo = CartItemRepository(dao)
 
         binding.foodItemsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecyclerViewAdapter(this,cartRepo,{selectedItem:FoodItem->listItemClicked(selectedItem)},
+        adapter = FoodItemsRVAdapter(this,cartRepo,{ selectedItem:FoodItem->listItemClicked(selectedItem)},
             {selectedItem:FoodItem->pencilClicked(selectedItem)})
         binding.foodItemsRecyclerView.adapter = adapter
     }
@@ -182,6 +172,7 @@ class FoodItemsActivity : AppCompatActivity() {
       showAlertDialogButtonClicked(foodItem)
     }
 
+    //this dialog displays a editText for adding items by entering number...
     fun showAlertDialogButtonClicked(foodItem: FoodItem) {
         // Create an alert builder
         val builder = AlertDialog.Builder(this)

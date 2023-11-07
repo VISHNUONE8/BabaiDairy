@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.adapters.CartAdapter
+import com.andrayudu.sureshdiaryfoods.adapters.CartRVAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityCartBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
@@ -25,15 +25,17 @@ class CartActivity : AppCompatActivity() {
 
     private val tag= "CartActivity"
 
-    private lateinit var binding:ActivityCartBinding
     private lateinit var cartViewModel: CartViewModel
-    private lateinit var adapter:CartAdapter
 
     //UI components
-    private lateinit var progressButtonTV:TextView
     private lateinit var progressButton: ProgressButton
+    private lateinit var progressBtnOrderNow:View
     private lateinit var actionBarBackButton: ImageView
     private lateinit var actionBarTextView: TextView
+    private lateinit var adapter:CartRVAdapter
+    private lateinit var binding:ActivityCartBinding
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +51,7 @@ class CartActivity : AppCompatActivity() {
 
 
         initViews()
+        initProgressBtn()
         initClickListeners()
         initRecyclerView()
         //the main work of this activity starts from here
@@ -56,6 +59,12 @@ class CartActivity : AppCompatActivity() {
 
         cartViewModel.runtimeEnableAutoInit()
 
+    }
+
+    private fun initProgressBtn() {
+        val btnName = "ORDER NOW"
+        progressBtnOrderNow = binding.progressBtnOrderNow
+        progressButton = ProgressButton(this, progressBtnOrderNow, btnName)
     }
 
 
@@ -74,34 +83,29 @@ class CartActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-
-
-
         binding.progressBtnOrderNow.setOnClickListener {
-            val btnName = "ORDERNOW"
-            progressButton = ProgressButton(this, it, btnName)
             progressButton.buttonActivated()
             cartViewModel.placeOrder()
         }
+        binding.clearCartTV.setOnClickListener{
+            cartViewModel.clearCart()
+        }
+
+
     }
 
     private fun initViews() {
         actionBarBackButton = binding.actionbarCart.findViewById(R.id.actionbar_Back)
         actionBarTextView = binding.actionbarCart.findViewById(R.id.actionbar_Text)
         actionBarTextView.text = "Cart"
-        progressButtonTV = binding.progressBtnOrderNow.findViewById(R.id.progressBtnText)
-        progressButtonTV.text = "OrderNow"
 
-        binding.clearCartTV.setOnClickListener{
-            cartViewModel.clearCart()
-            Toast.makeText(this,"Cart has been Cleared",Toast.LENGTH_SHORT).show()
-        }
+
     }
 
 
     private fun initRecyclerView(){
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CartAdapter({ selectedItem: CartItem?->removeItem(selectedItem!!)})
+        adapter = CartRVAdapter { selectedItem: CartItem? -> removeItem(selectedItem) }
         binding.cartRecyclerView.adapter = adapter
 
     }
@@ -138,20 +142,26 @@ class CartActivity : AppCompatActivity() {
         })
 
         cartViewModel.getStatusLive().observe(this, Observer {
-            if (it!=null){
-                if ( it.equals("Limit")) {
+            if (it!=null) {
+                if (it.equals("Limit")) {
                     progressButton.buttonFinished()
                     Toast.makeText(
                         this,
                         "Limit Exceeded:\nplease contact the Admin..",
                         Toast.LENGTH_LONG
                     ).show()
-                }
-                else if (it.equals("Success")){
-                    Toast.makeText(this,"Order Placed Successfully",Toast.LENGTH_LONG).show()
-                    val intent = Intent(this,HomeActivity::class.java)
+                } else if (it.equals("Success")) {
+                    progressButton.buttonFinished()
+                    Toast.makeText(this, "Order Placed Successfully", Toast.LENGTH_LONG).show()
+                    val intent = Intent(this, HomeActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
+                } else if (it.equals("Hold")) {
+                    progressButton.buttonFinished()
+                    Toast.makeText(this, "Application is under Maintenance ,\nPlease Contact Admin...", Toast.LENGTH_LONG).show()
+                }
+                else if (it.equals("Deleted")){
+                    Toast.makeText(this,"Cart has been Cleared",Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -166,9 +176,11 @@ class CartActivity : AppCompatActivity() {
 
     }
 
-    //removes the received cartItem in parameters  from the cartData
-    private fun removeItem(cartItem: CartItem){
-        cartViewModel.removeItem(cartItem)
+    //removes the cartItem on clicking cross in cartRV
+    private fun removeItem(cartItem: CartItem?){
+        if (cartItem != null) {
+            cartViewModel.removeItem(cartItem)
+        }
     }
 
 

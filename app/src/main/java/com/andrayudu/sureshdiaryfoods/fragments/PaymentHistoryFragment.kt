@@ -2,20 +2,17 @@ package com.andrayudu.sureshdiaryfoods.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
-import com.andrayudu.sureshdiaryfoods.adapters.PaymentHistoryAdapter
+import com.andrayudu.sureshdiaryfoods.adapters.PaymentHistoryRVAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentPaymentHistoryBinding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -25,13 +22,12 @@ class PaymentHistoryFragment : Fragment() {
 
     private val TAG = "PaymentHistoryFragment"
 
-    private lateinit var binding: FragmentPaymentHistoryBinding
     private  val sharedViewModel: HomeActivityViewModel by activityViewModels()
-    private lateinit var mContext: Context
 
     //UI components
-    private var adapter: PaymentHistoryAdapter? = null
-
+    private var adapter: PaymentHistoryRVAdapter? = null
+    private lateinit var binding: FragmentPaymentHistoryBinding
+    private lateinit var mContext: Context
 
 
     override fun onAttach(context: Context) {
@@ -56,8 +52,8 @@ class PaymentHistoryFragment : Fragment() {
     }
 
     private fun initObservers() {
+
         sharedViewModel.paymentListLive.observe(viewLifecycleOwner, Observer { paymentsList ->
-            Log.i(TAG,"payments list loaded")
 
             //the below code snippets should be here only because in future wemay introduce different sorting techniques..
             //sorting payments list according to the date..
@@ -75,7 +71,7 @@ class PaymentHistoryFragment : Fragment() {
 
     private fun initRecyclerView() {
         binding.paymentsRV.layoutManager = LinearLayoutManager(mContext)
-        adapter = PaymentHistoryAdapter()
+        adapter = PaymentHistoryRVAdapter()
         binding.paymentsRV.adapter = adapter
     }
 

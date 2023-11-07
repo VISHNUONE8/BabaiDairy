@@ -22,9 +22,8 @@ class ProfileFragment : Fragment() {
 
     private val TAG = "ProfileFragment"
 
-
+    //this viewmodel is common for all 4 frags and HomeActivity
     private val sharedViewModel: HomeActivityViewModel by activityViewModels()
-
 
     //UI related
     private lateinit var binding: FragmentProfileBinding
@@ -61,7 +60,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.relLayoutAbout.setOnClickListener {
-            Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF PURE JOY",Toast.LENGTH_SHORT).show()
+            Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF  JOY",Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -94,7 +93,7 @@ class ProfileFragment : Fragment() {
                     requireActivity().finish()
                     val intent = Intent(mContext, LoginActivity::class.java)
                     startActivity(intent)
-                    Toast.makeText(mContext, "User LogOut Successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mContext, "User LogOut Success", Toast.LENGTH_SHORT).show()
                 }
 
             }
@@ -105,6 +104,7 @@ class ProfileFragment : Fragment() {
             userDetails?.let {
                 binding.idPBLoading.visibility = View.GONE
                 val role = userDetails.role
+
                 binding.usernameTV.text = userDetails.Name
                 binding.outstandingTV.text = getString(R.string.amount_display,("${userDetails.Outstanding}"))
                 binding.roleTV.text = role

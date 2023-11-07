@@ -18,21 +18,21 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class HomeActivityViewModel(): ViewModel() {
 
 
-    val tag = "HomeActivityViewModel"
+    val TAG = "HomeActivityViewModel"
 
     private val mAuth = FirebaseAuth.getInstance()
     private val mDb   = FirebaseDatabase.getInstance()
     private val userId = mAuth.currentUser?.uid
 
 
-    //stores the userDetails,used in both home,profilefrags
+    //stores the userDetails
+    // used in both home,profilefrags
     private val _userLive = MutableLiveData<UserRegisterModel?>()
     val userLive: LiveData<UserRegisterModel?>
        get() = _userLive
@@ -54,30 +54,12 @@ class HomeActivityViewModel(): ViewModel() {
 
 
     //profileFragRelated
+    //used for logout
     private val _eventNotifyLiveData = MutableLiveData<Event<String>>()
      val eventNotifyLiveData :MutableLiveData<Event<String>>
         get() = _eventNotifyLiveData
 
 
-
-    //fetches the outstanding of user...
-    //and subscribes the user to appropriate notif channel...
-    fun userInit() {
-
-        viewModelScope.launch(Dispatchers.IO) {
-
-         try{
-
-                 val  user = mDb.getReference("UsersTesting").child(userId!!).get()
-                    .await().getValue(UserRegisterModel::class.java)
-                 _userLive.postValue(user)
-                subscribeToSDF()
-
-            } catch (e:Exception){
-                e.printStackTrace()
-            }
-        }
-    }
 
     //Admins notif channel,which gets requests from customers..
     private fun subscribeToAdminNotifications() {
@@ -87,20 +69,31 @@ class HomeActivityViewModel(): ViewModel() {
                 if (!task.isSuccessful){
                     msg = "Subscribe failed"
                 }
-                Log.i(tag,"The status of admins Subscription to notifications:${msg}")
+                Log.i(TAG,"The status of admins Subscription to notifications:${msg}")
             }
     }
 
     //General notification channel for all customers
-    private fun subscribeToSDF() {
-        Firebase.messaging.subscribeToTopic("sureshDairyFoods")
-            .addOnCompleteListener{task->
-                var msg = "Subscribed"
-                if (!task.isSuccessful){
-                    msg = "Subscribe failed"
-                }
-                Log.i(tag,"The status of customers Subscription to SDF notifications:${msg}")
+    //once the app is opened ,we make sure the customer is subscribed to this channel,it will run only once in the app lifecycle..
+     fun subscribeToSDF() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try{
+
+                Firebase.messaging.subscribeToTopic("sureshDairyFoods")
+                    .addOnCompleteListener{task->
+                        var msg = "Subscribed"
+                        if (!task.isSuccessful){
+                            msg = "Subscribe failed"
+                        }
+                        Log.i(TAG,"The status of customers Subscription to SDF notifications:${msg}")
+                    }
+
+            } catch (e:Exception){
+                e.printStackTrace()
             }
+
+        }
+
     }
 
     //loads the customer payments related info ...
@@ -129,21 +122,19 @@ class HomeActivityViewModel(): ViewModel() {
             //mostly the catch will run only if the userId is null(which is never going to happen)
             }catch (e:Exception){
                 e.printStackTrace()
-                Log.e(tag,"there is an exception:"+e.message.toString())
+                Log.e(TAG,"there is an exception:"+e.message.toString())
             }
         }
 
     }
-
-
 
     //loads the customers OrdersData and posts it to ordersListLive...
     fun loadOrdersData(){
 
         viewModelScope.launch(Dispatchers.IO) {
 
-            val customersordersRef =  mDb.getReference("CustomerOrdersTesting").child(userId!!)
-            customersordersRef.addValueEventListener(object : ValueEventListener {
+            val customersOrdersRef =  mDb.getReference("CustomerOrdersTesting").child(userId!!)
+            customersOrdersRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     //clearing the arraylist because it will load duplicate values...
                     customerOrdersList.clear()
@@ -201,10 +192,12 @@ class HomeActivityViewModel(): ViewModel() {
     }
 
 
+    //loads the userData and posts it as Live
+    //used  in profileFrag,HomeFrag
     fun loadUserData() {
 
         viewModelScope.launch(Dispatchers.IO) {
-            val userReference = FirebaseDatabase.getInstance().getReference("UsersTesting").child(userId!!)
+            val userReference = mDb.getReference("UsersTesting").child(userId!!)
             userReference.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {

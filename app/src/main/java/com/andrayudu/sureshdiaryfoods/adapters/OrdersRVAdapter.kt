@@ -1,7 +1,6 @@
 package com.andrayudu.sureshdiaryfoods.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,8 @@ import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.CustomerOrdersItemBinding
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 
-class OrdersAdapter( private val clickListener: (OrderModel?)->Unit) : RecyclerView.Adapter<OrdersViewHolder>(){
+class OrdersRVAdapter(private val clickListener: (OrderModel?)->Unit) : RecyclerView.Adapter<OrdersViewHolder>(){
+
 
 
     val tag = "OrdersAdapter"
@@ -72,8 +72,13 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
         val firstItemQuantity = cartItems?.get(0)?.Quantity
         val itemNames = "Items: $firstItemName * $firstItemQuantity ...."
         val orderId = "OrderId:${orderModel.orderId}"
-        val orderValue = "Amount:${orderModel.grandTotal}"
+        var orderValue = "Amount:${orderModel.grandTotal}"
         val orderStatus = "Status:${orderStatusStr}"
+        //if the order is dispatched then,dispatched grand total should be shown as price
+        if(orderModel.orderStatus == 1){
+            orderValue = "Amount:${orderModel.dispatchedGrandTotal}"
+        }
+
 
 
         binding.itemNameTV.text = itemNames

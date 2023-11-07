@@ -9,10 +9,12 @@ import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.LayoutCartItemBinding
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 
-class CartAdapter( private val clickListener: (CartItem?)->Unit) : RecyclerView.Adapter<CartItemsViewHolder>(){
+class CartRVAdapter(private val clickListener: (CartItem?)->Unit) : RecyclerView.Adapter<CartItemsViewHolder>(){
+
+    private val TAG = "CartAdapter"
+
 
     private val foodItemsList = ArrayList<CartItem>()
-    private val tag = "CartAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemsViewHolder {
         val layoutInflater
@@ -40,7 +42,7 @@ class CartAdapter( private val clickListener: (CartItem?)->Unit) : RecyclerView.
 }
 
 class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewHolder(binding.root){
-    private val tag = "CartItemsViewHolder"
+    private val TAG = "CartItemsViewHolder"
 
     fun bind(
         cartItem: CartItem?,
@@ -51,9 +53,8 @@ class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewH
 
             binding.tName.text = cartItem.Name
             binding.tPrice.text = "₹ "+cartItem.Price
-            Log.i(tag,"the category is :"+cartItem.Category)
             if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
-                val kovaInKgs = cartItem.Quantity!!.toInt() * 3
+                val kovaInKgs = cartItem.Quantity * 3
                 binding.tQuantity.text = "${kovaInKgs} kgs    (${cartItem.Quantity} boxes) "
             }
             else{
@@ -67,10 +68,6 @@ class CartItemsViewHolder(val binding: LayoutCartItemBinding):RecyclerView.ViewH
             //onClicking the delete icon , the cartItem willbe passed into the function which will remove it from cartlist table
             clickListener(cartItem)
         }
-
-//        binding.itemHolder.setOnClickListener{
-//            clickListener(specializationType)
-//        }
 
 
 

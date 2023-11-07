@@ -8,23 +8,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".fragments.HomeFragment">
+    <!--since the cartbar size is 50dp-->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        >
+        android:layout_marginBottom="50dp">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
 
             <TextView
                 android:id="@+id/titleTV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="Our Products"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
@@ -154,16 +153,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_below="@id/gheeCardview"
-                app:cardCornerRadius="5dp"
-                app:cardBackgroundColor="@android:color/transparent">
+                app:cardCornerRadius="5dp">
 
                 <LinearLayout
                     android:id="@+id/kovaLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
+                    android:background="@drawable/rounded_corner"
                     android:orientation="vertical">
 
 
@@ -255,12 +257,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="10dp"
-                android:layout_below="@id/kovaCardview"
-                app:cardBackgroundColor="@android:color/transparent">
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="5dp"
+                android:layout_below="@id/kovaCardview">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corner">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -289,13 +295,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="10dp"
-                android:layout_below="@id/otherSweetsCardview"
-                app:cardBackgroundColor="@android:color/transparent">
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="5dp"
+                android:layout_below="@id/otherSweetsCardview">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corner">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -324,13 +334,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="10dp"
-                android:layout_below="@id/mixtureCardview"
-                app:cardBackgroundColor="@android:color/transparent">
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="5dp"
+                android:layout_below="@id/mixtureCardview">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corner">
 
                 <ImageView
                     android:layout_width="wrap_content"

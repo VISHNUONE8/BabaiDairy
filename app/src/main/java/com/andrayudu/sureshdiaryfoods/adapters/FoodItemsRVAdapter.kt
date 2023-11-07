@@ -14,8 +14,9 @@ import com.andrayudu.sureshdiaryfoods.model.FoodItem
 import kotlinx.coroutines.*
 import java.util.*
 
-class MyRecyclerViewAdapter(private val context: Context,private val cartRepo:CartItemRepository,
-                            private val clickListener: (FoodItem)->Unit,private val pencilListener: (FoodItem) -> Unit):RecyclerView.Adapter<MyViewHolder>() {
+class FoodItemsRVAdapter(
+    context: Context, private val cartRepo:CartItemRepository,
+    private val clickListener: (FoodItem)->Unit, private val pencilListener: (FoodItem) -> Unit):RecyclerView.Adapter<MyViewHolder>() {
 
     
     private val foodItemsList = ArrayList<FoodItem>()
@@ -55,14 +56,14 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
          pencilListener: (FoodItem) -> Unit
     ) {
 
-        var Quantity: Int? = 0
+        var Quantity = 0
 
         CoroutineScope(Dispatchers.IO).launch {
             val getCount = async(Dispatchers.IO) {
                 Log.i(tag, "name is: " + foodItem.Name)
                 //the above value is null if no items are addesd
                 Quantity = cartRepo.getCartItemQuantity(foodItem.Name)
-                Log.i("tag", "the quantity is:" + Quantity)
+                Log.i("tag", "the quantity is:$Quantity")
                 //the quantity is null if the item doesnt exist in the cart coalesce or ifnull functions can be used
 
             }
@@ -70,7 +71,7 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
             withContext(Dispatchers.Main) {
 
                 binding.tCount.setText(Quantity.toString())
-                foodItemsList.get(position).Quantity = Quantity!!
+                foodItemsList[position].Quantity = Quantity
 
             }
 
@@ -83,7 +84,7 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
 
         binding.iPlus.setOnClickListener{
 
-            foodItemsList.get(bindingAdapterPosition).Quantity= ((foodItemsList.get(bindingAdapterPosition).Quantity!!).toInt() + 1)
+            foodItemsList.get(bindingAdapterPosition).Quantity= ((foodItemsList.get(bindingAdapterPosition).Quantity) + 1)
             binding.tCount.setText(foodItemsList.get(bindingAdapterPosition).Quantity.toString())
             //now we should update this into cart database on demand
             clickListener(foodItem)
@@ -92,11 +93,11 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
         }
         binding.iMinus.setOnClickListener{
 
-            if (foodItemsList.get(bindingAdapterPosition).Quantity!!.toInt() !=0) {
+            if (foodItemsList[bindingAdapterPosition].Quantity!=0) {
 
 
-                foodItemsList.get(bindingAdapterPosition).Quantity =
-                    ((foodItemsList.get(bindingAdapterPosition).Quantity)!!.toInt() - 1)
+                foodItemsList[bindingAdapterPosition].Quantity =
+                    ((foodItemsList[bindingAdapterPosition].Quantity) - 1)
 
                 binding.tCount.setText(foodItemsList.get(bindingAdapterPosition).Quantity.toString())
                 //now we should update this into cart database on demand

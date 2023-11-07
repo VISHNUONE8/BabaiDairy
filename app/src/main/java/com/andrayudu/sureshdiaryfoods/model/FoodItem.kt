@@ -11,7 +11,6 @@ data class FoodItem (
     @ColumnInfo(name = "fooditem_name")
     var Name: String="food",
 
-
     @ColumnInfo(name = "item_price")
     var Price: Int=0,
 
@@ -22,6 +21,8 @@ data class FoodItem (
     var Category: String?=null,
     @ColumnInfo(name = "item_preference")
     var Preference: Int=0,
+    @ColumnInfo(name = "item_outofstock")
+    var isOutOfStock: Boolean=false,
 
 
 ):Comparable<FoodItem> {
@@ -31,8 +32,4 @@ data class FoodItem (
         return (Preference - comparePreference)
     }
 
-//    class comparatorOne : Comparator<FoodItem> {
-//        override fun compare(o1: FoodItem?, o2: FoodItem?): Int {
-//        }
-//    }
 }

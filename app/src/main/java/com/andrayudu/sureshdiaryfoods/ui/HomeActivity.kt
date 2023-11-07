@@ -6,8 +6,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -18,29 +16,27 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.NetworkConnection
-import com.andrayudu.sureshdiaryfoods.fragments.HomeFragment
-import com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment
-import com.andrayudu.sureshdiaryfoods.fragments.ProfileFragment
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
-import com.andrayudu.sureshdiaryfoods.fragments.PaymentHistoryFragment
-import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /*Done clearCoding*/
-class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListener {
+class HomeActivity : AppCompatActivity() {
 
-    private val tag = "HomeActivity"
+    private val TAG = "HomeActivity"
 
-    private lateinit var binding: ActivityHomeBinding
     private val viewModel:HomeActivityViewModel by viewModels()
+
+    private lateinit var networkConnection:NetworkConnection
 
     //UI components
     private lateinit var actionBarTextView: TextView
+    private lateinit var binding: ActivityHomeBinding
 
-
-    private lateinit var networkConnection:NetworkConnection
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,17 +46,10 @@ class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListene
         networkConnection = NetworkConnection(applicationContext)
 
         initViews()
+        setNavController()
         initOnbackPressedDispatcher()
-
         initObservers()
-
-        //below function fetches the users outstanding and subscribes him to the SDF Notif channel
-        viewModel.userInit()
         checkPermissions()
-
-
-        binding.bottomNavigation.selectedItemId = R.id.Home
-        binding.bottomNavigation.setOnItemSelectedListener (this)
 
     }
 
@@ -70,14 +59,13 @@ class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListene
                 //on pressing back from home Activity we should display a dialog are you sure you want to exit ...
                 showAlertDialog()
             }
-
         })
     }
 
     private fun showAlertDialog() {
 
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Are you Sure You want to exit the Application?")
+        builder.setMessage("Are you Sure You want to Exit?")
         builder.setTitle("Exit !")
         builder.setCancelable(false)
 
@@ -114,19 +102,18 @@ class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListene
 
 
     private fun initObservers() {
-        networkConnection.observe(this, Observer {isConnected->
-            if (isConnected){
+        networkConnection.observe(this) { isConnected ->
+            if (isConnected) {
                 binding.navigationHostFragment.visibility = View.VISIBLE
                 binding.actionbar.visibility = View.VISIBLE
-                binding.noInternetLayout.visibility= View.GONE
-            }
-            else{
+                binding.noInternetLayout.visibility = View.GONE
+            } else {
                 binding.navigationHostFragment.visibility = View.GONE
                 binding.actionbar.visibility = View.GONE
-                binding.noInternetLayout.visibility= View.VISIBLE
-                Toast.makeText(this,"No Internet Connection",Toast.LENGTH_LONG).show()
+                binding.noInternetLayout.visibility = View.VISIBLE
+                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show()
             }
-        })
+        }
 
     }
 
@@ -146,48 +133,19 @@ class HomeActivity : AppCompatActivity(),NavigationBarView.OnItemSelectedListene
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+    private fun setNavController(){
+        try{
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationHostFragment) as NavHostFragment
+            val navController = navHostFragment.navController
 
-
-        when(item.itemId){
-            R.id.Home ->{
-                if (binding.bottomNavigation.selectedItemId != R.id.Home){
-                    replaceFragment(HomeFragment())
-                }
-            }
-            R.id.Orders ->{
-
-                if (binding.bottomNavigation.selectedItemId != R.id.Orders){
-                    replaceFragment(OrdersFragment())
-                }
-
-            }
-            R.id.Payments ->{
-
-                if (binding.bottomNavigation.selectedItemId != R.id.Payments){
-                    replaceFragment(PaymentHistoryFragment())
-                }
-
-            }
-            R.id.Profile ->{
-                if (binding.bottomNavigation.selectedItemId != R.id.Profile){
-                    replaceFragment(ProfileFragment())
-                }
-            }
-            else->{
-                return false
-            }
+            // Find reference to bottom navigation view
+            val navView: BottomNavigationView = findViewById(R.id.bottomNavigation)
+            // Hook your navigation controller to bottom navigation view
+            navView.setupWithNavController(navController)
+        } catch (e:Exception){
+            Log.e(TAG,"there is an exception${e.message.toString()}")
         }
-        return true
-
     }
 
-    //replaces the fragment as a transaction...
-    private fun replaceFragment(fragment:Fragment){
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.navigationHostFragment,fragment)
-        transaction.commit()
-
-    }
 
 }

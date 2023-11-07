@@ -14,8 +14,6 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 //this viewmodel is used by both HomeFragment and FoodItemsActivity but not in a shared way
 //for sharedviewmodel instance see homeActivity viewmodel as it is shared by ordersFrag and HomeActivity
@@ -23,7 +21,7 @@ import java.time.format.DateTimeFormatter
 class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel() {
 
 
-    private val tag = "FoodItemsViewModel"
+    private val TAG = "FoodItemsViewModel"
 
     var specialPricesModel :SpecialPricesModel?  = null
     val foodItemsList: ArrayList<FoodItem> = ArrayList()
@@ -57,11 +55,10 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                 cartItem.Price = foodItem.Price
                 //calculating cartItem Total Price i.e quantity * price
                 if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
-                    cartItem.ItemTotalPrice = (cartItem.Quantity.toInt() * cartItem.Price!!.toInt() * 3)
+                    cartItem.ItemTotalPrice = (cartItem.Quantity * cartItem.Price * 3)
                 }
                 else{
-                    cartItem.ItemTotalPrice =(cartItem.Quantity.toInt() * cartItem.Price!!.toInt())
-
+                    cartItem.ItemTotalPrice =(cartItem.Quantity * cartItem.Price)
                 }
                 val newRowId = repository.insert(cartItem)
                 withContext(Dispatchers.Main) {
@@ -86,31 +83,33 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
             val mAuth = FirebaseAuth.getInstance()
             val userId = mAuth.currentUser?.uid
 
-            FirebaseDatabase.getInstance().getReference("SpecialPricesTesting").child(userId.toString())
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        specialPricesModel = SpecialPricesModel()
-                        if (snapshot.exists()) {
-                            specialPricesModel = snapshot.getValue(SpecialPricesModel::class.java)
-                            Log.i(tag,"specialprice snap loaded")
+            try{
+                FirebaseDatabase.getInstance().getReference("SpecialPricesTesting").child(userId!!)
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            specialPricesModel = SpecialPricesModel()
+                            if (snapshot.exists()) {
+                                specialPricesModel = snapshot.getValue(SpecialPricesModel::class.java)
+                                Log.i(TAG,"specialprice snap loaded")
+                            }
+                            status.postValue("loaded")
                         }
-                        status.postValue("loaded")
-                    }
-                    override fun onCancelled(error: DatabaseError) {
+                        override fun onCancelled(error: DatabaseError) {
 
-                    }
-                })
+                        }
+                    })
+            }catch (e:Exception){
+                Log.e(TAG,"The error is:${e.message.toString()}")
+            }
         }
-
-
     }
 
 
-    fun getSpecialPrice(foodItem: FoodItem?):FoodItem{
+    fun getSpecialPrice(foodItem: FoodItem):FoodItem{
 
         var splPrice = 0
 
-        when(foodItem?.Category){
+        when(foodItem.Category){
 
             "Kova"-> {
 
@@ -197,16 +196,28 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
                     splPrice = specialPricesModel!!.splMixturePrice
                 }
             }
+            "Paneer"->{
+                if (foodItem.Name == "1/2Kg Paneer"){
+                    splPrice = specialPricesModel!!.halfKgPaneerPrice
+                }
+                else if (foodItem.Name == "1Kg Paneer"){
+                    splPrice = specialPricesModel!!.oneKgPaneerPrice
+                }
+                else if (foodItem.Name == "5Kg  Paneer Bar"){
+                    splPrice = specialPricesModel!!.fiveKgPaneerPrice
+                }
+                Log.i(TAG,"the panner spl price is:"+splPrice.toString())
+            }
 
             else->{
-                //if the item doesnt belong to any above categories its price will stay same...
-                 splPrice = foodItem!!.Price
+                //if the item doesnt belong to any above categories its price will stay same like for OIL...
+                 splPrice = foodItem.Price
 
             }
 
         }
-            foodItem?.Price = splPrice
-            Log.i("spl price is:",""+foodItem?.Price)
+            foodItem.Price = splPrice
+            Log.i("spl price is:",""+foodItem.Price)
             return foodItem
 
         }
@@ -215,37 +226,42 @@ class FoodItemsViewModel(private val repository: CartItemRepository): ViewModel(
     fun loadItems(itemName:String?) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            if (firebaseFoodItems.value == null) {
-                FirebaseDatabase.getInstance().getReference("FoodItemsTesting").child(itemName.toString())
-                    .addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            foodItemsList.clear()
-                            if (snapshot.exists()) {
-                                for (dataSnapshot in snapshot.children) {
-                                    val foodItem: FoodItem? = dataSnapshot.getValue(FoodItem::class.java)
+            try {
+                if (firebaseFoodItems.value == null) {
+                    FirebaseDatabase.getInstance().getReference("FoodItemsTesting").child(itemName!!)
+                        .addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                foodItemsList.clear()
+                                if (snapshot.exists()) {
+                                    for (dataSnapshot in snapshot.children) {
+                                        val foodItem: FoodItem? = dataSnapshot.getValue(FoodItem::class.java)
 
-                                    Log.i(tag,"the item is "+foodItem!!.Name)
-                                    //if the users special price snap is null then it will show normal prices
-                                    val splPriceAddedItem = getSpecialPrice(foodItem)
-                                    if (splPriceAddedItem!=null){
-                                        foodItemsList.add(splPriceAddedItem)
+                                        if (foodItem!=null){
+                                            val splPriceAddedItem = getSpecialPrice(foodItem)
+                                            foodItemsList.add(splPriceAddedItem)
+                                        }
+
                                     }
+                                    //java method
+//                                Collections.sort(foodItemsList)
+                                    //kotlin method
+                                    //sorts the foodItems according to their priority,see FoodItem ModelClass
+                                    foodItemsList.sort()
+                                    firebaseFoodItems.postValue(foodItemsList)
+
 
                                 }
-                                //java method
-//                                Collections.sort(foodItemsList)
-                                //kotlin method
-                                foodItemsList.sort()
-                                firebaseFoodItems.postValue(foodItemsList)
-
-
                             }
-                        }
 
-                        override fun onCancelled(error: DatabaseError) {
-                        }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
 
-                    })
+                        })
+                }
+
+            }catch (e:Exception){
+                Log.e(TAG,"The error is:${e.message.toString()}")
+
             }
         }
 

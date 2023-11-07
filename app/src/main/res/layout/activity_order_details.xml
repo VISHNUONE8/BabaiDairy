@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:theme="@style/Theme.SureshDiaryFoods"
         android:orientation="vertical"
-        tools:context=".ui.OrderDetails">
+        tools:context=".ui.OrderDetailsActivity">
 
         <include layout="@layout/actionbar_with_back"
             android:id="@+id/actionbarOrderDetails"
@@ -63,11 +63,26 @@
             android:layout_marginTop="10dp"
             android:text="Status: "/>
 
+        <TextView
+            android:id="@+id/changedTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center"
+            android:rotation="0"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:text="-- ITEMS CHANGED --"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -81,6 +96,7 @@
                 android:text="Items: "/>
 
 
+
             <TextView
                 android:id="@+id/itemsDisplay"
                 android:layout_width="wrap_content"
@@ -88,12 +104,16 @@
                 android:scrollbars="vertical"
                 android:textStyle="bold"
                 android:textSize="20sp"
+                android:layout_weight="1"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
                 android:text=""/>
 
 
+
         </LinearLayout>
+
+
 
         <LinearLayout
             android:id="@+id/transportNameLayout"

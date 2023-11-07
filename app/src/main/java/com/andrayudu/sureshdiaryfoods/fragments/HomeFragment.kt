@@ -32,14 +32,15 @@ class HomeFragment : Fragment() {
     private val TAG = "HomeFragment"
 
     private val sharedViewModel: HomeActivityViewModel by activityViewModels()
-    private lateinit var binding: FragmentHomeBinding
-    private lateinit var mContext: Context
+
     private lateinit var foodIntent: Intent
     private lateinit var foodItemsViewModel: FoodItemsViewModel
 
     //UI components
     private lateinit var tTotalCost: TextView
     private lateinit var tCartQuantity: TextView
+    private lateinit var binding: FragmentHomeBinding
+    private lateinit var mContext: Context
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -59,7 +60,7 @@ class HomeFragment : Fragment() {
         foodItemsViewModel = ViewModelProvider(this, factory)[FoodItemsViewModel::class.java]
 
 
-        //this is used for making the scrolling text scrollable...
+        //this is used for making the scrollingText scrolling..
         binding.outstandingScrollTV.isSelected = true
 
         foodIntent = Intent(mContext, FoodItemsActivity::class.java)
@@ -68,6 +69,8 @@ class HomeFragment : Fragment() {
         initClickListeners()
         initObservers()
 
+        sharedViewModel.subscribeToSDF()
+        sharedViewModel.loadUserData()
 
         return binding.root
     }

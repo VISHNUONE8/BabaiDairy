@@ -1,6 +1,5 @@
 package com.andrayudu.sureshdiaryfoods.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -12,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PaymentHistoryAdapter(): RecyclerView.Adapter<PaymentsHolder>() {
+class PaymentHistoryRVAdapter(): RecyclerView.Adapter<PaymentsHolder>() {
 
     private val paymentsList = ArrayList<PaymentModel>()
 

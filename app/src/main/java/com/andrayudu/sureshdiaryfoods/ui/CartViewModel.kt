@@ -29,10 +29,12 @@ import kotlin.math.abs
 
 class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
+    private val TAG = "CartViewModel"
 
-
-    private val tag = "CartViewModel"
-    private val firebaseDBInstance = FirebaseDatabase.getInstance()
+    //Firebase
+    private val mDb = FirebaseDatabase.getInstance()
+    private val mAuth = FirebaseAuth.getInstance()
+    private val userId = mAuth.currentUser?.uid
 
     private val repo = repository
     private val cartItems = repository.cartItems
@@ -40,10 +42,8 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     private var user:UserRegisterModel? = null
     private var cartItemsList:List<CartItem>? = null
     private var cartValue: Int = 0
-    private var transportValue: Int? = 0
-    var transportCharges:Int = 0
-    val mAuth = FirebaseAuth.getInstance()
-    var userId = mAuth.currentUser?.uid
+    private var orderTransportCost: Int = 0
+    var userTransportCharges:Int = 0
 
     //LiveData
     private val grandTotal = MutableLiveData<String?>()
@@ -61,7 +61,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         return statusLive
     }
     fun getTransportValue(): String {
-        return transportValue.toString()
+        return orderTransportCost.toString()
     }
 
     //this function calculates the total cost of items in the cart(without transport)
@@ -82,39 +82,33 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
                     cartValue =
                         (cartValue + (cartItem.Price * cartItem.Quantity))
                 }
-
-
             }
-//            viewModelScope.launch {
-//                Log.i(tag,"the kova count is:"+repo.getKovaCount())
-//
-//            }
+
         }
         //here we are calculating the Transport charges for a customer...
         viewModelScope.launch(Dispatchers.IO) {
 
                 //if the user has transport enabled
-                if (transportCharges > 0){
+                if (userTransportCharges > 0){
                     var kovaCount = 0
                     //kovaCountFromDb uses default context i.e Dispatchers.IO used above in viewmodelscope
-                    val kovaCountFromDb =launch {
+                    val kovaCountFromDbTask =launch {
                         kovaCount = repository.getKovaCount()
                     }
-                    kovaCountFromDb.join()
-                    Log.i(tag,"kova category count is calculated"+kovaCount)
-                    if (kovaCountFromDb.isCompleted){
-                        transportValue = (transportCharges * kovaCount)
-                        Log.i(tag,"the transport charges for customer are:${transportValue}")
-                        transportChargesLive.postValue(transportValue.toString())
+                    kovaCountFromDbTask.join()
+                    Log.i(TAG, "kova category count is calculated$kovaCount")
+                    if (kovaCountFromDbTask.isCompleted){
+                        orderTransportCost = (userTransportCharges * kovaCount)
+                        Log.i(TAG,"the transport charges for customer are:${orderTransportCost}")
+                        transportChargesLive.postValue(orderTransportCost.toString())
                     }
 
                 }
                 //if the user has transport disabled i.e 0
                 else{
-                    transportChargesLive.postValue(transportValue.toString())
+                    transportChargesLive.postValue(orderTransportCost.toString())
                 }
-
-                grandTotal.postValue((cartValue + (transportValue)!!).toString())
+                grandTotal.postValue((cartValue + (orderTransportCost)).toString())
 
         }
     }
@@ -126,24 +120,31 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         return grandTotal
     }
 
-    // this fun is used to get the customers details like name,outstanding balance
+    // this fun is used to get the customers details like name,outstanding balance,mainly for userTransportCharges...
     fun getUserDetails():LiveData<UserRegisterModel?> {
         //since the user is already in login this can never be null
         //for admins ease of viewing the order will be saved under the users name in adminOrders db folder i.e "Orders"
         if (userId!=null && userDetails.value == null){
-            viewModelScope.launch {
-                withContext(Dispatchers.IO){
-                    val userReference = FirebaseDatabase.getInstance().getReference("UsersTesting").child(userId!!)
+            viewModelScope.launch(Dispatchers.IO){
+                try {
+                    val userReference = mDb.getReference("UsersTesting").child(userId!!)
                     user = userReference.get().await().getValue(UserRegisterModel::class.java)
-                    userDetails.postValue(user)
-                    transportCharges = user?.TransportCharges!!
-                    Log.i(tag, "the transport charges are:$transportCharges")
+                    user?.let {
+                        userDetails.postValue(user)
+                        userTransportCharges = user!!.TransportCharges
+                        Log.i(TAG, "the transport charges are:$userTransportCharges")
+                    }
+
+                }catch (e:Exception){
+                    Log.e(TAG, "the exception is:${e.message.toString()}")
+
                 }
             }
         }
         return userDetails
     }
 
+    //created orderId using system timeinMillis+"random number from 1 to 1000"
     private fun createOrderId():String{
         return StringBuilder()
             .append(System.currentTimeMillis())
@@ -154,81 +155,98 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     //starts the ordering procedure
     fun placeOrder() {
 
+
         val orderId = createOrderId()
         val date = getDate()
 
 
+        try {
+            //this data is used only for posting Orders
+            val name = user!!.Name
+            val outstanding = user!!.Outstanding
+            val limit = user!!.Limit
 
-        //this data is used only for posting Orders
-        val name = user!!.Name
-        val outstanding = user!!.Outstanding
-        val limit = user?.Limit
-
-        //orderDetails
-        val order = OrderModel()
-        order.userId = userId
-        order.orderId = orderId
-        order.userName = name
-        order.quantity = (cartItemsList?.size)!!
-        order.date = date
-        order.orderValue = getCartValue()
-        order.transportCharges = transportCharges
-        order.grandTotal = grandTotal.value!!.toInt()
-        order.cartItemList = cartItemsList
-
-
-        viewModelScope.launch {
+            //orderDetails
+            val order = OrderModel()
+            order.userId = userId
+            order.orderId = orderId
+            order.userName = name
+            order.quantity = (cartItemsList?.size)!!
+            order.date = date
+            order.orderValue = getCartValue()
+            order.transportCharges = userTransportCharges
+            order.grandTotal = grandTotal.value!!.toInt()
+            order.cartItemList = cartItemsList
 
 
-            //if the limit exceeds then we will not proceed with the order
-            if (order.orderValue > (limit)!!) {
-                Log.i(tag, "The order value is exceeding the usersLimit")
-                statusLive.postValue("Limit")
-                return@launch
+            viewModelScope.launch {
+
+
+                //if the account status of the user is in hold ,then we will not proceed further with the order...
+                //this is useful for publishing updatess...
+                if(user!!.onHold){
+                    statusLive.postValue("Hold")
+                    return@launch
+                }
+
+                //if the limit exceeds then we will not proceed with the order
+                else if (order.orderValue > (limit)) {
+                    Log.i(TAG, "The order value is exceeding the usersLimit")
+                    statusLive.postValue("Limit")
+                    return@launch
+                }
+
+                // outstanding is -ve balancethen we will place the order in hold state ie -1
+                else if ((outstanding) <  0) {
+                    //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
+                    order.orderStatus = -1
+                    sendNotifToAdmin(order)
+                }
+                else {
+
+                    order.orderStatus = 0
+                    //orderstatus 0 implies that the orderplaced succesfully
+
+                }
+
+                updateToDb(order)
+
+
             }
-            //if the account status of the user is in hold or outstanding is -ve balance
-            // then we will place the order in hold state ie -1
-            else if ((outstanding) <  0) {
-                //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
-                order.orderStatus = -1
-//                sendNotifToAdmin(order)
-            }
-            else {
 
-                order.orderStatus = 0
-                //orderstatus 0 implies that the orderplaced succesfully
-
-            }
-
-            updateToDb(order)
-
-
+        }catch (e:Exception){
+            Log.e("TAG","the error is:${e.message.toString()}")
         }
+
+
     }
 
     //updates the order details to both customerOrders and Orders db
     private suspend fun updateToDb( order: OrderModel) {
 
+        val orderId = order.orderId
 
-        //customerOrders is the db reference which is used for customers
-        val ordersReference = firebaseDBInstance.getReference("CustomerOrdersTesting").child(userId!!)
-        //Orders is the db reference which is used for Admin
-        val adminOrdersRef = firebaseDBInstance.getReference("OrdersTesting")
+        withContext(Dispatchers.IO){
+            //customerOrders is the db reference which is used for customers
+            val customerOrdersRef = mDb.getReference("CustomerOrdersTesting").child(userId!!)
+            //Orders is the db reference which is used for Admin
+            val adminOrdersRef = mDb.getReference("OrdersTesting")
 
 
-        val customerDbTask = ordersReference.child(order.orderId!!).setValue(order)
-        val adminDbTask = adminOrdersRef.child(order.orderId!!).setValue(order)
+            val customerDbTask = customerOrdersRef.child(orderId!!).setValue(order)
+            val adminDbTask = adminOrdersRef.child(orderId).setValue(order)
 
-        //clearing the cart after order has been successfully placed and
-        // also tell the user that the order has been successfully placed
-        customerDbTask.await()
-        adminDbTask.await()
+            customerDbTask.await()
+            adminDbTask.await()
+            //clearing the cart after order has been successfully placed and
+            // also tell the user that the order has been successfully placed
+            if (customerDbTask.isSuccessful && adminDbTask.isSuccessful) {
 
-        if (customerDbTask.isSuccessful && adminDbTask.isSuccessful) {
-
-            statusLive.postValue("Success")
-            repo.deleteAll()
+                statusLive.postValue("Success")
+                repo.deleteAll()
+            }
         }
+
     }
 
     private fun sendNotifToAdmin(order: OrderModel) {
@@ -257,7 +275,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.i("Sorry bro api call", "failed")
+                Log.i(TAG, "Sorry bro api call failed,Reason:${t.message.toString()}")
             }
         })
     }
@@ -265,6 +283,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     fun clearCart() {
          viewModelScope.launch(Dispatchers.IO) {
              repo.deleteAll()
+             statusLive.postValue("Deleted")
          }
 
     }
