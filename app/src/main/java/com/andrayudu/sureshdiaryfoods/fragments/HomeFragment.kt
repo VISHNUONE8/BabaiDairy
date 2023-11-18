@@ -69,7 +69,6 @@ class HomeFragment : Fragment() {
         initClickListeners()
         initObservers()
 
-        sharedViewModel.subscribeToSDF()
         sharedViewModel.loadUserData()
 
         return binding.root
@@ -91,50 +90,64 @@ class HomeFragment : Fragment() {
 
     private fun initClickListeners() {
 
-        binding.oilCardview.setOnClickListener {
+        val onClickListener = View.OnClickListener {
+            when(it.id){
 
-            foodIntent.putExtra("itemName", "Oil")
+                R.id.curdCardview->{
+                    foodIntent.putExtra("itemName", "Curd")
+                }
+                R.id.gheeCardview->{
+                    foodIntent.putExtra("itemName", "Ghee")
+                }
+            }
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
 
         }
-        binding.gheeCardview.setOnClickListener {
-
-            foodIntent.putExtra("itemName", "Ghee")
-            startActivity(foodIntent)
 
 
-        }
         binding.milkCardview.setOnClickListener {
             foodIntent.putExtra("itemName", "Milk")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
-
-
         }
+        binding.curdCardview.setOnClickListener (onClickListener)
+        binding.gheeCardview.setOnClickListener (onClickListener)
+
+        binding.oilCardview.setOnClickListener {
+            foodIntent.putExtra("itemName", "Oil")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
+            startActivity(foodIntent)
+        }
+
         binding.otherSweetsCardview.setOnClickListener {
             foodIntent.putExtra("itemName", "OtherSweets")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
-
-
         }
 
         binding.normalKovaTV.setOnClickListener {
 
             foodIntent.putExtra("itemName", "Kova")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
         }
         binding.speciallKovaTV.setOnClickListener {
 
-            foodIntent.putExtra("itemName", "SpecialKova")
+            foodIntent.putExtra("itemName", "KovaSpl")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
         }
         binding.sugarKovaTV.setOnClickListener {
 
             foodIntent.putExtra("itemName", "SugarKova")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
         }
         binding.sugarLessKovaTV.setOnClickListener {
 
             foodIntent.putExtra("itemName", "SugarLessKova")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
         }
         binding.kovaLayout.setOnClickListener {
@@ -142,11 +155,13 @@ class HomeFragment : Fragment() {
         }
         binding.mixtureCardview.setOnClickListener {
             foodIntent.putExtra("itemName", "Hot")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
 
         }
         binding.paneerCardView.setOnClickListener {
             foodIntent.putExtra("itemName", "Paneer")
+            foodIntent.putExtra("itemsCatalogue",sharedViewModel.itemsCatalogueModel)
             startActivity(foodIntent)
 
         }

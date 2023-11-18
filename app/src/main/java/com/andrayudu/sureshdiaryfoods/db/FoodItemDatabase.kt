@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
 
-@Database(entities = [FoodItem::class,CartItem::class],version = 1 , exportSchema = false)
+@Database(entities = [FoodItem::class,CartItem::class],version = 2 , exportSchema = false)
 abstract class FoodItemDatabase :RoomDatabase(){
 
     abstract val foodItemDao:FoodItemDao

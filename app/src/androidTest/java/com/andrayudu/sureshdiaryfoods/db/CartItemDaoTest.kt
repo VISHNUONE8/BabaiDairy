@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.andrayudu.sureshdiaryfoods.getOrAwaitValue
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.google.common.truth.Truth

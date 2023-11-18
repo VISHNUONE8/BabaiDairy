@@ -18,6 +18,9 @@ interface Api {
     ):Call<ResponseBody>
 
 
+    //posts a notification to the admin channel,"Mr.venu is requesting you to accept an order"
+    //token field is not required at all...
+    //title:alert
     @FormUrlEncoded
     @POST("send")
    fun  sendNotification(

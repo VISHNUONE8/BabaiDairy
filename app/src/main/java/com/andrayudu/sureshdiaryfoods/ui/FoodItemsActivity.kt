@@ -22,13 +22,13 @@ import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
+import com.andrayudu.sureshdiaryfoods.model.ItemsCatalogueModel
 
 class FoodItemsActivity : AppCompatActivity() {
 
     private val TAG = "FoodItemsActivity"
 
     private lateinit var foodItemsViewModel: FoodItemsViewModel
-    private var itemNameFromIntent:String? = null
 
     //UI components
     private lateinit var actionBarBackButton: ImageView
@@ -51,15 +51,17 @@ class FoodItemsActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
 
 
-        itemNameFromIntent = intent.getStringExtra("itemName")
+        val itemCategoryFromIntent = intent.getStringExtra("itemName")
+        val itemsCatalogue = intent.getParcelableExtra<ItemsCatalogueModel>("itemsCatalogue")
 
-        initViews()
+
+        initViews(itemCategoryFromIntent)
         initObservers()
         initClickListeners()
         initRecyclerView()
 
-        foodItemsViewModel.getSpecialPricesSnapshot()
-
+        //we are passing the itemsCatalogue,itemCategoryFromIntent which are received from Intent..
+        foodItemsViewModel.getSpecialPricesList(itemsCatalogue,itemCategoryFromIntent)
 
     }
 
@@ -70,17 +72,7 @@ class FoodItemsActivity : AppCompatActivity() {
             updateCartUI(it)
 
         }
-
-        foodItemsViewModel.getStatus().observe(this) {
-            if (it != null) {
-                //indicates the special prices snapshot is loaded...
-                if (it.equals("loaded")) {
-                    foodItemsViewModel.loadItems(itemNameFromIntent)
-                }
-            }
-        }
-
-        foodItemsViewModel.getFirebaseFoodItems().observe(this) {
+        foodItemsViewModel.firebaseFoodItems.observe(this) {
             //as soon as the items load we will hide the progress bar
             binding.idPBLoading.visibility = View.INVISIBLE
             adapter.setList(it)
@@ -105,12 +97,12 @@ class FoodItemsActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViews() {
+    private fun initViews(itemCategoryFromIntent: String?) {
         actionBarBackButton = binding.actionBarFoodItems.findViewById(R.id.actionbar_Back)
         actionBarTextView = binding.actionBarFoodItems.findViewById(R.id.actionbar_Text)
         tTotalCost = binding.tTotalPrice
         tCartQuantity = binding.tCartCount
-        actionBarTextView.text = itemNameFromIntent
+        actionBarTextView.text = itemCategoryFromIntent
 
     }
 

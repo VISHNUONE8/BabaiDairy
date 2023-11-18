@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -36,7 +37,7 @@
                 android:id="@+id/milkCardview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_below="@id/titleTV"
                 app:cardElevation="5dp"
@@ -57,7 +58,6 @@
 
 
                     <TextView
-                        android:id="@+id/category_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -69,17 +69,57 @@
 
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/curdCardview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/milkCardview"
+                android:layout_below="@id/titleTV"
+                app:cardElevation="5dp"
+                app:cardCornerRadius="5dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@mipmap/curd_image" />
+
+
+                    <TextView
+                        android:id="@+id/category_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:text="Curd"
+                        android:textColor="@color/black" />
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/gheeCardview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="10dp"
                 android:layout_below="@id/titleTV"
                 app:cardElevation="5dp"
                 app:cardCornerRadius="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_alignBaseline="@id/milkCardview"
-                android:layout_toEndOf="@id/milkCardview">
+                android:layout_toEndOf="@id/curdCardview">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -112,7 +152,7 @@
                 android:id="@+id/oilCardview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="10dp"
                 android:layout_below="@id/titleTV"
                 android:layout_marginTop="10dp"
                 app:cardElevation="5dp"

@@ -33,9 +33,11 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var networkConnection:NetworkConnection
 
+
     //UI components
     private lateinit var actionBarTextView: TextView
     private lateinit var binding: ActivityHomeBinding
+
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -50,8 +52,37 @@ class HomeActivity : AppCompatActivity() {
         initOnbackPressedDispatcher()
         initObservers()
         checkPermissions()
+        viewModel.loadItemsCatalogue()
+        viewModel.subscribeToSDF()
+
 
     }
+    private fun initObservers() {
+        networkConnection.observe(this) { isConnected ->
+            if (isConnected) {
+                //if the internet is connected and also the itemsCatalogue is loaded then we will display the fragments
+                if (viewModel.isLoaded){
+                    binding.navigationHostFragment.visibility = View.VISIBLE
+                }
+                binding.actionbar.visibility = View.VISIBLE
+                binding.noInternetLayout.visibility = View.GONE
+            } else {
+                binding.navigationHostFragment.visibility = View.GONE
+                binding.actionbar.visibility = View.GONE
+                binding.noInternetLayout.visibility = View.VISIBLE
+                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.itemsCatalogueLive.observe(this, Observer { itemsCatalogueModel->
+            itemsCatalogueModel.let {
+                binding.progressBarHome.visibility = View.GONE
+                binding.navigationHostFragment.visibility = View.VISIBLE
+            }
+        })
+
+    }
+
 
     private fun initOnbackPressedDispatcher() {
         onBackPressedDispatcher.addCallback(this,object :OnBackPressedCallback(true){
@@ -89,34 +120,15 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     //only valid from android 13 and above versions
     //10,11,12 versions are enabled with notifications by default
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkPermissions() {
 
        val perms =  arrayOf(android.Manifest.permission.POST_NOTIFICATIONS)
        val permsRequestCode = 200
        requestPermissions(perms,permsRequestCode)
     }
-
-
-
-    private fun initObservers() {
-        networkConnection.observe(this) { isConnected ->
-            if (isConnected) {
-                binding.navigationHostFragment.visibility = View.VISIBLE
-                binding.actionbar.visibility = View.VISIBLE
-                binding.noInternetLayout.visibility = View.GONE
-            } else {
-                binding.navigationHostFragment.visibility = View.GONE
-                binding.actionbar.visibility = View.GONE
-                binding.noInternetLayout.visibility = View.VISIBLE
-                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show()
-            }
-        }
-
-    }
-
 
 
     override fun onRequestPermissionsResult(

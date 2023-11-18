@@ -92,10 +92,7 @@
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:layout_marginTop="10dp"
-                android:scrollbars="vertical"
                 android:text="Items: "/>
-
-
 
             <TextView
                 android:id="@+id/itemsDisplay"
@@ -104,12 +101,9 @@
                 android:scrollbars="vertical"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_weight="1"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
                 android:text=""/>
-
-
 
         </LinearLayout>
 

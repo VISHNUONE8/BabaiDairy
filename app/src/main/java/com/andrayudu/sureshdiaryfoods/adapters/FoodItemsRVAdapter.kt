@@ -60,10 +60,8 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
 
         CoroutineScope(Dispatchers.IO).launch {
             val getCount = async(Dispatchers.IO) {
-                Log.i(tag, "name is: " + foodItem.Name)
                 //the above value is null if no items are addesd
                 Quantity = cartRepo.getCartItemQuantity(foodItem.Name)
-                Log.i("tag", "the quantity is:$Quantity")
                 //the quantity is null if the item doesnt exist in the cart coalesce or ifnull functions can be used
 
             }
@@ -102,7 +100,7 @@ class MyViewHolder(val binding: FoodItemCardviewBinding, private val cartRepo: C
                 binding.tCount.setText(foodItemsList.get(bindingAdapterPosition).Quantity.toString())
                 //now we should update this into cart database on demand
 
-                Log.i("the list you want is:", "" + foodItemsList.toString())
+
                 clickListener(foodItem)
             }
 

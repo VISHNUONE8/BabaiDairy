@@ -1,10 +1,12 @@
 package com.andrayudu.sureshdiaryfoods
 
+import android.content.ClipData.Item
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andrayudu.sureshdiaryfoods.model.ItemsCatalogueModel
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.andrayudu.sureshdiaryfoods.model.PaymentModel
 import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
@@ -31,6 +33,9 @@ class HomeActivityViewModel(): ViewModel() {
     private val userId = mAuth.currentUser?.uid
 
 
+    //this variable is for knowing itemsCatalogue is loaded or not...
+     var isLoaded:Boolean = false
+
     //stores the userDetails
     // used in both home,profilefrags
     private val _userLive = MutableLiveData<UserRegisterModel?>()
@@ -45,6 +50,12 @@ class HomeActivityViewModel(): ViewModel() {
     private val _datesList = ArrayList<Int>()
      val datesList:ArrayList<Int>
        get() = _datesList
+
+    //ItemsBrochureRelated
+    var itemsCatalogueModel = ItemsCatalogueModel()
+    private val _itemsCatalogueLive = MutableLiveData<ItemsCatalogueModel>()
+    val itemsCatalogueLive : LiveData<ItemsCatalogueModel>
+        get()= _itemsCatalogueLive
 
     //paymentsFrag Related
     private val paymentsList = ArrayList<PaymentModel>()
@@ -95,6 +106,36 @@ class HomeActivityViewModel(): ViewModel() {
         }
 
     }
+    fun loadItemsCatalogue(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val customerPayments = mDb.getReference("ItemsCatalogue")
+                customerPayments.addValueEventListener(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        itemsCatalogueModel = ItemsCatalogueModel()
+                        if (snapshot.exists()){
+
+                                val itemsCatalogueFromDb = snapshot.getValue(ItemsCatalogueModel::class.java)
+                                if (itemsCatalogueFromDb != null) {
+                                    itemsCatalogueModel = itemsCatalogueFromDb
+                                }
+                            }
+                            isLoaded = true
+                            _itemsCatalogueLive.postValue(itemsCatalogueModel)
+                        }
+
+                    override fun onCancelled(error: DatabaseError) {}
+
+                })
+                //mostly the catch will run only if the userId is null(which is never going to happen)
+            }catch (e:Exception){
+                e.printStackTrace()
+                Log.e(TAG,"there is an exception:"+e.message.toString())
+            }
+        }
+
+    }
+
 
     //loads the customer payments related info ...
     fun loadCustomerPayments(){
