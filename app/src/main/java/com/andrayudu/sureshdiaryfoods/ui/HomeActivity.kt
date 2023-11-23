@@ -96,8 +96,8 @@ class HomeActivity : AppCompatActivity() {
     private fun showAlertDialog() {
 
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Are you Sure You want to Exit?")
         builder.setTitle("Exit !")
+        builder.setMessage("Are you Sure You want to Exit?")
         builder.setCancelable(false)
 
         builder.setPositiveButton("Yes",(DialogInterface.OnClickListener { dialog, which ->

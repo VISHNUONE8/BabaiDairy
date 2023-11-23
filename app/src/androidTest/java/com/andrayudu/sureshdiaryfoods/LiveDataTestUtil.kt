@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException
     /* Copyright 2019 Google LLC.
    SPDX-License-Identifier: Apache-2.0 */
     fun <T> LiveData<T>.getOrAwaitValue(
-        time: Long = 2,
+        time: Long = 10,
         timeUnit: TimeUnit = TimeUnit.SECONDS
     ): T {
         var data: T? = null
@@ -19,17 +19,23 @@ import java.util.concurrent.TimeoutException
         val observer = object : Observer<T> {
             override fun onChanged(o: T?) {
                 data = o
-                latch.countDown()
                 this@getOrAwaitValue.removeObserver(this)
+                latch.countDown()
+
             }
         }
 
         this.observeForever(observer)
 
-        // Don't wait indefinitely if the LiveData is not set.
-        if (!latch.await(time, timeUnit)) {
-            throw TimeoutException("LiveData value was never set.")
+        try {
+            // Don't wait indefinitely if the LiveData is not set.
+            if (!latch.await(time, timeUnit)) {
+                throw TimeoutException("LiveData value was never set.")
+            }
+        }finally {
+            this.removeObserver(observer)
         }
+
 
         @Suppress("UNCHECKED_CAST")
         return data as T

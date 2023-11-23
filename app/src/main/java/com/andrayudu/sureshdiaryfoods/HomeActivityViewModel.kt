@@ -1,15 +1,11 @@
 package com.andrayudu.sureshdiaryfoods
 
-import android.content.ClipData.Item
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrayudu.sureshdiaryfoods.model.ItemsCatalogueModel
-import com.andrayudu.sureshdiaryfoods.model.OrderModel
-import com.andrayudu.sureshdiaryfoods.model.PaymentModel
-import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
+import com.andrayudu.sureshdiaryfoods.model.*
 import com.andrayudu.sureshdiaryfoods.utility.Event
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -28,9 +24,11 @@ class HomeActivityViewModel(): ViewModel() {
 
     val TAG = "HomeActivityViewModel"
 
+    //Firebase related
     private val mAuth = FirebaseAuth.getInstance()
     private val mDb   = FirebaseDatabase.getInstance()
     private val userId = mAuth.currentUser?.uid
+
 
 
     //this variable is for knowing itemsCatalogue is loaded or not...
@@ -60,29 +58,15 @@ class HomeActivityViewModel(): ViewModel() {
     //paymentsFrag Related
     private val paymentsList = ArrayList<PaymentModel>()
     private val _paymentListLive = MutableLiveData<List<PaymentModel>>()
-     val paymentListLive : MutableLiveData<List<PaymentModel>>
+     val paymentListLive : LiveData<List<PaymentModel>>
        get()= _paymentListLive
 
 
-    //profileFragRelated
-    //used for logout
+    //profileFragRelated,used for Logout
     private val _eventNotifyLiveData = MutableLiveData<Event<String>>()
      val eventNotifyLiveData :MutableLiveData<Event<String>>
         get() = _eventNotifyLiveData
 
-
-
-    //Admins notif channel,which gets requests from customers..
-    private fun subscribeToAdminNotifications() {
-        Firebase.messaging.subscribeToTopic("notifications")
-            .addOnCompleteListener{task->
-                var msg = "Subscribed"
-                if (!task.isSuccessful){
-                    msg = "Subscribe failed"
-                }
-                Log.i(TAG,"The status of admins Subscription to notifications:${msg}")
-            }
-    }
 
     //General notification channel for all customers
     //once the app is opened ,we make sure the customer is subscribed to this channel,it will run only once in the app lifecycle..
@@ -102,10 +86,20 @@ class HomeActivityViewModel(): ViewModel() {
             } catch (e:Exception){
                 e.printStackTrace()
             }
-
         }
 
     }
+
+    fun callLoadCustomerPayments(){
+        loadCustomerPayments(userId)
+    }
+    fun callLoadOrdersData(){
+        loadCustomerOrders(userId)
+    }
+    fun callLoadUserData(){
+        loadUserData(userId)
+    }
+
     fun loadItemsCatalogue(){
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -135,13 +129,13 @@ class HomeActivityViewModel(): ViewModel() {
         }
 
     }
-
-
     //loads the customer payments related info ...
-    fun loadCustomerPayments(){
+
+
+    fun loadCustomerPayments(usersId:String?){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val customerPayments = mDb.getReference("CustomerPayments").child(userId!!)
+                val customerPayments = mDb.getReference("CustomerPayments").child(usersId!!)
                 customerPayments.addValueEventListener(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         paymentsList.clear()
@@ -151,7 +145,6 @@ class HomeActivityViewModel(): ViewModel() {
                                 if (payment != null) {
                                     paymentsList.add(payment)
                                 }
-
                             }
                             _paymentListLive.postValue(paymentsList)
                         }
@@ -162,7 +155,6 @@ class HomeActivityViewModel(): ViewModel() {
                 })
             //mostly the catch will run only if the userId is null(which is never going to happen)
             }catch (e:Exception){
-                e.printStackTrace()
                 Log.e(TAG,"there is an exception:"+e.message.toString())
             }
         }
@@ -170,11 +162,11 @@ class HomeActivityViewModel(): ViewModel() {
     }
 
     //loads the customers OrdersData and posts it to ordersListLive...
-    fun loadOrdersData(){
+    fun loadCustomerOrders(usersId:String?){
 
         viewModelScope.launch(Dispatchers.IO) {
 
-            val customersOrdersRef =  mDb.getReference("CustomerOrdersTesting").child(userId!!)
+            val customersOrdersRef =  mDb.getReference("CustomerOrdersTesting").child(usersId!!)
             customersOrdersRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     //clearing the arraylist because it will load duplicate values...
@@ -187,8 +179,8 @@ class HomeActivityViewModel(): ViewModel() {
                                 customerOrdersList.add(order)
                             }
                         }
-                        val sortedOrdersList = sortListByDate(customerOrdersList)
-                        createDatesList(sortedOrdersList)
+                        val sortedOrdersList = sortOrdersByDate(customerOrdersList)
+                        createDatesListLogicRV(sortedOrdersList)
                         _ordersListLive.postValue(sortedOrdersList)
 
                     }
@@ -197,16 +189,40 @@ class HomeActivityViewModel(): ViewModel() {
                         _ordersListLive.postValue(customerOrdersList)
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
+                override fun onCancelled(error: DatabaseError) {}
 
             })
         }
     }
 
-    //this function creates a dates list which will be used in  orders RecyclerView...
-    private fun createDatesList(sortedCustomerOrdersList: List<OrderModel>) {
+    //loads the userData and posts it as Live
+    //used  in profileFrag,HomeFrag
+    fun loadUserData(usersId: String?) {
+
+        try{
+            viewModelScope.launch(Dispatchers.IO) {
+                val userReference = mDb.getReference("UsersTesting").child(usersId!!)
+                userReference.addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val userRegisterModel = snapshot.getValue(UserRegisterModel::class.java)
+                            if(userRegisterModel!=null){
+                                _userLive.postValue(userRegisterModel)
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            }
+
+        }catch (e:Exception){
+            Log.i(TAG,"An Exception Occurred:${e.message.toString()}")
+        }
+    }
+
+    //this function creates a 0,1 list from date wise sorted orderslist
+    // which will be used in  orders RecyclerView...
+     fun createDatesListLogicRV(sortedCustomerOrdersList: List<OrderModel>) {
         _datesList.clear()
         var prevDate:String? = null
         for (order in sortedCustomerOrdersList) {
@@ -216,14 +232,10 @@ class HomeActivityViewModel(): ViewModel() {
                 prevDate = order.date
                 _datesList.add(1)
             }
-
         }
-
-
     }
-
     //sorts the customerOrders list by date in descending order...
-    private fun sortListByDate(customerOrdersList: ArrayList<OrderModel>): List<OrderModel> {
+     fun sortOrdersByDate(customerOrdersList: List<OrderModel>): List<OrderModel> {
 
         val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val sortedList = customerOrdersList.sortedByDescending {
@@ -233,35 +245,11 @@ class HomeActivityViewModel(): ViewModel() {
     }
 
 
-    //loads the userData and posts it as Live
-    //used  in profileFrag,HomeFrag
-    fun loadUserData() {
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val userReference = mDb.getReference("UsersTesting").child(userId!!)
-            userReference.addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val userRegisterModel = snapshot.getValue(UserRegisterModel::class.java)
-                        _userLive.postValue(userRegisterModel)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-
-        }
-    }
-
     fun logOut() {
         mAuth.signOut()
         //if the logging out is successful then we will post logout action
         if (mAuth.currentUser == null){
             _eventNotifyLiveData.postValue(Event("Logout"))
         }
-
     }
-
-
 }

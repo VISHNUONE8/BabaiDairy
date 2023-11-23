@@ -14,6 +14,7 @@ import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.PaymentHistoryRVAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentPaymentHistoryBinding
+import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -23,6 +24,7 @@ class PaymentHistoryFragment : Fragment() {
     private val TAG = "PaymentHistoryFragment"
 
     private  val sharedViewModel: HomeActivityViewModel by activityViewModels()
+
 
     //UI components
     private var adapter: PaymentHistoryRVAdapter? = null
@@ -41,12 +43,14 @@ class PaymentHistoryFragment : Fragment() {
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_payment_history, container, false)
 
+
+
+
         initRecyclerView()
         initObservers()
         initClickListeners()
 
-
-        sharedViewModel.loadCustomerPayments()
+        sharedViewModel.callLoadCustomerPayments()
 
         return binding.root
     }

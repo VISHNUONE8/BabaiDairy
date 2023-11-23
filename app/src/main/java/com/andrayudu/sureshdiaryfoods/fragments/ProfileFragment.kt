@@ -44,7 +44,7 @@ class ProfileFragment : Fragment() {
         initObservers()
         initClickListeners()
 
-        sharedViewModel.loadUserData()
+        sharedViewModel.callLoadUserData()
 
         return binding.root
     }
@@ -54,14 +54,27 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(mContext, PasswordResetActivity::class.java))
         }
 
+        binding.relLayoutShippingPolicy.setOnClickListener {
+            val intent = Intent(mContext,PdfViewingActivity::class.java)
+            intent.putExtra("policyLink","https://drive.google.com/u/0/uc?id=1y3dhbuVW5vqF6nL2x12AGXt5M3ZtXGtF&export=download")
+            startActivity(intent)
+        }
+        binding.relLayoutRefundPolicy.setOnClickListener {
+            val intent = Intent(mContext,PdfViewingActivity::class.java)
+            intent.putExtra("policyLink","https://drive.google.com/u/0/uc?id=18T3LcgD4fEUWEj7GcKhzh-O22Sn8FEgp&export=download")
+            startActivity(intent)
+        }
+
+
+        binding.relLayoutAbout.setOnClickListener {
+            Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF  JOY",Toast.LENGTH_SHORT).show()
+        }
+
         binding.relLayoutLogout.setOnClickListener {
             //show the alert dialog to confirm once again....
             showAlertDialog()
         }
 
-        binding.relLayoutAbout.setOnClickListener {
-            Toast.makeText(mContext,"WELCOME TO SDF, \nA TASTE OF  JOY",Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun showAlertDialog() {
@@ -94,6 +107,9 @@ class ProfileFragment : Fragment() {
                     val intent = Intent(mContext, LoginActivity::class.java)
                     startActivity(intent)
                     Toast.makeText(mContext, "User LogOut Success", Toast.LENGTH_SHORT).show()
+                }
+                else if (msg =="exception"){
+                    Toast.makeText(mContext,"An Exception Occurred",Toast.LENGTH_SHORT).show()
                 }
 
             }

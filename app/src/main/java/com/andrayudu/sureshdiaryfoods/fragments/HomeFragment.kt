@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
         initClickListeners()
         initObservers()
 
-        sharedViewModel.loadUserData()
+        sharedViewModel.callLoadUserData()
 
         return binding.root
     }
@@ -96,7 +96,7 @@ class HomeFragment : Fragment() {
                 R.id.curdCardview->{
                     foodIntent.putExtra("itemName", "Curd")
                 }
-                R.id.gheeCardview->{
+                R.id.gheeCardView->{
                     foodIntent.putExtra("itemName", "Ghee")
                 }
             }
@@ -112,7 +112,7 @@ class HomeFragment : Fragment() {
             startActivity(foodIntent)
         }
         binding.curdCardview.setOnClickListener (onClickListener)
-        binding.gheeCardview.setOnClickListener (onClickListener)
+        binding.gheeCardView.setOnClickListener (onClickListener)
 
         binding.oilCardview.setOnClickListener {
             foodIntent.putExtra("itemName", "Oil")

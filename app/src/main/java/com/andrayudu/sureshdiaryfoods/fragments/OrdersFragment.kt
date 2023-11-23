@@ -45,7 +45,7 @@ class OrdersFragment : Fragment() {
 
         initObservers()
         initRecyclerView()
-        sharedViewModel.loadOrdersData()
+        sharedViewModel.callLoadOrdersData()
 
 
 

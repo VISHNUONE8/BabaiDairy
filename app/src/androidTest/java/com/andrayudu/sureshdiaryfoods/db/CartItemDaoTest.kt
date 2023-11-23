@@ -19,6 +19,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CartItemDaoTest {
 
+    //this line helps in executing all the lifecycle related components in flow..
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -33,11 +34,14 @@ class CartItemDaoTest {
             FoodItemDatabase::class.java
         ).build()
         dao = database.cartItemDao
+        println("Ready for testing!");
     }
+
 
     @After
     fun tearDown() {
         database.close()
+        println("Done with the instrumented test!");
     }
 
 

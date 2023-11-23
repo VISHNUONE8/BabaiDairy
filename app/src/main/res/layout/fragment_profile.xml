@@ -132,26 +132,23 @@
             android:layout_height="2dp"
             android:background="@color/colorDivider"/>
 
-
         <RelativeLayout
-            android:id="@+id/relLayoutAdminPanel"
+            android:id="@+id/relLayoutShippingPolicy"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:visibility="gone"
-            tools:visibility="visible"
             android:orientation="horizontal"
 
             >
 
             <TextView
-                android:id="@+id/adminPanel"
+                android:id="@+id/shippingPolicy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 style="@style/TextAppearance.Material3.BodyLarge"
                 android:textSize="20dp"
-                android:text="AdminPanel"
+                android:text="Shipping Policy"
                 />
 
             <ImageView
@@ -162,6 +159,46 @@
                 android:layout_marginStart="100dp"
                 android:src="@drawable/baseline_keyboard_arrow_right_24"/>
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorDivider"/>
+
+        <RelativeLayout
+            android:id="@+id/relLayoutRefundPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+
+            >
+
+            <TextView
+                android:id="@+id/RefundPolicy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="20dp"
+                android:text="Returns Policy"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="100dp"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorDivider"/>
+
+
         <RelativeLayout
             android:id="@+id/relLayoutAbout"
             android:layout_width="match_parent"
@@ -189,6 +226,7 @@
                 android:layout_marginStart="100dp"
                 android:src="@drawable/baseline_keyboard_arrow_right_24"/>
         </RelativeLayout>
+
 
 
 
