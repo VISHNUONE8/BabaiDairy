@@ -14,8 +14,8 @@ android {
         applicationId "com.andrayudu.sureshdiaryfoods"
         minSdk 29
         targetSdk 33
-        versionCode 6
-        versionName "1.8"
+        versionCode 7
+        versionName "1.8.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Use JUnit 5 for local unit tests
@@ -41,9 +41,6 @@ android {
 }
 
 dependencies {
-
-
-
 
     def lifecycle_version = "2.6.0-alpha01"
     def arch_version = "2.1.0"

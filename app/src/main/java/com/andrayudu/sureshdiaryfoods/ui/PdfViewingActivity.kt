@@ -10,12 +10,13 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.andrayudu.sureshdiaryfoods.R
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 
 class PdfViewingActivity : AppCompatActivity() {
 
-
-    private val i = 0
 
     private lateinit var pdfView: WebView
     private lateinit var progress: ProgressBar
@@ -23,9 +24,7 @@ class PdfViewingActivity : AppCompatActivity() {
 
     private val removePdfTopIcon =
         "javascript:(function() {" + "document.querySelector('[role=\"toolbar\"]').remove();})()"
-    private val strArray = arrayOf(
-        "https://drive.google.com/u/0/uc?id=1y3dhbuVW5vqF6nL2x12AGXt5M3ZtXGtF&export=download",
-    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pdf_viewing)
@@ -36,10 +35,10 @@ class PdfViewingActivity : AppCompatActivity() {
 
         initClickListeners()
 
-        val pdfLink = intent.getStringExtra("policyLink")
+        val policyType = intent.getStringExtra("policyType")
 
-        if(pdfLink!=null){
-            showPdfFile(pdfLink)
+        if(policyType!=null){
+            getUrlFromFirebase(policyType)
         }
     }
 
@@ -49,8 +48,36 @@ class PdfViewingActivity : AppCompatActivity() {
         }
     }
 
+    private fun getUrlFromFirebase(policyType:String){
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val utilitiesDb =  FirebaseDatabase.getInstance().getReference("Utilities")
+
+                if (policyType == "Shipping"){
+                    val urlTask =utilitiesDb.child("returnAndRefundPolicyLink").get().await()
+                    val policyLink = urlTask.value
+                    policyLink?.let {
+                        withContext(Dispatchers.Main){
+                            showPdfFile(policyLink.toString())
+                        }
+                    }
+
+                }
+                else{
+                    val urlTask =utilitiesDb.child("shippingPolicyLink").get().await()
+                    val policyLink = urlTask.value
+                    withContext(Dispatchers.Main){
+                        showPdfFile(policyLink.toString())
+                    }
+                }
+            }
+
+
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun showPdfFile(imageString: String) {
+
         showProgress()
         pdfView.invalidate()
         pdfView.settings.javaScriptEnabled = true

@@ -56,12 +56,12 @@ class ProfileFragment : Fragment() {
 
         binding.relLayoutShippingPolicy.setOnClickListener {
             val intent = Intent(mContext,PdfViewingActivity::class.java)
-            intent.putExtra("policyLink","https://drive.google.com/u/0/uc?id=1y3dhbuVW5vqF6nL2x12AGXt5M3ZtXGtF&export=download")
+            intent.putExtra("policyType","Shipping")
             startActivity(intent)
         }
         binding.relLayoutRefundPolicy.setOnClickListener {
             val intent = Intent(mContext,PdfViewingActivity::class.java)
-            intent.putExtra("policyLink","https://drive.google.com/u/0/uc?id=18T3LcgD4fEUWEj7GcKhzh-O22Sn8FEgp&export=download")
+            intent.putExtra("policyType","Return")
             startActivity(intent)
         }
 
