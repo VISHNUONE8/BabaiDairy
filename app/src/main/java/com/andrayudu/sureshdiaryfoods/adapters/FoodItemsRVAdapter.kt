@@ -19,7 +19,6 @@ class FoodItemsRVAdapter(
     context: Context, private val cartRepo:CartItemRepository,
     private val clickListener: (FoodItem)->Unit, private val pencilListener: (FoodItem) -> Unit):RecyclerView.Adapter<MyViewHolder>() {
 
-    //allgood so far
     private val foodItemsList = ArrayList<FoodItem>()
     private val mContext = context
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
