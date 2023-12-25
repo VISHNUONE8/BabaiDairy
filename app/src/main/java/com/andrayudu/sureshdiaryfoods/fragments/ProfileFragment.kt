@@ -64,6 +64,16 @@ class ProfileFragment : Fragment() {
             intent.putExtra("policyType","Return")
             startActivity(intent)
         }
+        binding.relLayoutPrivacyPolicy.setOnClickListener {
+            val intent = Intent(mContext,PdfViewingActivity::class.java)
+            intent.putExtra("policyType","Privacy")
+            startActivity(intent)
+        }
+        binding.relLayoutTandC.setOnClickListener {
+            val intent = Intent(mContext,PdfViewingActivity::class.java)
+            intent.putExtra("policyType","Terms")
+            startActivity(intent)
+        }
 
 
         binding.relLayoutAbout.setOnClickListener {

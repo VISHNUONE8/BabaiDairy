@@ -1,6 +1,8 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.app.Activity
 import android.content.DialogInterface
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +12,8 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -23,6 +27,15 @@ import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.common.IntentSenderForResultStarter
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 
 /*Done clearCoding*/
 class HomeActivity : AppCompatActivity() {
@@ -31,7 +44,11 @@ class HomeActivity : AppCompatActivity() {
 
     private val viewModel:HomeActivityViewModel by viewModels()
 
+    private val UPDATE_REQUEST_CODE = 101
+
     private lateinit var networkConnection:NetworkConnection
+
+    private lateinit var appUpdateManager: AppUpdateManager
 
 
     //UI components
@@ -54,6 +71,11 @@ class HomeActivity : AppCompatActivity() {
         checkPermissions()
         viewModel.loadItemsCatalogue()
         viewModel.subscribeToSDF()
+
+        appUpdateManager  = AppUpdateManagerFactory.create(this)
+        checkUpdate()
+        appUpdateManager.registerListener(appUpdateListener)
+
 
 
     }
@@ -160,4 +182,97 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
+    private val updateLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        // handle callback
+        if (result.data == null) return@registerForActivityResult
+        if (result.resultCode == UPDATE_REQUEST_CODE) {
+            Toast.makeText(this, "Downloading stated", Toast.LENGTH_SHORT).show()
+            if (result.resultCode != Activity.RESULT_OK) {
+                Toast.makeText(this, "Downloading failed" , Toast.LENGTH_SHORT).show()
+            }
+            }
+        }
+    private val updateResultStarter =
+        IntentSenderForResultStarter { intent, _, fillInIntent, flagsMask, flagsValues, _, _ ->
+            val request = IntentSenderRequest.Builder(intent)
+                .setFillInIntent(fillInIntent)
+                .setFlags(flagsValues, flagsMask)
+                .build()
+            // launch updateLauncher
+            updateLauncher.launch(request)
+        }
+
+
+
+    // Create a listener to track request state updates.
+    val listener = InstallStateUpdatedListener { state ->
+        // (Optional) Provide a download progress bar.
+        if (state.installStatus() == InstallStatus.DOWNLOADING) {
+            val bytesDownloaded = state.bytesDownloaded()
+            val totalBytesToDownload = state.totalBytesToDownload()
+            // Show update progress bar.
+        }
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            Snackbar.make(
+                binding.bottomNavigation,
+                "New app is ready",
+                Snackbar.LENGTH_INDEFINITE
+            ).setAction("Restart") {
+                appUpdateManager.completeUpdate()
+            }.show()
+        }
+        // Log state or install the update.
+    }
+    private fun checkUpdate() {
+        val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
+        appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo ->
+            // This example applies an flexible update. To apply a immediate update
+            // instead, pass in AppUpdateType.IMMEDIATE
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                try {
+                    appUpdateManager?.startUpdateFlowForResult(
+                        // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                        appUpdateInfo,
+                        // an activity result launcher registered via registerForActivityResult
+                        updateResultStarter,
+                        //pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
+                        // flexible updates.
+                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                        // Include a request code to later monitor this update request.
+                        UPDATE_REQUEST_CODE
+                    )
+                } catch (exception: IntentSender.SendIntentException) {
+                    Toast.makeText(this, "Something wrong went wrong!", Toast.LENGTH_SHORT).show()
+                }
+
+            } else {
+                Log.d(TAG, "No Update available")
+            }
+        }
+    }
+
+    private val appUpdateListener = InstallStateUpdatedListener { state ->
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            Snackbar.make(
+                binding.bottomNavigation,
+                getString(R.string.new_app_ready),
+                Snackbar.LENGTH_INDEFINITE
+            ).setAction(getString(R.string.restart)) {
+                appUpdateManager.completeUpdate()
+            }.show()
+        }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        appUpdateManager.unregisterListener(appUpdateListener)
+    }
+
+
 }
+

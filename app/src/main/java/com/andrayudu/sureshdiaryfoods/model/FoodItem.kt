@@ -26,6 +26,11 @@ data class FoodItem (
     @ColumnInfo(name = "item_outofstock")
     var isOutOfStock: Boolean=false,
 
+    @ColumnInfo(name = "item_imagelink")
+    var imageLink: String?=null,
+
+
+
 
 ):Comparable<FoodItem>,Parcelable {
     constructor(parcel: Parcel) : this(
@@ -34,7 +39,8 @@ data class FoodItem (
         parcel.readInt(),
         parcel.readString(),
         parcel.readInt(),
-        parcel.readByte() != 0.toByte()
+        parcel.readByte() != 0.toByte(),
+        parcel.readString()
     ) {
     }
 
@@ -51,6 +57,7 @@ data class FoodItem (
         parcel.writeString(Category)
         parcel.writeInt(Preference)
         parcel.writeByte(if (isOutOfStock) 1 else 0)
+        parcel.writeString(imageLink)
     }
 
     override fun describeContents(): Int {

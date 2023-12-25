@@ -4,6 +4,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
     id "androidx.navigation.safeargs.kotlin"
+    id "kotlin-parcelize"
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         applicationId "com.andrayudu.sureshdiaryfoods"
         minSdk 29
         targetSdk 33
-        versionCode 7
-        versionName "1.8.1"
+        versionCode 8
+        versionName "1.8.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Use JUnit 5 for local unit tests
@@ -48,8 +49,11 @@ dependencies {
     def nav_version = "2.5.3"
     def retrofit_version = "2.9.0"
 
+    //For Razorpay checkout SDK
+    implementation 'com.razorpay:checkout:1.6.20'
+
     // for ripple effect
-    implementation 'com.balysv:material-ripple:1.0.2'
+    implementation "com.balysv:material-ripple:1.0.2"
 
     //firebase messaging related
     implementation 'com.google.firebase:firebase-messaging-ktx:23.2.1'

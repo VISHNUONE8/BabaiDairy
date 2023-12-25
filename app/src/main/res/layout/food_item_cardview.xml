@@ -22,9 +22,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/food_card">
             <ImageView
+                android:id="@+id/i_food_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:id="@+id/i_food_image"
                 android:scaleType="centerCrop"
                 android:layout_alignParentTop="true"
                 android:src="@drawable/nutrition_24px"

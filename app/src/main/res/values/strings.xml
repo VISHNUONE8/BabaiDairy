@@ -10,5 +10,8 @@
     <string name="amount_display">%1$s/-</string>
     <string name="progress_btn">Progress Btn</string>
     <string name="outstanding">Outstanding:</string>
+    <string name="new_app_ready">newappready</string>
+    <string name="restart">restart</string>
+    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
 
 </resources>

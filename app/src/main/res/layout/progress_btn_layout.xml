@@ -9,6 +9,8 @@
     app:cardCornerRadius="50dp"
     android:layout_alignParentBottom="true">
 
+
+
     <RelativeLayout
         android:id="@+id/cardInside"
         android:layout_width="match_parent"

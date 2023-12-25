@@ -3,6 +3,7 @@ package com.andrayudu.sureshdiaryfoods.ui
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -10,6 +11,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.andrayudu.sureshdiaryfoods.R
+import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -17,6 +20,7 @@ import kotlinx.coroutines.tasks.await
 
 class PdfViewingActivity : AppCompatActivity() {
 
+    private val Tag = "PdfViewingActivity"
 
     private lateinit var pdfView: WebView
     private lateinit var progress: ProgressBar
@@ -52,24 +56,31 @@ class PdfViewingActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 val utilitiesDb =  FirebaseDatabase.getInstance().getReference("Utilities")
-
-                if (policyType == "Shipping"){
-                    val urlTask =utilitiesDb.child("returnAndRefundPolicyLink").get().await()
-                    val policyLink = urlTask.value
-                    policyLink?.let {
-                        withContext(Dispatchers.Main){
-                            showPdfFile(policyLink.toString())
-                        }
+                val urlTask: Task<DataSnapshot> = when (policyType) {
+                    "Return" -> {
+                        utilitiesDb.child("returnAndRefundPolicyLink").get()
+                    }
+                    "Shipping" -> {
+                        utilitiesDb.child("shippingPolicyLink").get()
+                    }
+                    "Terms" -> {
+                        utilitiesDb.child("termsAndConditions").get()
                     }
 
+                    //else case contains privacy policy
+                    else -> {
+                        utilitiesDb.child("privacyPolicyLink").get()
+                    }
                 }
-                else{
-                    val urlTask =utilitiesDb.child("shippingPolicyLink").get().await()
-                    val policyLink = urlTask.value
+
+
+               val policyLink =  urlTask.await().value
+               policyLink?.let {
                     withContext(Dispatchers.Main){
                         showPdfFile(policyLink.toString())
                     }
                 }
+
             }
 
 

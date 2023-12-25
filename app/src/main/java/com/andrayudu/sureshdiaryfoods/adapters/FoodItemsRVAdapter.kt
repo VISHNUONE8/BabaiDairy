@@ -11,6 +11,7 @@ import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FoodItemCardviewBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -34,6 +35,7 @@ class FoodItemsRVAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        Glide.with(mContext).load(foodItemsList[position].imageLink).into(holder.binding.iFoodImage)
         holder.bind(mContext,position,foodItemsList,foodItemsList[position],clickListener,pencilListener)
     }
 

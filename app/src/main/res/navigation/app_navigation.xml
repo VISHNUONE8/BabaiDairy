@@ -12,9 +12,6 @@
         android:name="com.andrayudu.sureshdiaryfoods.fragments.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home"/>
-
-
-
     <fragment
         android:id="@+id/ordersFragment"
         android:name="com.andrayudu.sureshdiaryfoods.fragments.OrdersFragment"

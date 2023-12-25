@@ -1,13 +1,18 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
+import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -20,12 +25,20 @@ import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.utility.ProgressButton
+import com.razorpay.Checkout
+import com.razorpay.ExternalWalletListener
+import com.razorpay.PaymentData
+import com.razorpay.PaymentResultWithDataListener
+import org.json.JSONObject
+import org.w3c.dom.Text
 
-class CartActivity : AppCompatActivity() {
+class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalWalletListener,DialogInterface.OnClickListener {
 
     private val tag= "CartActivity"
 
     private lateinit var cartViewModel: CartViewModel
+
+    private lateinit var alertDialogBuilder: AlertDialog.Builder
 
     //UI components
     private lateinit var progressButton: ProgressButton
@@ -57,9 +70,63 @@ class CartActivity : AppCompatActivity() {
         //the main work of this activity starts from here
         initObservers()
 
+        Checkout.preload(applicationContext)
+        alertDialogBuilder = AlertDialog.Builder(this@CartActivity)
+        alertDialogBuilder.setTitle("PaymentResult")
+        alertDialogBuilder.setCancelable(true)
+        alertDialogBuilder.setPositiveButton("Ok",this)
+        val button:View = findViewById(R.id.progressBtnPayNow)
+        val buttonText: TextView = button.findViewById(R.id.progressBtnText)
+        buttonText.text = "PayNow"
+        button.setOnClickListener {
+            startPayment()
+        }
+
+
         cartViewModel.runtimeEnableAutoInit()
 
     }
+
+    private fun startPayment() {
+
+
+        /*
+        *  You need to pass current activity in order to let Razorpay create CheckoutActivity
+        * */
+        val activity: Activity = this
+        val checkout = Checkout()
+//        val etApiKey = findViewById<EditText>(R.id.et_api_key)
+//        val etCustomOptions = findViewById<EditText>(R.id.et_custom_options)
+        if (!TextUtils.isEmpty(binding.tGrandTotal.text.toString())){
+            checkout.setKeyID("rzp_test_K6KTKSGEynrk1s")
+        }
+        try {
+            var options = JSONObject()
+            if (TextUtils.isEmpty(binding.tGrandTotal.text.toString())){
+//                options = JSONObject(etCustomOptions.text.toString())
+            }else{
+                options.put("name","Razorpay Corp")
+                options.put("description","Demoing Charges")
+                //You can omit the image option to fetch the image from dashboard
+                options.put("image","https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
+                options.put("currency","INR")
+                options.put("amount","100")
+                options.put("send_sms_hash",true);
+
+                val prefill = JSONObject()
+                prefill.put("email","test@razorpay.com")
+                prefill.put("contact","9021066696")
+
+                options.put("prefill",prefill)
+            }
+
+            checkout.open(activity,options)
+        }catch (e: Exception){
+            Toast.makeText(activity,"Error in payment: "+ e.message,Toast.LENGTH_LONG).show()
+            e.printStackTrace()
+        }
+    }
+
 
     private fun initProgressBtn() {
         val btnName = "ORDER NOW"
@@ -183,8 +250,33 @@ class CartActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPaymentSuccess(p0: String?, p1: PaymentData?) {
+        try{
+            alertDialogBuilder.setMessage("Payment Successful : Payment ID: $p0\nPayment Data: ${p1?.data}")
+            alertDialogBuilder.show()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
 
+    override fun onPaymentError(p0: Int, p1: String?, p2: PaymentData?) {
+        try {
+            alertDialogBuilder.setMessage("Payment Failed : Payment Data: ${p2?.data}")
+            alertDialogBuilder.show()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }    }
 
+    override fun onExternalWalletSelected(p0: String?, p1: PaymentData?) {
+        try{
+            alertDialogBuilder.setMessage("External wallet was selected : Payment Data: ${p1?.data}")
+            alertDialogBuilder.show()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }    }
+
+    override fun onClick(dialog: DialogInterface?, which: Int) {
+    }
 
 
 }

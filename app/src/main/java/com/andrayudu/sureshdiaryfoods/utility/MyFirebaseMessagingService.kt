@@ -65,7 +65,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         super.onMessageReceived(message)
         Log.i("TAG","the notification received is"+message.notification?.title.toString())
 
-        if (message.getNotification() != null) {
+        if (message.notification != null) {
             // Since the notification is received directly from
             // FCM, the title and the body can be fetched
             // directly as below.
@@ -74,10 +74,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         }
     }
 
-    override fun onMessageSent(msgId: String) {
-        super.onMessageSent(msgId)
-        Log.i("the message has been sent successfully","bro"+msgId)
-    }
     @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     private fun showNotification(title: String?, body: String?) {
