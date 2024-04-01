@@ -189,6 +189,7 @@ class HomeActivity : AppCompatActivity() {
         if (result.data == null) return@registerForActivityResult
         if (result.resultCode == UPDATE_REQUEST_CODE) {
             Toast.makeText(this, "Downloading stated", Toast.LENGTH_SHORT).show()
+            Log.i("updateLauncher","Downloading started..")
             if (result.resultCode != Activity.RESULT_OK) {
                 Toast.makeText(this, "Downloading failed" , Toast.LENGTH_SHORT).show()
             }
@@ -241,7 +242,7 @@ class HomeActivity : AppCompatActivity() {
                         updateResultStarter,
                         //pass 'AppUpdateType.FLEXIBLE' to newBuilder() for
                         // flexible updates.
-                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
                         // Include a request code to later monitor this update request.
                         UPDATE_REQUEST_CODE
                     )

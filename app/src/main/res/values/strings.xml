@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SureshDairyFoods</string>
+    <string name="app_name">Suresh Dairy Foods</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="rupee_symbol_new">₹%1$s </string>
     <string name="rupee_symbol">₹ </string>
