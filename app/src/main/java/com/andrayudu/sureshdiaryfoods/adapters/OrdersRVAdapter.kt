@@ -67,6 +67,7 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
         }
 
         val orderStatusStr = getOrderStatus(orderModel.orderStatus)
+        //kdslfjlkasf
         val cartItems = orderModel.cartItemList
         val firstItemName = cartItems?.get(0)?.Name
         val firstItemQuantity = cartItems?.get(0)?.Quantity
