@@ -6,6 +6,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:theme="@style/Theme.SureshDiaryFoods"
        >
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -21,14 +22,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/food_card">
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/i_food_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:scaleType="centerCrop"
-                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/nutrition_24px"
-                android:contentDescription="food_image" />
+                android:contentDescription="food_image"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000">
+
+            </de.hdodenhof.circleimageview.CircleImageView>
             <TextView
                 android:id="@+id/t_food_name"
                 android:layout_width="wrap_content"

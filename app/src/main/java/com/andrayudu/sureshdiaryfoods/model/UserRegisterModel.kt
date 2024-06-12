@@ -15,7 +15,8 @@ data class UserRegisterModel (var Name:String?=null,
                               //whenever the outstanding is updated,this val will also be updated...
                               var updatedAt:String?=null,
                               var isExpanded:Boolean = false,
-                              var onHold:Boolean = false
+                              var onHold:Boolean = false,
+                              var address:String?=null
 
 
 ):Parcelable {

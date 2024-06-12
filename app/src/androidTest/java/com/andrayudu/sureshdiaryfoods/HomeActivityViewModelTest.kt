@@ -1,9 +1,8 @@
 package com.andrayudu.sureshdiaryfoods
 
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.andrayudu.sureshdiaryfoods.model.OrderModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivityViewModel
 import com.google.common.truth.Truth
 
 import org.junit.Before

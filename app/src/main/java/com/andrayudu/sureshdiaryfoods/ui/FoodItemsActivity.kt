@@ -15,12 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.adapters.FoodItemsRVAdapter
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityFoodItemsBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.db.FoodItemDatabase
-import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
 import com.andrayudu.sureshdiaryfoods.model.ItemsCatalogueModel
 
@@ -29,6 +29,8 @@ class FoodItemsActivity : AppCompatActivity() {
     private val TAG = "FoodItemsActivity"
 
     private lateinit var foodItemsViewModel: FoodItemsViewModel
+    private lateinit var itemCategoryFromIntent: String
+    private lateinit var itemsCatalogue:ItemsCatalogueModel
 
     //UI components
     private lateinit var actionBarBackButton: ImageView
@@ -51,8 +53,8 @@ class FoodItemsActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
 
 
-        val itemCategoryFromIntent = intent.getStringExtra("itemName")
-        val itemsCatalogue = intent.getParcelableExtra<ItemsCatalogueModel>("itemsCatalogue")
+         itemCategoryFromIntent = intent.getStringExtra("itemName").toString()
+         itemsCatalogue = intent.getParcelableExtra<ItemsCatalogueModel>("itemsCatalogue")!!
 
 
         initViews(itemCategoryFromIntent)
@@ -63,6 +65,11 @@ class FoodItemsActivity : AppCompatActivity() {
         //we are passing the itemsCatalogue,itemCategoryFromIntent which are received from Intent..
         foodItemsViewModel.getSpecialPricesList(itemsCatalogue,itemCategoryFromIntent)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        foodItemsViewModel.firebaseFoodItems
     }
 
     private fun initObservers() {

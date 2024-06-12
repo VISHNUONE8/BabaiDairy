@@ -18,11 +18,9 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.NetworkConnection
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityHomeBinding
@@ -42,7 +40,7 @@ class HomeActivity : AppCompatActivity() {
 
     private val TAG = "HomeActivity"
 
-    private val viewModel:HomeActivityViewModel by viewModels()
+    private val viewModel: HomeActivityViewModel by viewModels()
 
     private val UPDATE_REQUEST_CODE = 101
 

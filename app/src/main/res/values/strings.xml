@@ -13,5 +13,7 @@
     <string name="new_app_ready">newappready</string>
     <string name="restart">restart</string>
     <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="otp_verification">otp_verification</string>
+    <string name="Address">address</string>
 
 </resources>

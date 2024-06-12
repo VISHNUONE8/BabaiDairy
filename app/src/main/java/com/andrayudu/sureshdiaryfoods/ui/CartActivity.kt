@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,11 +29,10 @@ import com.razorpay.ExternalWalletListener
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
 import org.json.JSONObject
-import org.w3c.dom.Text
 
 class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalWalletListener,DialogInterface.OnClickListener {
 
-    private val tag= "CartActivity"
+    private val TAG= "CartActivity"
 
     private lateinit var cartViewModel: CartViewModel
 
@@ -71,6 +69,8 @@ class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalW
         initObservers()
 
         Checkout.preload(applicationContext)
+
+
         alertDialogBuilder = AlertDialog.Builder(this@CartActivity)
         alertDialogBuilder.setTitle("PaymentResult")
         alertDialogBuilder.setCancelable(true)
@@ -101,16 +101,17 @@ class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalW
             checkout.setKeyID("rzp_test_K6KTKSGEynrk1s")
         }
         try {
-            var options = JSONObject()
+            val options = JSONObject()
             if (TextUtils.isEmpty(binding.tGrandTotal.text.toString())){
 //                options = JSONObject(etCustomOptions.text.toString())
             }else{
+                Log.i(TAG,"else loop is executed")
                 options.put("name","Razorpay Corp")
                 options.put("description","Demoing Charges")
                 //You can omit the image option to fetch the image from dashboard
                 options.put("image","https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
                 options.put("currency","INR")
-                options.put("amount","100")
+                options.put("amount","200")
                 options.put("send_sms_hash",true);
 
                 val prefill = JSONObject()
@@ -194,23 +195,23 @@ class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalW
         cartViewModel.getUserDetails().observe(this, Observer {
 
             cartViewModel.getCartItems().observe(this, observer)
-            Log.i(tag, "User details have been loaded successfully")
+            Log.i(TAG, "User details have been loaded successfully")
 
         })
 
         cartViewModel.getGrandTotal().observe(this, Observer {
             //the grand total is the final calculation that will be done
             //so it must definitely have an observer
-            Log.i(tag, "grandtotal is updated...")
+            Log.i(TAG, "grandtotal is updated...")
             updateUI(it)
             binding.idPBLoading.visibility = View.GONE
             binding.tDelivery.visibility = View.VISIBLE
-            binding.progressBtnOrderNow.visibility = View.VISIBLE
+//            binding.progressBtnOrderNow.visibility = View.VISIBLE
         })
 
         cartViewModel.getStatusLive().observe(this, Observer {
             if (it!=null) {
-                if (it.equals("Limit")) {
+                if (it == "Limit") {
                     progressButton.buttonFinished()
                     Toast.makeText(
                         this,
@@ -236,7 +237,7 @@ class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalW
     }
 
     private fun updateUI(grandTotal:String?) {
-        Log.i(tag,"updateUI function is called")
+        Log.i(TAG,"updateUI function is called")
         binding.tTotal.text = getString(R.string.rupee_symbol) + " " + cartViewModel.getCartValue()
         binding.tGrandTotal.text = getString(R.string.rupee_symbol) + " " +grandTotal
         binding.tDelivery.text=getString(R.string.rupee_symbol) + " " + cartViewModel.getTransportValue()
@@ -252,8 +253,10 @@ class CartActivity : AppCompatActivity(),PaymentResultWithDataListener,ExternalW
 
     override fun onPaymentSuccess(p0: String?, p1: PaymentData?) {
         try{
-            alertDialogBuilder.setMessage("Payment Successful : Payment ID: $p0\nPayment Data: ${p1?.data}")
+            alertDialogBuilder.setMessage("Payment Successful \n : Payment ID: $p0\nPayment Data: ${p1?.data}")
             alertDialogBuilder.show()
+            cartViewModel.placeOrder()
+
         }catch (e: Exception){
             e.printStackTrace()
         }

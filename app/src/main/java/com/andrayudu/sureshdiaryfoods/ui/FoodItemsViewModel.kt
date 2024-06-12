@@ -2,9 +2,9 @@ package com.andrayudu.sureshdiaryfoods.ui
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.model.FoodItem
-import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.ItemsCatalogueModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot

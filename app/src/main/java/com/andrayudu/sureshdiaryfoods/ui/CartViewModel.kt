@@ -1,17 +1,20 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.andrayudu.sureshdiaryfoods.Api
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
 import com.andrayudu.sureshdiaryfoods.model.CartItem
 import com.andrayudu.sureshdiaryfoods.model.OrderModel
 import com.andrayudu.sureshdiaryfoods.model.UserRegisterModel
+import com.andrayudu.sureshdiaryfoods.utility.RetrofitClientInstance
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -39,11 +42,11 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     private val repo = repository
     private val cartItems = repository.cartItems
 
-    private var user:UserRegisterModel? = null
-    private var cartItemsList:List<CartItem>? = null
+    private var user: UserRegisterModel? = null
+    private var cartItemsList: List<CartItem>? = null
     private var cartValue: Int = 0
     private var orderTransportCost: Int = 0
-    var userTransportCharges:Int = 0
+    var userTransportCharges: Int = 0
 
     //LiveData
     private val grandTotal = MutableLiveData<String?>()
@@ -52,14 +55,14 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     private val userDetails = MutableLiveData<UserRegisterModel?>()
 
 
-
-
     fun getCartValue(): Int {
         return cartValue
     }
+
     fun getStatusLive(): LiveData<String?> {
         return statusLive
     }
+
     fun getTransportValue(): String {
         return orderTransportCost.toString()
     }
@@ -67,18 +70,17 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     //this function calculates the total cost of items in the cart(without transport)
     fun cartItemsCost() {
 
-         cartItemsList = cartItems.value
+        cartItemsList = cartItems.value
 
-        if(cartItemsList!=null) {
+        if (cartItemsList != null) {
             //this list will be uploaded to firebase soo we have to keep it up-to-date
 
             cartValue = 0
             for (cartItem in cartItemsList!!) {
-                if(cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")){
+                if (cartItem.Category.equals("Kova") || cartItem.Category.equals("KovaSpl")) {
                     cartValue =
                         (cartValue + (cartItem.Price * cartItem.Quantity * 3))
-                }
-                else{
+                } else {
                     cartValue =
                         (cartValue + (cartItem.Price * cartItem.Quantity))
                 }
@@ -88,44 +90,45 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         //here we are calculating the Transport charges for a customer...
         viewModelScope.launch(Dispatchers.IO) {
 
-                //if the user has transport enabled
-                if (userTransportCharges > 0){
-                    var kovaCount = 0
-                    //kovaCountFromDb uses default context i.e Dispatchers.IO used above in viewmodelscope
-                    val kovaCountFromDbTask =launch {
-                        kovaCount = repository.getKovaCount()
-                    }
-                    kovaCountFromDbTask.join()
-                    Log.i(TAG, "kova category count is calculated$kovaCount")
-                    if (kovaCountFromDbTask.isCompleted){
-                        orderTransportCost = (userTransportCharges * kovaCount)
-                        Log.i(TAG,"the transport charges for customer are:${orderTransportCost}")
-                        transportChargesLive.postValue(orderTransportCost.toString())
-                    }
-
+            //if the user has transport enabled
+            if (userTransportCharges > 0) {
+                var kovaCount = 0
+                //kovaCountFromDb uses default context i.e Dispatchers.IO used above in viewmodelscope
+                val kovaCountFromDbTask = launch {
+                    kovaCount = repository.getKovaCount()
                 }
-                //if the user has transport disabled i.e 0
-                else{
+                kovaCountFromDbTask.join()
+                Log.i(TAG, "kova category count is calculated$kovaCount")
+                if (kovaCountFromDbTask.isCompleted) {
+                    orderTransportCost = (userTransportCharges * kovaCount)
+                    Log.i(TAG, "the transport charges for customer are:${orderTransportCost}")
                     transportChargesLive.postValue(orderTransportCost.toString())
                 }
-                grandTotal.postValue((cartValue + (orderTransportCost)).toString())
+
+            }
+            //if the user has transport disabled i.e 0
+            else {
+                transportChargesLive.postValue(orderTransportCost.toString())
+            }
+            grandTotal.postValue((cartValue + (orderTransportCost)).toString())
 
         }
     }
 
-    fun getCartItems():LiveData<List<CartItem>>{
+    fun getCartItems(): LiveData<List<CartItem>> {
         return cartItems
     }
-    fun getGrandTotal():LiveData<String?>{
+
+    fun getGrandTotal(): LiveData<String?> {
         return grandTotal
     }
 
     // this fun is used to get the customers details like name,outstanding balance,mainly for userTransportCharges...
-    fun getUserDetails():LiveData<UserRegisterModel?> {
+    fun getUserDetails(): LiveData<UserRegisterModel?> {
         //since the user is already in login this can never be null
         //for admins ease of viewing the order will be saved under the users name in adminOrders db folder i.e "Orders"
-        if (userId!=null && userDetails.value == null){
-            viewModelScope.launch(Dispatchers.IO){
+        if (userId != null && userDetails.value == null) {
+            viewModelScope.launch(Dispatchers.IO) {
                 try {
                     val userReference = mDb.getReference("UsersTesting").child(userId!!)
                     user = userReference.get().await().getValue(UserRegisterModel::class.java)
@@ -135,7 +138,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
                         Log.i(TAG, "the transport charges are:$userTransportCharges")
                     }
 
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     Log.e(TAG, "the exception is:${e.message.toString()}")
 
                 }
@@ -145,7 +148,7 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     }
 
     //created orderId using system timeinMillis+"random number from 1 to 1000"
-    private fun createOrderId():String{
+    private fun createOrderId(): String {
         return StringBuilder()
             .append(System.currentTimeMillis())
             .append(abs(Random().nextInt(1000)))
@@ -184,49 +187,50 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
 
                 //if the account status of the user is in hold ,then we will not proceed further with the order...
                 //this is useful for publishing updatess...
-                if(user!!.onHold){
+                if (user!!.onHold) {
                     statusLive.postValue("Hold")
                     return@launch
                 }
 
-                //if the limit exceeds then we will not proceed with the order
-                else if (order.orderValue > (limit)) {
-                    Log.i(TAG, "The order value is exceeding the usersLimit")
-                    statusLive.postValue("Limit")
-                    return@launch
-                }
+//                //if the limit exceeds then we will not proceed with the order
+//                else if (order.orderValue > (limit)) {
+//                    Log.i(TAG, "The order value is exceeding the usersLimit")
+//                    statusLive.postValue("Limit")
+//                    return@launch
+//                }
 
-                // outstanding is -ve balancethen we will place the order in hold state ie -1
-                else if ((outstanding) <  0) {
-                    //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
-                    order.orderStatus = -1
-                    sendNotifToAdmin(order)
-                }
+//                // outstanding is -ve balancethen we will place the order in hold state ie -1
+//                else if ((outstanding) <  0) {
+//                    //order status -1 means the order is in waiting stage and will have to get acceptance from th admin ...
+//                    order.orderStatus = -1
+//                    sendNotifToAdmin(order)
+//                }
                 else {
 
-                    order.orderStatus = 0
                     //orderstatus 0 implies that the orderplaced succesfully
+                    order.orderStatus = 0
 
                 }
 
+                createRazorpayOrder()
                 updateToDb(order)
 
 
             }
 
-        }catch (e:Exception){
-            Log.e("TAG","the error is:${e.message.toString()}")
+        } catch (e: Exception) {
+            Log.e("TAG", "the error is:${e.message.toString()}")
         }
 
 
     }
 
     //updates the order details to both customerOrders and Orders db
-    private suspend fun updateToDb( order: OrderModel) {
+    private suspend fun updateToDb(order: OrderModel) {
 
         val orderId = order.orderId
 
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             //customerOrders is the db reference which is used for customers
             val customerOrdersRef = mDb.getReference("CustomerOrdersTesting").child(userId!!)
             //Orders is the db reference which is used for Admin
@@ -248,6 +252,38 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         }
 
     }
+
+    private fun createRazorpayOrder() {
+        viewModelScope.launch {
+            val merchantOrderId = createOrderId()
+            val service =
+                RetrofitClientInstance.retrofitInstance!!.create(Api::class.java)
+            val response = service.createOrder(merchantOrderId, 1000.0)
+            if (response.isSuccessful) {
+                val body = response.body()
+                val rzpOrderId = body?.get("rzp_order_id")
+                val rzpId = body?.get("rzp_id")
+                if (rzpId != null && rzpOrderId != null) {
+                    Log.i(
+                        TAG,
+                        "generateOrderId: Razorpay order id: $rzpOrderId || Razorpay Id: $rzpId"
+                    )
+//                    makePayment(
+//                        merchantOrderId,
+//                        rzpOrderId.toString(),
+//                        rzpId.toString(),
+//                        amount
+//                    )
+                } else {
+                    Log.i("TAG", "Failed to generate order id")
+
+                }
+            } else {
+                Log.i("TAG", "Failed to generate order id")
+            }
+        }
+    }
+
 
     private fun sendNotifToAdmin(order: OrderModel) {
         val retrofit = Retrofit.Builder()
@@ -281,10 +317,10 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
     }
 
     fun clearCart() {
-         viewModelScope.launch(Dispatchers.IO) {
-             repo.deleteAll()
-             statusLive.postValue("Deleted")
-         }
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteAll()
+            statusLive.postValue("Deleted")
+        }
 
     }
 
@@ -313,9 +349,8 @@ class CartViewModel(private val repository: CartItemRepository):ViewModel() {
         }
 
     }
-
-
 }
+
 
 class CartViewModelFactory(private val repository: CartItemRepository): ViewModelProvider.Factory {
     override fun<T: ViewModel> create(modelClass: Class<T>):T{

@@ -15,8 +15,8 @@ android {
         applicationId "com.andrayudu.sureshdiaryfoods"
         minSdk 29
         targetSdk 33
-        versionCode 5
-        versionName "1.8.2"
+        versionCode 12
+        versionName "1.8.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Use JUnit 5 for local unit tests
@@ -49,16 +49,34 @@ dependencies {
     def nav_version = "2.5.3"
     def retrofit_version = "2.9.0"
 
-    //For Razorpay checkout SDK
-    implementation 'com.razorpay:checkout:1.6.20'
 
-    // for ripple effect
-    implementation "com.balysv:material-ripple:1.0.2"
+    // Feature module Support
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.5.1")
 
     //firebase messaging related
     implementation 'com.google.firebase:firebase-messaging-ktx:23.2.1'
     implementation 'androidx.test:core-ktx:1.5.0'
-    
+
+
+
+    //Jetpack compose
+    implementation 'androidx.activity:activity-compose:1.3.0-alpha06'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+
+    // Jetpack Compose Integration
+    implementation("androidx.navigation:navigation-compose:2.5.1")
+
+    // Razorpay checkout SDK
+    implementation 'com.razorpay:checkout:1.6.20'
+
+    // ripple effect
+    implementation "com.balysv:material-ripple:1.0.2"
+
+
 //Splash Screen API
     implementation("androidx.core:core-splashscreen:1.0.1")
 //SwipeDecorator
@@ -68,12 +86,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
 
-// Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.5.1")
 
-
-    // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:2.5.1")
 
 
     // ViewModel & LiveData
@@ -108,9 +121,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     //Firebase Auth Dependency
-    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation platform('com.google.firebase:firebase-bom:32.8.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
+//    implementation 'com.google.android.recaptcha:recaptcha:18.4.0'
 
     //Firebase RealtimeDatabase Dependency
     implementation 'com.google.firebase:firebase-database-ktx'

@@ -10,11 +10,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.PaymentHistoryRVAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentPaymentHistoryBinding
-import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

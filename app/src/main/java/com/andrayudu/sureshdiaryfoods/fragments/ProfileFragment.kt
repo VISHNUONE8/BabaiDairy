@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentProfileBinding
 import com.andrayudu.sureshdiaryfoods.ui.*
@@ -114,7 +114,7 @@ class ProfileFragment : Fragment() {
                 if(msg == "Logout"){
 
                     requireActivity().finish()
-                    val intent = Intent(mContext, LoginActivity::class.java)
+                    val intent = Intent(mContext, OtpLoginActivity::class.java)
                     startActivity(intent)
                     Toast.makeText(mContext, "User LogOut Success", Toast.LENGTH_SHORT).show()
                 }
@@ -132,7 +132,8 @@ class ProfileFragment : Fragment() {
                 val role = userDetails.role
 
                 binding.usernameTV.text = userDetails.Name
-                binding.outstandingTV.text = getString(R.string.amount_display,("${userDetails.Outstanding}"))
+                binding.outstandingTV.text = userDetails.address
+//                binding.outstandingTV.text = getString(R.string.amount_display,("${userDetails.Outstanding}"))
                 binding.roleTV.text = role
             }
         }

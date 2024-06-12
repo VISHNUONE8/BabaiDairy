@@ -8,7 +8,7 @@ class CartItemRepository(private val cartItemDao: CartItemDao) {
 
     val cartItems = cartItemDao.getAllCartItems()
 
-    suspend fun insert(cartItem:CartItem):Long{
+    suspend fun insert(cartItem: CartItem):Long{
         return cartItemDao.insertCartItem(cartItem)
     }
     suspend fun getCartItemQuantity(itemName:String):Int{
@@ -21,7 +21,7 @@ class CartItemRepository(private val cartItemDao: CartItemDao) {
         return cartItemDao.getKovaCount()
     }
 
-    suspend fun update(cartItem:CartItem):Int{
+    suspend fun update(cartItem: CartItem):Int{
         return cartItemDao.updateCartItem(cartItem)
     }
     suspend fun delete(name:String):Int{

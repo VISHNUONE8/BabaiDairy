@@ -73,10 +73,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_marginStart="10dp"
                     android:includeFontPadding="false"
-                    android:text="@string/outstanding"
+                    android:text="@string/Address"
                     android:textSize="14sp" />
                 <TextView
                     android:id="@+id/outstandingTV"
@@ -109,6 +108,7 @@
         <RelativeLayout
             android:id="@+id/relLayoutChangePassword"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="40dp"
             android:orientation="horizontal"
 

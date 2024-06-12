@@ -29,6 +29,13 @@ interface Api {
         @Field("body")body:String
     ):Call<ResponseBody>
 
+    @FormUrlEncoded
+    @POST("/createorder")
+    suspend fun createOrder(
+        @Field("orderid") merchantOrderId: String,
+        @Field("amount") amount: Double
+    ): Response<Map<String, Any>>
+
 
 
 }

@@ -1,12 +1,10 @@
 package com.andrayudu.sureshdiaryfoods.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -14,15 +12,17 @@ import androidx.databinding.DataBindingUtil
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.ActivityLoginBinding
 import com.andrayudu.sureshdiaryfoods.model.TokenSavingModel
+import com.andrayudu.sureshdiaryfoods.utility.Helpers
 import com.andrayudu.sureshdiaryfoods.utility.ProgressButton
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -32,6 +32,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var mAuth:FirebaseAuth
     private var email:String? = null
     private var password:String? = null
+    private var helpers: Helpers? = null
+
 
     //UI components
     private lateinit var progressButton: ProgressButton
@@ -43,7 +45,9 @@ class LoginActivity : AppCompatActivity() {
 
         installSplashScreen()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        mAuth  = Firebase.auth
+        mAuth  = FirebaseAuth.getInstance()
+
+        helpers = Helpers(this)
 
         initProgressBtn()
         initClickListeners()
@@ -59,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
     private fun initClickListeners() {
         binding.progressBtnLogin.setOnClickListener {
 
-            hideKeyboard(this)
+            helpers?.hideKeyboard(this)
             progressButton.buttonActivated()
             //if the validation is done then loginuser method will be called
             if(validateInputs()){
@@ -157,18 +161,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    //hides the keyboard and this is invoked on clicking login button
-    fun hideKeyboard(activity: Activity) {
-        val imm: InputMethodManager =
-            activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
+
 
     override fun onStart() {
         super.onStart()

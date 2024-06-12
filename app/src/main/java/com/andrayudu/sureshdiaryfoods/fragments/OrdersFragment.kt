@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.adapters.OrdersRVAdapter
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentOrdersBinding

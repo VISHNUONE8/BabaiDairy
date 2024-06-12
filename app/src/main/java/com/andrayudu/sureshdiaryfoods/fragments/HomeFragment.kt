@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import com.andrayudu.sureshdiaryfoods.HomeActivityViewModel
+import com.andrayudu.sureshdiaryfoods.ui.HomeActivityViewModel
 import com.andrayudu.sureshdiaryfoods.R
 import com.andrayudu.sureshdiaryfoods.databinding.FragmentHomeBinding
 import com.andrayudu.sureshdiaryfoods.db.CartItemRepository
