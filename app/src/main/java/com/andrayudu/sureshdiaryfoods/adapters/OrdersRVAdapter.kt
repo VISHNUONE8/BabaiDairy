@@ -66,7 +66,7 @@ class OrdersViewHolder(val binding: CustomerOrdersItemBinding,val datesList: Arr
             binding.dateTV.text = orderModel.date
         }
 
-        //djdsjf
+        //djdsjfsergre
 
         val orderStatusStr = getOrderStatus(orderModel.orderStatus)
         //kdslfjlkasf
