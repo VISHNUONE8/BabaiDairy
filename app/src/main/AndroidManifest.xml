@@ -10,17 +10,17 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/applogo"
+        android:icon="@drawable/babaidairy"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/SplashScreenTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.LoginActivity"
+            android:name="com.andrayudu.babaidairy.ui.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.PdfViewingActivity"
+            android:name="com.andrayudu.babaidairy.ui.PdfViewingActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <!--
@@ -39,7 +39,7 @@
             android:resource="@color/colorAccent" />
 
         <service
-            android:name=".utility.MyFirebaseMessagingService"
+            android:name="com.andrayudu.babaidairy.utility.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -47,33 +47,33 @@
         </service>
 
         <activity
-            android:name=".ui.OrderDetailsActivity"
+            android:name="com.andrayudu.babaidairy.ui.OrderDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <activity
-            android:name=".ui.PasswordResetActivity"
+            android:name="com.andrayudu.babaidairy.ui.PasswordResetActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <activity
-            android:name=".ui.FoodItemsActivity"
+            android:name="com.andrayudu.babaidairy.ui.FoodItemsActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <activity
-            android:name=".ui.CartActivity"
+            android:name="com.andrayudu.babaidairy.ui.CartActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
         <activity
-            android:name=".ui.HomeActivity"
+            android:name="com.andrayudu.babaidairy.ui.HomeActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
          <activity
-            android:name=".ui.VerifyOTPActivity"
+            android:name="com.andrayudu.babaidairy.ui.VerifyOTPActivity"
             android:exported="false"
             android:theme="@style/Theme.SureshDiaryFoods" />
 
 
         <activity
-            android:name=".ui.OtpLoginActivity"
+            android:name="com.andrayudu.babaidairy.ui.OtpLoginActivity"
             android:exported="true"
             android:theme="@style/SplashScreenTheme">
             <intent-filter>

@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Suresh Dairy Foods</string>
+    <string name="app_name">Babai Dairy</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="rupee_symbol_new">₹%1$s </string>
     <string name="rupee_symbol">₹ </string>
     <string name="adminPanel">Admin Panel</string>
 
 
-    <string name="scrolling_text">Hi,%1$s  Welcome to SureshDairyFoods Your Outstanding Balance as of Today is:  ₹%2$d</string>
+    <string name="scrolling_text">Hi,%1$s  Welcome to Babai Dairy Your Outstanding Balance as of Today is:  ₹%2$d</string>
     <string name="amount_display">%1$s/-</string>
     <string name="progress_btn">Progress Btn</string>
     <string name="outstanding">Outstanding:</string>

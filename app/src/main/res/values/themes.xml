@@ -17,7 +17,7 @@
 
     <style name="SplashScreenTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FFFFFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/applogo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/babaidairyappicon</item>
         <item name="postSplashScreenTheme">@style/Theme.SureshDiaryFoods</item>
     </style>
 

@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace 'com.andrayudu.sureshdiaryfoods'
+    namespace 'com.andrayudu.babaidairy'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.andrayudu.sureshdiaryfoods"
+        applicationId "com.andrayudu.babaidairy"
         minSdk 29
         targetSdk 33
         versionCode 12

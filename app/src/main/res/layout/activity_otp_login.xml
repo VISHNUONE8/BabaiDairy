@@ -8,7 +8,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.andrayudu.sureshdiaryfoods.ui.OtpLoginViewModel" />
+            type="com.andrayudu.babaidairy.ui.OtpLoginViewModel" />
 
     </data>
 
@@ -27,7 +27,7 @@
         android:layout_height="130dp"
         android:layout_marginTop="80dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/dairylogo"/>
+        android:src="@drawable/babaidairy"/>
 
     <TextView
         android:layout_width="wrap_content"

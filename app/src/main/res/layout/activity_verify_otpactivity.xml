@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.andrayudu.sureshdiaryfoods.ui.VerifyOtpViewModel" />
+            type="com.andrayudu.babaidairy.ui.VerifyOtpViewModel" />
 
     </data>
 
@@ -29,7 +29,7 @@
             android:layout_height="130dp"
             android:layout_marginTop="80dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/dairylogo"/>
+            android:src="@drawable/babaidairy"/>
 
         <LinearLayout
             android:id="@+id/verificationLinLayout"

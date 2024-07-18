@@ -8,7 +8,7 @@
     <data>
         <variable
             name="myViewModel"
-            type="com.andrayudu.sureshdiaryfoods.ui.FoodItemsViewModel" />
+            type="com.andrayudu.babaidairy.ui.FoodItemsViewModel" />
     </data>
 
 
