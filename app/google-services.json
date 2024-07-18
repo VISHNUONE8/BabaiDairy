@@ -1,103 +1,26 @@
 {
   "project_info": {
-    "project_number": "414833058183",
-    "firebase_url": "https://sureshdairyfoods-f8a5a-default-rtdb.firebaseio.com",
-    "project_id": "sureshdairyfoods-f8a5a",
-    "storage_bucket": "sureshdairyfoods-f8a5a.appspot.com"
+    "project_number": "605720815020",
+    "project_id": "babaidairy",
+    "storage_bucket": "babaidairy.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:414833058183:android:002e6db8d2cf8b1fe7f322",
+        "mobilesdk_app_id": "1:605720815020:android:aee17d13a7bf97806c8609",
         "android_client_info": {
           "package_name": "com.andrayudu.babaidairy"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBXn45XHznbnRC_E4i6M_nZSY3I8DWNzz0"
+          "current_key": "AIzaSyDfUYBFvfudtJopO9_wdF4cIDyaYE5vQTM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:414833058183:android:5f33bf3857e542ece7f322",
-        "android_client_info": {
-          "package_name": "com.andrayudu.sdfadmin"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBXn45XHznbnRC_E4i6M_nZSY3I8DWNzz0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:414833058183:android:127c2318f3ab1ea9e7f322",
-        "android_client_info": {
-          "package_name": "com.andrayudu.sureshdiaryfoods"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "414833058183-vtssbpd8tcecd8h3lj007t1v0pe3fvcm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.andrayudu.sureshdiaryfoods",
-            "certificate_hash": "2997e0ace51e266450b0aa71c683e16a645d2b68"
-          }
-        },
-        {
-          "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBXn45XHznbnRC_E4i6M_nZSY3I8DWNzz0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "414833058183-p66jd7bpmn1alj4q87croeds30pe5mmv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
